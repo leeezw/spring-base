@@ -1,0 +1,131 @@
+.container {
+  padding: 20px;
+  background: #f7f8fa;
+  min-height: calc(100vh - 60px);
+}
+
+.searchCard {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  
+  :global {
+    .arco-card-body {
+      padding: 20px;
+    }
+  }
+}
+
+.tableCard {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  
+  :global {
+    .arco-card-header {
+      border-bottom: 1px solid #e5e6eb;
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .arco-card-body {
+      padding: 0;
+    }
+    
+    .arco-table {
+      border-radius: 0 0 8px 8px;
+    }
+    
+    .arco-table-th {
+      background: #f7f8fa;
+      font-weight: 600;
+      color: #1d2129;
+    }
+    
+    .arco-table-td {
+      color: #4e5969;
+    }
+    
+    .arco-table-tr:hover .arco-table-td {
+      background: #f7f8fa;
+    }
+    
+    .arco-btn-text {
+      padding: 4px 8px;
+      
+      &:hover {
+        background: rgba(var(--primary-6), 0.1);
+      }
+    }
+    
+    .arco-tag {
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+/* 飞书风格的按钮 */
+:global {
+  .arco-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+    
+    &:hover {
+      background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+    }
+  }
+  
+  .arco-btn {
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  
+  .arco-input,
+  .arco-select-view,
+  .arco-textarea {
+    border-radius: 6px;
+    
+    &:hover {
+      border-color: #667eea;
+    }
+    
+    &:focus,
+    &.arco-input-focus,
+    &.arco-select-view-focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+  }
+  
+  .arco-modal {
+    border-radius: 12px;
+    overflow: hidden;
+    
+    .arco-modal-header {
+      border-bottom: 1px solid #e5e6eb;
+      padding: 20px 24px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    
+    .arco-modal-body {
+      padding: 24px;
+    }
+    
+    .arco-modal-footer {
+      border-top: 1px solid #e5e6eb;
+      padding: 16px 24px;
+    }
+  }
+  
+  .arco-form-label-item {
+    font-weight: 500;
+    color: #1d2129;
+  }
+}

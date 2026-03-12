@@ -15,7 +15,7 @@ public class SysDept extends BaseEntity {
     private Long tenantId;
     private String deptName;
     private Long parentId;
-    private String leader;
+    private Long leaderId;
     private String phone;
     private String email;
     private Integer sortOrder;
@@ -33,8 +33,8 @@ public class SysDept extends BaseEntity {
     public Long getParentId() { return parentId; }
     public void setParentId(Long parentId) { this.parentId = parentId; }
     
-    public String getLeader() { return leader; }
-    public void setLeader(String leader) { this.leader = leader; }
+    public Long getLeaderId() { return leaderId; }
+    public void setLeaderId(Long leaderId) { this.leaderId = leaderId; }
     
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }

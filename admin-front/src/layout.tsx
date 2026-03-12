@@ -37,6 +37,8 @@ function getIconFromKey(key) {
   switch (key) {
     case 'dashboard':
       return <IconDashboard className={styles.icon} />;
+    case 'system':
+      return <IconSettings className={styles.icon} />;
     case 'list':
       return <IconList className={styles.icon} />;
     case 'form':
