@@ -39,5 +39,13 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        
+        <!-- MyBatis-Plus Core (optional, for PageResult.of(IPage)) -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-core</artifactId>
+            <version>3.5.5</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 </project>

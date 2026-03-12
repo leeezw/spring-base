@@ -3,6 +3,7 @@ package com.kite.mybatis.config;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan("com.kite.mybatis")
+@MapperScan({"com.kite.*.mapper", "com.kite.**.mapper"})
 public class MybatisPlusAutoConfiguration {
     
     /**

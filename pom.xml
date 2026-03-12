@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.1.11</version>
         <relativePath/>
     </parent>
 
@@ -27,10 +27,8 @@
         <module>scaffold-permission-starter</module>
         <module>scaffold-log-starter</module>
         <module>scaffold-cache-starter</module>
+        <module>scaffold-user-center</module>
         <module>scaffold-app</module>
-        <!-- TODO: 待创建 -->
-        <!--<module>scaffold-file-starter</module>-->
-        <!--<module>scaffold-user-center</module>-->
     </modules>
 
     <properties>
@@ -79,6 +77,11 @@
             <dependency>
                 <groupId>com.kite</groupId>
                 <artifactId>scaffold-cache-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kite</groupId>
+                <artifactId>scaffold-user-center</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

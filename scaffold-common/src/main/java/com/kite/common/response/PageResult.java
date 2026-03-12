@@ -34,4 +34,8 @@ public class PageResult<T> implements Serializable {
     public static <T> PageResult<T> of(List<T> records, Long total, Long current, Long size) {
         return new PageResult<>(records, total, current, size);
     }
+    
+    public static <T> PageResult<T> of(com.baomidou.mybatisplus.core.metadata.IPage<T> page) {
+        return new PageResult<>(page.getRecords(), page.getTotal(), page.getCurrent(), page.getSize());
+    }
 }

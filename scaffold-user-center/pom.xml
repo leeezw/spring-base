@@ -11,7 +11,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     
-    <artifactId>scaffold-app</artifactId>
+    <artifactId>scaffold-user-center</artifactId>
     <packaging>jar</packaging>
     
     <dependencies>
@@ -21,16 +21,16 @@
             <artifactId>scaffold-common</artifactId>
         </dependency>
         
-        <!-- scaffold-auth-starter -->
-        <dependency>
-            <groupId>com.kite</groupId>
-            <artifactId>scaffold-auth-starter</artifactId>
-        </dependency>
-        
         <!-- scaffold-mybatis-starter -->
         <dependency>
             <groupId>com.kite</groupId>
             <artifactId>scaffold-mybatis-starter</artifactId>
+        </dependency>
+        
+        <!-- scaffold-auth-starter -->
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-auth-starter</artifactId>
         </dependency>
         
         <!-- scaffold-permission-starter -->
@@ -45,60 +45,22 @@
             <artifactId>scaffold-log-starter</artifactId>
         </dependency>
         
-        <!-- scaffold-cache-starter -->
-        <dependency>
-            <groupId>com.kite</groupId>
-            <artifactId>scaffold-cache-starter</artifactId>
-        </dependency>
-        
-        <!-- scaffold-user-center -->
-        <dependency>
-            <groupId>com.kite</groupId>
-            <artifactId>scaffold-user-center</artifactId>
-        </dependency>
-        
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <!-- Spring Boot Redis -->
+        <!-- Spring Security Crypto (BCrypt) -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        
-        <!-- Knife4j -->
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
         
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        
-        <!-- Spring Boot Test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.kite.app.ScaffoldApplication</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
