@@ -2,12 +2,12 @@ package com.kite.app.controller;
 
 import com.kite.auth.annotation.AllowAnonymous;
 import com.kite.auth.model.LoginUser;
-import com.kite.auth.service.AuthenticationService;
 import com.kite.auth.service.SessionService;
 import com.kite.auth.util.JwtUtils;
 import com.kite.common.exception.BusinessException;
 import com.kite.common.response.Result;
 import com.kite.common.response.ResultCode;
+import com.kite.user.service.UserAuthenticationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,22 +23,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     
-    private final AuthenticationService authenticationService;
+    private final UserAuthenticationService userAuthenticationService;
     private final JwtUtils jwtUtils;
     private final SessionService sessionService;
     
     @AllowAnonymous
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@RequestBody LoginRequest request) {
-        // 加载用户
-        LoginUser loginUser = authenticationService.loadUserByUsername(request.getUsername());
-        if (loginUser == null) {
-            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        // 验证租户编码（如果未提供，默认使用default）
+        String tenantCode = request.getTenantCode();
+        if (tenantCode == null || tenantCode.isEmpty()) {
+            tenantCode = "default";
         }
         
-        // 临时实现：密码固定为 admin123
-        if (!"admin123".equals(request.getPassword())) {
-            throw new BusinessException(ResultCode.PASSWORD_ERROR);
+        // 使用租户编码 + 用户名 + 密码认证
+        LoginUser loginUser = userAuthenticationService.authenticate(
+            tenantCode, 
+            request.getUsername(), 
+            request.getPassword()
+        );
+        
+        if (loginUser == null) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
         
         // 生成 Token
@@ -58,6 +64,7 @@ public class AuthController {
     
     @Data
     public static class LoginRequest {
+        private String tenantCode;  // 租户编码
         private String username;
         private String password;
     }

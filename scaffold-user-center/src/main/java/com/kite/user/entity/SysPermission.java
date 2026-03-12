@@ -9,6 +9,7 @@ import com.kite.mybatis.entity.BaseEntity;
 @TableName("sys_permission")
 public class SysPermission extends BaseEntity {
     
+    private Long tenantId;
     private String permissionCode;
     private String permissionName;
     private Integer permissionType;
@@ -18,6 +19,9 @@ public class SysPermission extends BaseEntity {
     private String icon;
     private Integer sortOrder;
     private Integer status;
+    
+    public Long getTenantId() { return tenantId; }
+    public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
     public String getPermissionCode() { return permissionCode; }
     public void setPermissionCode(String permissionCode) { this.permissionCode = permissionCode; }

@@ -12,6 +12,7 @@ import java.util.List;
 @TableName("sys_dept")
 public class SysDept extends BaseEntity {
     
+    private Long tenantId;
     private String deptName;
     private Long parentId;
     private String leader;
@@ -22,6 +23,9 @@ public class SysDept extends BaseEntity {
     
     @TableField(exist = false)
     private List<SysDept> children;
+    
+    public Long getTenantId() { return tenantId; }
+    public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
     public String getDeptName() { return deptName; }
     public void setDeptName(String deptName) { this.deptName = deptName; }

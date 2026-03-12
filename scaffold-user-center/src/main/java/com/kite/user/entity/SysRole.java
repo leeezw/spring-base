@@ -9,11 +9,15 @@ import com.kite.mybatis.entity.BaseEntity;
 @TableName("sys_role")
 public class SysRole extends BaseEntity {
     
+    private Long tenantId;
     private String roleCode;
     private String roleName;
     private String description;
     private Integer sortOrder;
     private Integer status;
+    
+    public Long getTenantId() { return tenantId; }
+    public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
     public String getRoleCode() { return roleCode; }
     public void setRoleCode(String roleCode) { this.roleCode = roleCode; }

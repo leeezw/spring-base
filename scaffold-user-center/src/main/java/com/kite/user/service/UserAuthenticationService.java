@@ -3,7 +3,10 @@ package com.kite.user.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kite.auth.model.LoginUser;
 import com.kite.auth.service.AuthenticationService;
+import com.kite.mybatis.context.TenantContext;
+import com.kite.user.entity.SysTenant;
 import com.kite.user.entity.SysUser;
+import com.kite.user.mapper.SysTenantMapper;
 import com.kite.user.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +22,8 @@ import java.util.List;
 public class UserAuthenticationService implements AuthenticationService {
     
     private final SysUserMapper userMapper;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final SysTenantMapper tenantMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
     
     @Override
     public LoginUser loadUserByUsername(String username) {
@@ -38,17 +42,72 @@ public class UserAuthenticationService implements AuthenticationService {
     
     @Override
     public LoginUser loadUserById(Long userId) {
-        SysUser user = userMapper.selectById(userId);
-        if (user == null || user.getDeleted() == 1 || user.getStatus() != 1) {
-            return null;
+        // 通过主键查询，不需要租户过滤
+        TenantContext.setIgnore(true);
+        try {
+            SysUser user = userMapper.selectById(userId);
+            if (user == null || user.getDeleted() == 1 || user.getStatus() != 1) {
+                return null;
+            }
+            
+            return buildLoginUser(user);
+        } finally {
+            TenantContext.clear();
         }
-        
-        return buildLoginUser(user);
     }
     
     /**
-     * 用户名密码认证
+     * 租户编码 + 用户名 + 密码认证
      */
+    public LoginUser authenticate(String tenantCode, String username, String password) {
+        // 1. 查询租户
+        SysTenant tenant = tenantMapper.selectOne(
+            new LambdaQueryWrapper<SysTenant>()
+                .eq(SysTenant::getTenantCode, tenantCode)
+                .eq(SysTenant::getDeleted, 0)
+        );
+        
+        if (tenant == null || tenant.getStatus() != 1) {
+            return null;
+        }
+        
+        // 2. 设置租户上下文（临时，用于查询用户）
+        Long tenantId = tenant.getId();
+        TenantContext.setTenantId(tenantId);
+        
+        try {
+            // 3. 查询用户（会自动注入 WHERE tenant_id = ?）
+            SysUser user = userMapper.selectOne(
+                new LambdaQueryWrapper<SysUser>()
+                    .eq(SysUser::getUsername, username)
+                    .eq(SysUser::getDeleted, 0)
+            );
+            
+            if (user == null) {
+                return null;
+            }
+            
+            // 4. 验证密码
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                return null;
+            }
+            
+            // 5. 检查状态
+            if (user.getStatus() != 1) {
+                return null;
+            }
+            
+            return buildLoginUser(user);
+        } finally {
+            // 清除临时租户上下文
+            TenantContext.clear();
+        }
+    }
+    
+    /**
+     * 用户名密码认证（已废弃，使用 authenticate(tenantCode, username, password)）
+     */
+    @Deprecated
     public LoginUser authenticate(String username, String password) {
         SysUser user = userMapper.selectOne(
             new LambdaQueryWrapper<SysUser>()
@@ -77,6 +136,7 @@ public class UserAuthenticationService implements AuthenticationService {
         
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getId());
+        loginUser.setTenantId(user.getTenantId());
         loginUser.setUsername(user.getUsername());
         loginUser.setNickname(user.getNickname());
         loginUser.setAvatar(user.getAvatar());

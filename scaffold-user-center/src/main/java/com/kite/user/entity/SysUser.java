@@ -9,6 +9,7 @@ import com.kite.mybatis.entity.BaseEntity;
 @TableName("sys_user")
 public class SysUser extends BaseEntity {
     
+    private Long tenantId;
     private String username;
     private String password;
     private String nickname;
@@ -16,6 +17,9 @@ public class SysUser extends BaseEntity {
     private String email;
     private String phone;
     private Integer status;
+    
+    public Long getTenantId() { return tenantId; }
+    public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

@@ -12,6 +12,7 @@ import java.util.List;
 @TableName("sys_menu")
 public class SysMenu extends BaseEntity {
     
+    private Long tenantId;
     private String menuName;
     private Long parentId;
     private String path;
@@ -23,6 +24,9 @@ public class SysMenu extends BaseEntity {
     
     @TableField(exist = false)
     private List<SysMenu> children;
+    
+    public Long getTenantId() { return tenantId; }
+    public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
     public String getMenuName() { return menuName; }
     public void setMenuName(String menuName) { this.menuName = menuName; }

@@ -26,6 +26,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
  * 认证过滤器
@@ -100,6 +101,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         // 设置到上下文
         LoginUserContext.set(loginUser);
         
+        // 设置租户上下文
+        if (loginUser.getTenantId() != null) {
+            try {
+                Class<?> tenantContextClass = Class.forName("com.kite.mybatis.context.TenantContext");
+                Method setTenantIdMethod = tenantContextClass.getMethod("setTenantId", Long.class);
+                setTenantIdMethod.invoke(null, loginUser.getTenantId());
+            } catch (Exception e) {
+                log.warn("设置租户上下文失败: {}", e.getMessage());
+            }
+        }
+        
         // 刷新 Session
         sessionService.refreshSession(userId);
         
@@ -107,6 +119,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } finally {
             LoginUserContext.clear();
+            // 清除租户上下文
+            try {
+                Class<?> tenantContextClass = Class.forName("com.kite.mybatis.context.TenantContext");
+                Method clearMethod = tenantContextClass.getMethod("clear");
+                clearMethod.invoke(null);
+            } catch (Exception e) {
+                // ignore
+            }
         }
     }
     
