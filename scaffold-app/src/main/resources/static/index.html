@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scaffold Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --border: #e1e4e8;
+            --text: #24292e;
+            --text-secondary: #586069;
+            --accent: #0366d6;
+            --accent-hover: #0256c7;
+            --success: #28a745;
+            --danger: #d73a49;
+            --warning: #ffc107;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .btn {
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .test-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        
+        .test-item {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+        }
+        
+        .test-item h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .test-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .result {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="login-form">
+        <div class="card">
+            <div class="card-title">登录 Scaffold Admin</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="username" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="password" value="admin123" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">登录</button>
+            </form>
+            <div id="loginError" class="result error hidden" style="margin-top: 16px;"></div>
+        </div>
+    </div>
+    
+    <!-- 主页面 -->
+    <div id="mainPage" class="hidden">
+        <div class="header">
+            <h1>Scaffold Admin</h1>
+            <div class="user-info">
+                <span id="currentUser"></span>
+                <button class="btn" onclick="logout()">退出</button>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="card">
+                <div class="card-title">功能测试</div>
+                <div class="test-section">
+                    <div class="test-item">
+                        <h3>角色权限测试</h3>
+                        <p>测试 @RequiresRoles("admin") 注解</p>
+                        <button class="btn btn-primary" onclick="testRole()">测试</button>
+                        <div id="roleResult"></div>
+                    </div>
+                    
+                    <div class="test-item">
+                        <h3>操作权限测试</h3>
+                        <p>测试 @RequiresPermissions 注解</p>
+                        <button class="btn btn-primary" onclick="testPermission()">测试</button>
+                        <div id="permissionResult"></div>
+                    </div>
+                    
+                    <div class="test-item">
+                        <h3>操作日志测试</h3>
+                        <p>测试 @OperationLog 注解</p>
+                        <button class="btn btn-primary" onclick="testLog()">测试</button>
+                        <div id="logResult"></div>
+                    </div>
+                    
+                    <div class="test-item">
+                        <h3>限流测试</h3>
+                        <p>测试 @RateLimit 注解（5次/分钟）</p>
+                        <button class="btn btn-primary" onclick="testRateLimit()">连续测试6次</button>
+                        <div id="rateLimitResult"></div>
+                    </div>
+                    
+                    <div class="test-item">
+                        <h3>综合测试</h3>
+                        <p>权限 + 日志 + 限流（3次/分钟）</p>
+                        <button class="btn btn-primary" onclick="testCombined()">测试</button>
+                        <div id="combinedResult"></div>
+                    </div>
+                    
+                    <div class="test-item">
+                        <h3>健康检查</h3>
+                        <p>测试服务状态</p>
+                        <button class="btn btn-primary" onclick="testHealth()">测试</button>
+                        <div id="healthResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let token = localStorage.getItem('token');
+        
+        if (token) {
+            showMainPage();
+        } else {
+            showLoginPage();
+        }
+        
+        function showLoginPage() {
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('mainPage').classList.add('hidden');
+        }
+        
+        function showMainPage() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+            
+            const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+            document.getElementById('currentUser').textContent = userInfo.nickname || userInfo.username || 'User';
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    token = result.data.token;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('userInfo', JSON.stringify(result.data.userInfo));
+                    showMainPage();
+                } else {
+                    showError('loginError', result.message || '登录失败');
+                }
+            } catch (error) {
+                showError('loginError', '网络错误: ' + error.message);
+            }
+        });
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            token = null;
+            showLoginPage();
+        }
+        
+        async function apiCall(url) {
+            const response = await fetch(url, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            return await response.json();
+        }
+        
+        function showResult(elementId, result, isError = false) {
+            const el = document.getElementById(elementId);
+            el.className = 'result ' + (isError ? 'error' : 'success');
+            el.textContent = JSON.stringify(result, null, 2);
+        }
+        
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.className = 'result error';
+            el.classList.remove('hidden');
+            el.textContent = message;
+        }
+        
+        async function testRole() {
+            try {
+                const result = await apiCall('/api/test/admin');
+                showResult('roleResult', result, result.code !== 200);
+            } catch (error) {
+                showResult('roleResult', { error: error.message }, true);
+            }
+        }
+        
+        async function testPermission() {
+            try {
+                const result = await apiCall('/api/test/permission');
+                showResult('permissionResult', result, result.code !== 200);
+            } catch (error) {
+                showResult('permissionResult', { error: error.message }, true);
+            }
+        }
+        
+        async function testLog() {
+            try {
+                const result = await apiCall('/api/test/log');
+                showResult('logResult', result, result.code !== 200);
+            } catch (error) {
+                showResult('logResult', { error: error.message }, true);
+            }
+        }
+        
+        async function testRateLimit() {
+            const results = [];
+            for (let i = 1; i <= 6; i++) {
+                try {
+                    const result = await apiCall('/api/test/rate-limit-ip');
+                    results.push(`请求 ${i}: ${result.message || result.data}`);
+                } catch (error) {
+                    results.push(`请求 ${i}: 错误 - ${error.message}`);
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            showResult('rateLimitResult', results.join('\n'));
+        }
+        
+        async function testCombined() {
+            try {
+                const result = await apiCall('/api/test/combined');
+                showResult('combinedResult', result, result.code !== 200);
+            } catch (error) {
+                showResult('combinedResult', { error: error.message }, true);
+            }
+        }
+        
+        async function testHealth() {
+            try {
+                const result = await apiCall('/api/health');
+                showResult('healthResult', result, result.code !== 200);
+            } catch (error) {
+                showResult('healthResult', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>
