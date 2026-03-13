@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown, Drawer } from 'antd';
-import { 
+import {
+ 
   UserOutlined, 
   CheckCircleOutlined, 
   StopOutlined, 
@@ -18,11 +19,13 @@ import RoleSelectModal from '../components/RoleSelectModal.jsx';
 import TableSearchForm from '../components/TableSearchForm.jsx';
 import ProTableV2 from '../components/ProTableV2.jsx';
 import { usePageToolbar } from '../components/AppLayout.jsx';
+import { usePermission } from '../hooks/usePermission.jsx';
 import './UserList.css';
 
 const { Search } = Input;
 
 export default function UserList() {
+  const { hasPermission } = usePermission();
   const actionRef = useRef();
   const [stats, setStats] = useState({
     total: 0,
@@ -151,44 +154,47 @@ export default function UserList() {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     try {
+      const { roleIds, ...userData } = values;
+      
       // 编辑模式下，如果密码为空则移除密码字段
-      if (editingUser && !values.password) {
-        delete values.password;
+      if (editingUser && !userData.password) {
+        delete userData.password;
       }
 
+      let userId;
       if (editingUser) {
         // 编辑用户
-        const res = await request.put('/system/user', { ...values, id: editingUser.id });
-        if (res.code === 200) {
-          message.success('用户更新成功');
-          setModalVisible(false);
-          form.resetFields();
-          setEditingUser(null);
-          handleRefresh();
-        } else {
+        const res = await request.put('/system/user', { ...userData, id: editingUser.id });
+        if (res.code !== 200) {
           message.error(res.message || '更新失败');
+          return;
         }
+        userId = editingUser.id;
       } else {
         // 新增用户
-        const res = await request.post('/system/user', values);
-        if (res.code === 200) {
-          message.success('用户创建成功');
-          setModalVisible(false);
-          form.resetFields();
-          // 确保表单字段完全清空
-          form.setFieldsValue({
-            username: undefined,
-            password: undefined,
-            nickname: undefined,
-            email: undefined,
-            status: 1,
-          });
-          setEditingUser(null);
-          handleRefresh();
-        } else {
+        const res = await request.post('/system/user', userData);
+        if (res.code !== 200) {
           message.error(res.message || '创建失败');
+          return;
+        }
+        // 新增成功后需要拿到用户ID来分配角色
+        userId = res.data?.id;
+      }
+
+      // 分配角色（如果有选择角色且有userId）
+      if (userId && roleIds && roleIds.length > 0) {
+        try {
+          await request.post(`/system/relation/user/${userId}/roles`, { ids: roleIds });
+        } catch (e) {
+          console.warn('角色分配失败:', e);
         }
       }
+      
+      message.success(editingUser ? '用户更新成功' : '用户创建成功');
+      setModalVisible(false);
+      form.resetFields();
+      setEditingUser(null);
+      handleRefresh();
     } catch (error) {
       message.error(error.message || '操作失败');
     } finally {

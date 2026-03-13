@@ -8,6 +8,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   PoweroffOutlined,
+  MenuOutlined,
 } from '@ant-design/icons';
 import request from '../api/index.js';
 import RoleForm from '../components/RoleForm.jsx';
@@ -36,6 +37,7 @@ export default function RoleList() {
   const [grantTree, setGrantTree] = useState([]);
   const [grantCheckedKeys, setGrantCheckedKeys] = useState([]);
   const [grantRole, setGrantRole] = useState(null);
+  const [grantType, setGrantType] = useState('permission'); // 'permission' | 'menu'
   const { statsVisible, setStatsVisible, setShowStatsToggle } = usePageToolbar();
   const debounceTimerRef = useRef(null);
   
@@ -234,22 +236,45 @@ export default function RoleList() {
     }));
   }, []);
 
-  const handleOpenGrantDrawer = async (record) => {
+  // 打开权限/菜单分配抽屉
+  const handleOpenGrantDrawer = async (record, type = 'permission') => {
     setGrantDrawerVisible(true);
     setGrantRole(record);
+    setGrantType(type);
     setGrantLoading(true);
     try {
-      const res = await request.get(`/system/relation/role-permissions/${record.id}`);
-      if (res.code === 200 && res.data) {
-        setGrantTree(buildTreeData(res.data.tree || []));
-        const checked = (res.data.checkedKeys || []).map(id => id?.toString());
-        setGrantCheckedKeys(checked);
+      // 加载树数据 + 已选中的ID
+      let treeRes, checkedRes;
+      if (type === 'permission') {
+        [treeRes, checkedRes] = await Promise.all([
+          request.get('/system/permission/tree'),
+          request.get(`/system/relation/role/${record.id}/permissions`),
+        ]);
       } else {
-        setGrantTree([]);
+        [treeRes, checkedRes] = await Promise.all([
+          request.get('/system/menu/tree'),
+          request.get(`/system/relation/role/${record.id}/menus`),
+        ]);
+      }
+      
+      if (treeRes.code === 200 && treeRes.data) {
+        const transformTree = (nodes) => nodes.map(node => ({
+          title: type === 'permission' 
+            ? `${node.permissionName || node.name} (${node.permissionCode || node.code})`
+            : node.menuName,
+          key: node.id.toString(),
+          children: node.children?.length > 0 ? transformTree(node.children) : undefined,
+        }));
+        setGrantTree(transformTree(treeRes.data));
+      }
+      
+      if (checkedRes.code === 200 && checkedRes.data) {
+        setGrantCheckedKeys(checkedRes.data.map(id => id.toString()));
+      } else {
         setGrantCheckedKeys([]);
       }
     } catch (error) {
-      message.error(error.message || '加载权限数据失败');
+      message.error('加载数据失败');
     } finally {
       setGrantLoading(false);
     }
@@ -264,25 +289,25 @@ export default function RoleList() {
   };
 
   const handleGrantSubmit = async () => {
-    if (!grantRole) {
-      return;
-    }
+    if (!grantRole) return;
     setGrantLoading(true);
     try {
-      const payload = {
-        permissionIds: grantCheckedKeys.map(key => Number(key)),
-      };
-      const res = await request.post(`/system/relation/role-permissions/${grantRole.id}`, payload);
+      const ids = grantCheckedKeys.map(key => Number(key));
+      const url = grantType === 'permission'
+        ? `/system/relation/role/${grantRole.id}/permissions`
+        : `/system/relation/role/${grantRole.id}/menus`;
+      
+      const res = await request.post(url, { ids });
       if (res.code === 200) {
-        message.success('菜单授权成功');
+        message.success(grantType === 'permission' ? '权限分配成功' : '菜单分配成功');
         setGrantDrawerVisible(false);
         setGrantRole(null);
         handleRefresh();
       } else {
-        message.error(res.message || '授权失败');
+        message.error(res.message || '分配失败');
       }
     } catch (error) {
-      message.error(error.message || '授权失败');
+      message.error(error.message || '分配失败');
     } finally {
       setGrantLoading(false);
     }
@@ -423,8 +448,15 @@ export default function RoleList() {
             type="text" 
             icon={<SafetyOutlined />} 
             size="small"
-            title="菜单授权"
-            onClick={() => handleOpenGrantDrawer(record)}
+            title="分配权限"
+            onClick={() => handleOpenGrantDrawer(record, 'permission')}
+          />
+          <Button 
+            type="text" 
+            icon={<MenuOutlined />} 
+            size="small"
+            title="分配菜单"
+            onClick={() => handleOpenGrantDrawer(record, 'menu')}
           />
           <Button 
             type="text" 
@@ -579,7 +611,7 @@ export default function RoleList() {
       </Drawer>
 
       <Drawer
-        title={grantRole ? `菜单授权 - ${grantRole.roleName || grantRole.roleCode}` : '菜单授权'}
+        title={grantRole ? `${grantType === 'permission' ? '分配权限' : '分配菜单'} - ${grantRole.roleName || grantRole.roleCode}` : '分配'}
         placement="right"
         size={420}
         open={grantDrawerVisible}
