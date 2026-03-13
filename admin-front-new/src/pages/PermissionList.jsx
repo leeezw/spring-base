@@ -167,11 +167,11 @@ export default function PermissionList() {
   };
 
   const openDrawer = (mode, parentId = 0, permission = null) => {
-    if (mode === 'create' && !hasPermission('permission:create')) {
+    if (mode === 'create' && !hasPermission('system:permission:add')) {
       message.warning('暂无新增权限');
       return;
     }
-    if (mode === 'edit' && !hasPermission('permission:update')) {
+    if (mode === 'edit' && !hasPermission('system:permission:edit')) {
       message.warning('暂无编辑权限');
       return;
     }
@@ -256,7 +256,7 @@ export default function PermissionList() {
     if (!selectedPermission) {
       return;
     }
-    if (!hasPermission('permission:delete')) {
+    if (!hasPermission('system:permission:delete')) {
       message.warning('暂无删除权限');
       return;
     }
@@ -284,12 +284,12 @@ export default function PermissionList() {
     <div className="permission-list-page">
       <div className="permission-toolbar">
         <Space>
-          {hasPermission('permission:create') && (
+          {hasPermission('system:permission:add') && (
             <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create', 0)}>
               新增顶级菜单
             </Button>
           )}
-          {hasPermission('permission:create') && (
+          {hasPermission('system:permission:add') && (
             <Button
               icon={<PlusOutlined />}
               disabled={!selectedPermission}
@@ -298,7 +298,7 @@ export default function PermissionList() {
               新增子节点
             </Button>
           )}
-          {hasPermission('permission:update') && (
+          {hasPermission('system:permission:edit') && (
             <Button
               icon={<EditOutlined />}
               disabled={!selectedPermission}
@@ -307,7 +307,7 @@ export default function PermissionList() {
               编辑
             </Button>
           )}
-          {hasPermission('permission:delete') && (
+          {hasPermission('system:permission:delete') && (
             <Button
               danger
               icon={<DeleteOutlined />}
