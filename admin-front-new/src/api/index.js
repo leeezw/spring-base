@@ -1,11 +1,11 @@
 import axios from 'axios';
+
 const request = axios.create({
-  // 使用相对路径，通过 Vite 代理转发到后端
-  // 代理配置在 vite.config.js 中：/api -> http://localhost:8080
   baseURL: '/api',
-  timeout: 10000
+  timeout: 15000,
 });
 
+// 请求拦截器
 request.interceptors.request.use((config) => {
   const token = localStorage.getItem('uc_token');
   if (token) {
@@ -14,17 +14,38 @@ request.interceptors.request.use((config) => {
   return config;
 });
 
+// 响应拦截器
 request.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    // 网络错误 / 超时
+    if (!error.response) {
+      return Promise.reject(new Error('网络连接失败，请检查网络'));
+    }
+
+    const { status, data } = error.response;
+
+    // 401 未认证 → 跳登录
+    if (status === 401) {
       localStorage.removeItem('uc_token');
       localStorage.removeItem('uc_user');
       localStorage.removeItem('uc_remember');
       window.location.href = '/login';
+      return Promise.reject(new Error('登录已过期'));
     }
-    // 统一错误处理，返回错误信息
-    const errorMessage = error.response?.data?.message || error.message || '请求失败';
+
+    // 403 无权限
+    if (status === 403) {
+      return Promise.reject(new Error('没有操作权限'));
+    }
+
+    // 后端返回了标准 Result 格式（code + message），当成正常响应返回
+    if (data && data.code !== undefined) {
+      return data;
+    }
+
+    // 其他错误
+    const errorMessage = data?.message || error.message || '请求失败';
     return Promise.reject(new Error(errorMessage));
   }
 );

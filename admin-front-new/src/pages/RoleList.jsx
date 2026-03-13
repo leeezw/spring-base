@@ -133,7 +133,6 @@ export default function RoleList() {
 
   // 处理数据变化（仅用于通知，不触发刷新，避免无限循环）
   const handleDataChange = (data, total) => {
-    console.log('handleDataChange', data, total);
   };
 
   const handleRefresh = () => {

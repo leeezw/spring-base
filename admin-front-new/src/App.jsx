@@ -1,20 +1,28 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Spin } from 'antd';
 import { useAuthContext } from './hooks/AuthProvider.jsx';
 import Login from './pages/Login.jsx';
-import UserList from './pages/UserList.jsx';
-import RoleList from './pages/RoleList.jsx';
-import PermissionList from './pages/PermissionList.jsx';
-import RolePermConfig from './pages/RolePermConfig.jsx';
-import PostList from './pages/PostList.jsx';
-import DictList from './pages/DictList.jsx';
-import Profile from './pages/Profile.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import MenuList from './pages/MenuList.jsx';
-import DeptList from './pages/DeptList.jsx';
-import SessionList from './pages/SessionList.jsx';
-import NotificationCenter from './pages/NotificationCenter.jsx';
-import ComponentShowcase from './pages/ComponentShowcase.jsx';
 import AppLayout from './components/AppLayout.jsx';
+
+// 路由级懒加载
+const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
+const UserList = lazy(() => import('./pages/UserList.jsx'));
+const RoleList = lazy(() => import('./pages/RoleList.jsx'));
+const PermissionList = lazy(() => import('./pages/PermissionList.jsx'));
+const RolePermConfig = lazy(() => import('./pages/RolePermConfig.jsx'));
+const PostList = lazy(() => import('./pages/PostList.jsx'));
+const DictList = lazy(() => import('./pages/DictList.jsx'));
+const MenuList = lazy(() => import('./pages/MenuList.jsx'));
+const DeptList = lazy(() => import('./pages/DeptList.jsx'));
+const Profile = lazy(() => import('./pages/Profile.jsx'));
+
+// 懒加载 fallback
+const PageLoading = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+    <Spin size="large" />
+  </div>
+);
 
 function PrivateRoute({ children }) {
   const { token } = useAuthContext();
@@ -40,27 +48,18 @@ export default function App() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         
         {/* 数据看板 */}
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="dashboard" element={<Suspense fallback={<PageLoading />}><Dashboard /></Suspense>} />
         
         {/* 系统管理 */}
-        <Route path="system/user" element={<UserList />} />
-        <Route path="system/role" element={<RoleList />} />
-        <Route path="system/role/config" element={<RolePermConfig />} />
-        <Route path="system/permission" element={<PermissionList />} />
-        <Route path="system/menu" element={<MenuList />} />
-        <Route path="system/dept" element={<DeptList />} />
-        <Route path="system/post" element={<PostList />} />
-        <Route path="system/dict" element={<DictList />} />
-        <Route path="profile" element={<Profile />} />
-        
-        {/* 数据分析 */}
-        
-        {/* 会话管理 */}
-        <Route path="sessions" element={<SessionList />} />
-        
-        {/* 公共页面 */}
-        <Route path="notifications" element={<NotificationCenter />} />
-        <Route path="components" element={<ComponentShowcase />} />
+        <Route path="system/user" element={<Suspense fallback={<PageLoading />}><UserList /></Suspense>} />
+        <Route path="system/role" element={<Suspense fallback={<PageLoading />}><RoleList /></Suspense>} />
+        <Route path="system/role/config" element={<Suspense fallback={<PageLoading />}><RolePermConfig /></Suspense>} />
+        <Route path="system/permission" element={<Suspense fallback={<PageLoading />}><PermissionList /></Suspense>} />
+        <Route path="system/menu" element={<Suspense fallback={<PageLoading />}><MenuList /></Suspense>} />
+        <Route path="system/dept" element={<Suspense fallback={<PageLoading />}><DeptList /></Suspense>} />
+        <Route path="system/post" element={<Suspense fallback={<PageLoading />}><PostList /></Suspense>} />
+        <Route path="system/dict" element={<Suspense fallback={<PageLoading />}><DictList /></Suspense>} />
+        <Route path="profile" element={<Suspense fallback={<PageLoading />}><Profile /></Suspense>} />
         
         {/* 兼容旧路径 */}
         <Route path="roles" element={<Navigate to="/system/role" replace />} />

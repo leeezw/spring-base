@@ -85,7 +85,7 @@ export default function Dashboard() {
     colorField: 'deptName',
     radius: 0.8,
     innerRadius: 0.5,
-    label: { type: 'outer', content: '{name} {value}人', style: { fontSize: 11 } },
+    label: false,
     legend: { position: 'bottom', itemHeight: 18 },
     interactions: [{ type: 'element-active' }],
     statistic: {

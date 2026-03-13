@@ -11,5 +11,22 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // Ant Design
+          'vendor-antd': ['antd', '@ant-design/icons'],
+          // Charts (largest dep)
+          'vendor-charts': ['@ant-design/charts'],
+          // Pro components
+          'vendor-pro': ['@ant-design/pro-components'],
+        }
+      }
+    }
   }
 });

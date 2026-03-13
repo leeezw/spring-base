@@ -118,7 +118,6 @@ export default function UserList() {
 
   // 处理数据变化（仅用于通知，不触发刷新，避免无限循环）
   const handleDataChange = (data, total) => {
-    console.log('handleDataChange', data, total);
     // 统计数据已从后端获取，这里不需要再计算
   };
 

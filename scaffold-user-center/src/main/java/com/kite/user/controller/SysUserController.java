@@ -8,6 +8,7 @@ import com.kite.permission.annotation.RequiresPermissions;
 import com.kite.user.entity.SysUser;
 import com.kite.user.service.SysUserService;
 import lombok.RequiredArgsConstructor;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -55,9 +56,11 @@ public class SysUserController {
     @PostMapping
     @RequiresPermissions("system:user:add")
     @OperationLog(module = "用户管理", type = OperationType.INSERT, description = "新增用户")
-    public Result<Void> add(@RequestBody SysUser user) {
+    public Result<Map<String, Object>> add(@RequestBody SysUser user) {
         userService.addUser(user);
-        return Result.success();
+        Map<String, Object> data = new java.util.HashMap<>();
+        data.put("id", user.getId());
+        return Result.success(data);
     }
     
     /**
