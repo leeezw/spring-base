@@ -5,6 +5,12 @@ spring:
   application:
     name: scaffold-app
   
+  # 文件上传
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+  
   # 数据源配置
   datasource:
     url: jdbc:postgresql://localhost:5432/scaffold_db

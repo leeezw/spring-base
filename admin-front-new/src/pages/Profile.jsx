@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Card, Form, Input, Button, message, Tabs, Descriptions, Tag, Space, Avatar, Divider, Row, Col, Spin } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, EditOutlined, SafetyOutlined, IdcardOutlined } from '@ant-design/icons';
+import { Card, Form, Input, Button, message, Tabs, Descriptions, Tag, Space, Avatar, Divider, Row, Col, Spin, Upload } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, EditOutlined, SafetyOutlined, CameraOutlined } from '@ant-design/icons';
 import request from '../api/index.js';
 import { useAuthContext } from '../hooks/AuthProvider.jsx';
 import './Profile.css';
@@ -13,6 +13,7 @@ export default function Profile() {
   const [passwordForm] = Form.useForm();
   const [profileSaving, setProfileSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
@@ -67,6 +68,37 @@ export default function Profile() {
     finally { setPasswordSaving(false); }
   };
 
+  const handleAvatarUpload = async (info) => {
+    const file = info.file;
+    if (!file) return;
+    
+    // 校验
+    const isImage = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type);
+    if (!isImage) { message.error('只支持 JPG/PNG/GIF/WebP'); return; }
+    if (file.size > 5 * 1024 * 1024) { message.error('头像不能超过5MB'); return; }
+    
+    setAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('module', 'avatar');
+      
+      const res = await request.post('/system/file/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      if (res.code === 200 && res.data?.url) {
+        // 更新头像
+        await request.put('/auth/profile', { avatar: res.data.url });
+        message.success('头像更新成功');
+        loadProfile();
+      } else {
+        message.error(res.message || '上传失败');
+      }
+    } catch (e) { message.error('上传失败'); }
+    finally { setAvatarUploading(false); }
+  };
+
   const user = profile?.user;
 
   return (
@@ -77,7 +109,20 @@ export default function Profile() {
           <Col xs={24} md={8}>
             <Card className="profile-card">
               <div className="profile-avatar-section">
-                <Avatar size={80} icon={<UserOutlined />} src={user?.avatar} className="profile-avatar" />
+                <Upload
+                  showUploadList={false}
+                  beforeUpload={() => false}
+                  onChange={handleAvatarUpload}
+                  accept="image/*"
+                >
+                  <div className="profile-avatar-wrapper">
+                    <Avatar size={80} icon={<UserOutlined />} src={user?.avatar} className="profile-avatar" />
+                    <div className="profile-avatar-overlay">
+                      <CameraOutlined style={{ fontSize: 20, color: 'white' }} />
+                    </div>
+                    {avatarUploading && <Spin className="profile-avatar-spin" />}
+                  </div>
+                </Upload>
                 <h2 className="profile-name">{user?.nickname || user?.username || '-'}</h2>
                 <p className="profile-username">@{user?.username}</p>
               </div>
