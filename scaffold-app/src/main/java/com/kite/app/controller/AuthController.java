@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +27,25 @@ public class AuthController {
     private final UserAuthenticationService userAuthenticationService;
     private final JwtUtils jwtUtils;
     private final SessionService sessionService;
+    
+    /**
+     * 预登录：验证用户名密码，返回该用户所属的租户列表
+     * 用于两阶段登录流程
+     */
+    @AllowAnonymous
+    @PostMapping("/pre-login")
+    public Result<List<Map<String, Object>>> preLogin(@RequestBody PreLoginRequest request) {
+        List<Map<String, Object>> tenants = userAuthenticationService.preLogin(
+            request.getUsername(),
+            request.getPassword()
+        );
+        
+        if (tenants == null || tenants.isEmpty()) {
+            throw new BusinessException(ResultCode.USER_NOT_FOUND, "用户名或密码错误");
+        }
+        
+        return Result.success(tenants);
+    }
     
     @AllowAnonymous
     @PostMapping("/login")
@@ -60,6 +80,12 @@ public class AuthController {
         data.put("userInfo", loginUser);
         
         return Result.success(data);
+    }
+    
+    @Data
+    public static class PreLoginRequest {
+        private String username;
+        private String password;
     }
     
     @Data

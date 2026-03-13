@@ -1,0 +1,237 @@
+/* 个人中心页面样式 - 基于设计系统 */
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  height: 100%;
+}
+
+/* ==================== 页面头部 ==================== */
+.profile-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.profile-header h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family);
+}
+
+.profile-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: var(--font-family);
+}
+
+/* ==================== 内容区域 ==================== */
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.profile-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.profile-card .ant-card-head {
+  border-bottom: 1px solid var(--border-light);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.profile-card .ant-card-head-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+}
+
+.profile-card .ant-card-body {
+  padding: var(--spacing-lg);
+}
+
+/* ==================== 头像区域 ==================== */
+.profile-avatar-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) 0;
+}
+
+.profile-avatar {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-avatar:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: var(--font-size-sm);
+}
+
+.avatar-overlay .anticon {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.avatar-info h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family);
+}
+
+.username-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-family);
+}
+
+.status-tag {
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+}
+
+/* ==================== 描述列表 ==================== */
+.profile-descriptions {
+  font-family: var(--font-family);
+}
+
+.profile-descriptions .ant-descriptions-item-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  width: 150px;
+}
+
+.profile-descriptions .ant-descriptions-item-content {
+  color: var(--text-primary);
+}
+
+/* ==================== 表单 ==================== */
+.profile-form {
+  font-family: var(--font-family);
+}
+
+.profile-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+/* ==================== 安全设置 ==================== */
+.security-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.security-item:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.security-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+.security-icon {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.security-info h4 {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  font-family: var(--font-family);
+}
+
+.security-info p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: var(--font-family);
+}
+
+/* ==================== 密码修改弹窗 ==================== */
+.password-modal .ant-modal-content {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
+
+.password-modal .ant-modal-header {
+  border-bottom: 1px solid var(--border-light);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.password-modal .ant-modal-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+}
+
+.password-modal .ant-modal-body {
+  padding: var(--spacing-lg);
+}
+
+.password-form {
+  font-family: var(--font-family);
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 768px) {
+  .profile-avatar-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+  }
+
+  .security-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+}
+

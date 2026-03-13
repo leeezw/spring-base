@@ -25,12 +25,10 @@ export default defineConfig({
     preprocessorOptions: {
       less: {
         javascriptEnabled: true,
-        modifyVars: {
-          // Semi Design主题变量
-          '@semi-brand-color': '#4a90e2',
-          '@semi-color-primary': '#4a90e2',
-        },
       },
     },
+  },
+  optimizeDeps: {
+    include: ['@douyinfe/semi-ui', '@douyinfe/semi-icons'],
   },
 });

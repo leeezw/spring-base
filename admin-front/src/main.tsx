@@ -17,6 +17,9 @@ import changeTheme from './utils/changeTheme';
 import useStorage from './utils/useStorage';
 import './mock';
 
+// 引入Semi Design样式
+import '@douyinfe/semi-ui/lib/es/_base/base.css';
+
 const store = createStore(rootReducer);
 
 // 配置axios拦截器

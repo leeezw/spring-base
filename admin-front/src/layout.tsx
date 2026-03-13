@@ -3,17 +3,27 @@ import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Spin } from '@arco-design/web-react';
 import cs from 'classnames';
 import {
-  IconDashboard,
-  IconList,
-  IconSettings,
-  IconFile,
-  IconApps,
-  IconCheckCircle,
-  IconExclamationCircle,
-  IconUser,
   IconMenuFold,
   IconMenuUnfold,
 } from '@arco-design/web-react/icon';
+import {
+  IconHome,
+  IconSetting,
+  IconUser,
+  IconUserGroup,
+  IconShield,
+  IconMenu as IconMenuSemi,
+  IconGridSquare,
+  IconLayers,
+  IconKey,
+  IconCrown,
+  IconServer,
+  IconMonitorStroked,
+  IconBarChartHStroked,
+  IconChecklistStroked,
+  IconGlobe,
+  IconComponent,
+} from '@douyinfe/semi-icons';
 import { useSelector } from 'react-redux';
 import qs from 'query-string';
 import NProgress from 'nprogress';
@@ -36,21 +46,33 @@ const Content = Layout.Content;
 function getIconFromKey(key) {
   switch (key) {
     case 'dashboard':
-      return <IconDashboard className={styles.icon} />;
+      return <IconHome className={styles.icon} />;
     case 'system':
-      return <IconSettings className={styles.icon} />;
+      return <IconSetting className={styles.icon} />;
+    case 'system/user':
+      return <IconUser className={styles.icon} />;
+    case 'system/role':
+      return <IconCrown className={styles.icon} />;
+    case 'system/permission':
+      return <IconShield className={styles.icon} />;
+    case 'system/menu':
+      return <IconMenuSemi className={styles.icon} />;
+    case 'system/dept':
+      return <IconLayers className={styles.icon} />;
+    case 'system/tenant':
+      return <IconGlobe className={styles.icon} />;
     case 'list':
-      return <IconList className={styles.icon} />;
+      return <IconChecklistStroked className={styles.icon} />;
     case 'form':
-      return <IconSettings className={styles.icon} />;
+      return <IconComponent className={styles.icon} />;
     case 'profile':
-      return <IconFile className={styles.icon} />;
+      return <IconServer className={styles.icon} />;
     case 'visualization':
-      return <IconApps className={styles.icon} />;
+      return <IconBarChartHStroked className={styles.icon} />;
     case 'result':
-      return <IconCheckCircle className={styles.icon} />;
+      return <IconGridSquare className={styles.icon} />;
     case 'exception':
-      return <IconExclamationCircle className={styles.icon} />;
+      return <IconMonitorStroked className={styles.icon} />;
     case 'user':
       return <IconUser className={styles.icon} />;
     default:

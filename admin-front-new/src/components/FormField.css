@@ -1,0 +1,217 @@
+/* 通用表单项样式 - 基于登录页面规范 */
+
+.form-field {
+  margin-bottom: 0;
+  padding: 0.5rem 0 0.75rem; /* 减少间距，与登录页面保持一致但更紧凑 */
+}
+
+.form-field:first-child {
+  padding-top: 0.25rem; /* 第一个表单项减少顶部间距，更靠近分割线 */
+}
+
+.form-field:last-child {
+  padding-bottom: 0.5rem; /* 最后一项减少底部间距 */
+}
+
+.form-field .ant-form-item-label {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.form-field .ant-form-item-label > label {
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.88rem; /* 与登录页面一致 */
+  font-weight: 700;
+  color: #7d8592; /* 与登录页面一致 */
+  line-height: 1.5rem;
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  height: auto;
+}
+
+.form-field .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+
+.form-field .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  content: '*';
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+  font-family: SimSun, sans-serif;
+}
+
+.form-field .ant-form-item-control {
+  margin: 0;
+}
+
+.form-field .ant-input,
+.form-field .ant-input-password,
+.form-field .ant-select-selector,
+.form-field .ant-picker {
+  background-color: #ffffff;
+  border-radius: 0.88rem; /* 与登录页面一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22); /* 与登录页面一致 */
+  border: solid 0.063rem #d8e0f0; /* 与登录页面一致 */
+  height: 3rem; /* 与登录页面一致，48px */
+  font-size: 0.88rem; /* 与登录页面一致 */
+  color: #7d8592; /* 与登录页面一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  transition: all 0.2s ease;
+}
+
+/* Select 组件特殊样式 - 确保与输入框完全一致 */
+.form-field .ant-select {
+  height: 3rem; /* 与输入框一致 */
+}
+
+.form-field .ant-select-selector {
+  height: 3rem !important; /* 与输入框一致 */
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.form-field .ant-select-selection-item {
+  line-height: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.88rem; /* 与登录页面一致 */
+  color: #7d8592; /* 与登录页面一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+.form-field .ant-select-selection-placeholder {
+  line-height: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.88rem; /* 与登录页面一致 */
+  color: #7d8592; /* 与登录页面一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  opacity: 1;
+}
+
+.form-field .ant-select-arrow {
+  right: 1rem;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  color: #7d8592; /* 与登录页面一致 */
+  font-size: 12px;
+}
+
+.form-field .ant-select-selection-search {
+  height: 3rem;
+  line-height: 3rem;
+}
+
+.form-field .ant-select-selection-search-input {
+  height: 3rem;
+  line-height: 3rem;
+  font-size: 0.88rem; /* 与登录页面一致 */
+  color: #7d8592; /* 与登录页面一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+.form-field .ant-input::placeholder,
+.form-field .ant-input-password input::placeholder {
+  color: #7d8592; /* 与登录页面一致 */
+}
+
+.form-field .ant-input:hover,
+.form-field .ant-input-password:hover,
+.form-field .ant-select:hover .ant-select-selector,
+.form-field .ant-picker:hover {
+  border-color: #3f8cff; /* 与登录页面一致 */
+}
+
+.form-field .ant-select:hover .ant-select-arrow {
+  color: #3f8cff; /* 与登录页面一致 */
+}
+
+.form-field .ant-input:focus,
+.form-field .ant-input-focused,
+.form-field .ant-input-password:focus,
+.form-field .ant-input-password-focused,
+.form-field .ant-select-focused .ant-select-selector,
+.form-field .ant-picker-focused {
+  border-color: #3f8cff; /* 与登录页面一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3); /* 与登录页面一致 */
+}
+
+.form-field .ant-select-focused .ant-select-arrow {
+  color: #3f8cff; /* 与登录页面一致 */
+}
+
+.form-field .ant-input-password {
+  padding: 0.75rem 1.13rem 0.75rem 1.38rem; /* 与登录页面一致 */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.form-field .ant-input-password .ant-input {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  height: auto;
+  flex: 1;
+}
+
+.form-field .ant-input-password .ant-input:focus {
+  box-shadow: none;
+}
+
+.form-field .ant-form-item-explain-error {
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  font-size: var(--font-size-xs);
+  color: var(--error-color);
+  font-family: var(--font-family);
+}
+
+.form-field .ant-form-item-explain-success {
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  font-size: var(--font-size-xs);
+  color: var(--success-color);
+  font-family: var(--font-family);
+}
+
+/* Select 下拉菜单样式 */
+.form-field .ant-select-dropdown {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-xs) 0;
+}
+
+.form-field .ant-select-item {
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.form-field .ant-select-item-option-selected {
+  background-color: var(--info-bg);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.form-field .ant-select-item-option-active {
+  background-color: var(--bg-tertiary);
+}
+
+/* 确保 Input 的内边距与 Select 一致 */
+.form-field .ant-input {
+  padding: 0 1rem; /* 与登录页面一致 */
+  height: 3rem; /* 与登录页面一致 */
+  line-height: 3rem;
+}
+

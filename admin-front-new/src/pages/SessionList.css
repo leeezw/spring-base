@@ -1,0 +1,173 @@
+/* Session列表页面样式 */
+
+.session-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* ==================== 搜索区域 ==================== */
+.session-list-page .search-section {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: var(--spacing-md);
+}
+
+/* ==================== 统计卡片 ==================== */
+.session-list-page .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.session-list-page .stats-grid .stat-card.ant-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base) var(--ease-out);
+}
+
+.session-list-page .stats-grid .stat-card.ant-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.session-list-page .stats-grid .stat-card .ant-card-body {
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.session-list-page .stats-grid .stat-card .ant-statistic-title {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.session-list-page .stats-grid .stat-card .ant-statistic-content {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.session-list-page .stats-grid .stat-card .ant-statistic-content-prefix {
+  margin-right: var(--spacing-sm);
+}
+
+/* ==================== 筛选表单样式 ==================== */
+/* 搜索表单容器 */
+.session-list-page .search-section .session-search-form-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.session-list-page .search-section .session-search-form-wrapper .table-search-form {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-list-page .search-section .session-search-form-wrapper .user-select-wrapper {
+  flex-shrink: 0;
+}
+
+/* 筛选下拉框样式 - 统一为表单样式 */
+.session-list-page .search-section .filter-status-select {
+  width: 200px;
+  height: 3rem; /* 与表单一致 */
+  flex-shrink: 0;
+}
+
+.session-list-page .search-section .filter-status-select .ant-select-selector {
+  border-radius: 0.88rem; /* 与表单一致 */
+  border: solid 0.063rem #d8e0f0; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22); /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 0.88rem; /* 与表单一致 */
+  height: 3rem !important; /* 与表单一致 */
+  min-height: 3rem;
+  padding: 0 1rem; /* 与表单一致 */
+  transition: all 0.2s ease;
+}
+
+.session-list-page .search-section .filter-status-select .ant-select-selection-item {
+  line-height: 3rem;
+  height: 3rem;
+  font-size: 0.88rem; /* 与表单一致 */
+  color: #7d8592; /* 与表单一致 */
+}
+
+.session-list-page .search-section .filter-status-select:hover .ant-select-selector {
+  border-color: #3f8cff; /* 与表单一致 */
+}
+
+.session-list-page .search-section .filter-status-select.ant-select-focused .ant-select-selector {
+  border-color: #3f8cff; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3); /* 与表单一致 */
+}
+
+/* 表单项样式 */
+.session-list-page .search-section .search-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.session-info-cell {
+  min-width: 200px;
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-device-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a1629;
+}
+
+.session-key-text {
+  font-size: 12px;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: block;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-timeline {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.timeline-label {
+  color: #9ca3af;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-search-input {
+    width: 100%;
+  }
+
+  .filter-status-select {
+    width: 100%;
+  }
+}

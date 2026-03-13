@@ -1,0 +1,179 @@
+/* 权限列表页面样式 - 基于设计系统 */
+
+.permission-list-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--spacing-xs);
+}
+
+/* ==================== 权限内容区域 ==================== */
+.permission-content {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: var(--spacing-sm);
+  height: 100%;
+}
+
+/* ==================== 区域标题 ==================== */
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* ==================== 权限树区域 ==================== */
+.tree-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tree-section .permission-tree {
+  flex: 1;
+  overflow-y: auto;
+  font-family: var(--font-family);
+  padding: var(--spacing-xs);
+}
+
+.permission-tree .ant-tree-node-content-wrapper {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base) var(--ease-out);
+}
+
+.permission-tree .ant-tree-node-content-wrapper:hover {
+  background-color: var(--info-bg);
+}
+
+.permission-tree .ant-tree-node-selected .ant-tree-node-content-wrapper {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.permission-tree .ant-tree-node-selected .ant-tree-node-content-wrapper .tree-node-content {
+  color: white;
+}
+
+.permission-tree .ant-tree-node-selected .ant-tree-node-content-wrapper .tree-node-code {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 树节点内容 */
+.tree-node-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.tree-node-icon {
+  color: var(--primary-color);
+  font-size: 14px;
+}
+
+.tree-node-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tree-node-code {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  font-family: monospace;
+}
+
+.tree-node-status {
+  margin-left: auto;
+}
+
+/* ==================== 详情区域 ==================== */
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.detail-section .ant-descriptions {
+  flex: 1;
+  overflow-y: auto;
+  font-family: var(--font-family);
+}
+
+/* 权限详情表格样式优化 - 避免闪动 */
+.permission-detail-descriptions {
+  min-height: 400px;
+  transition: none;
+}
+
+.permission-detail-descriptions .ant-descriptions-item {
+  min-height: 40px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: none;
+}
+
+.permission-detail-descriptions .ant-descriptions-item-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  width: 120px;
+  min-width: 120px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-right: 1px solid var(--border-light);
+  transition: none;
+}
+
+.permission-detail-descriptions .ant-descriptions-item-content {
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: 20px;
+  transition: none;
+}
+
+.permission-detail-descriptions code {
+  background-color: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--font-size-xs);
+  color: var(--primary-color);
+}
+
+/* 确保表格行高度一致，避免切换时的闪动 */
+.permission-detail-descriptions .ant-descriptions-row {
+  min-height: 40px;
+}
+
+.permission-detail-descriptions .ant-descriptions-row > td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  vertical-align: middle;
+}
+
+/* 空值显示样式 */
+.permission-detail-descriptions .ant-descriptions-item-content span[style*="text-tertiary"] {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 1200px) {
+  .permission-content {
+    grid-template-columns: 1fr;
+  }
+}
+.permission-toolbar {
+  margin-bottom: 16px;
+}
+
+.permission-drawer-form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.permission-drawer-form .ant-divider {
+  margin: 16px 0 12px;
+}

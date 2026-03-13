@@ -18,6 +18,8 @@
     "@arco-design/web-react": "^2.32.2",
     "@arco-plugins/vite-react": "^1.0.5",
     "@arco-themes/react-arco-pro": "^0.0.7",
+    "@douyinfe/semi-icons": "^2.92.2",
+    "@douyinfe/semi-ui": "^2.92.2",
     "@loadable/component": "^5.13.2",
     "@turf/turf": "^6.5.0",
     "axios": "^0.24.0",
@@ -45,7 +47,7 @@
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
-    "@vitejs/plugin-react": "^1.1.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-babel": "^5.3.1",
@@ -62,7 +64,7 @@
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-standard": "^24.0.0",
     "typescript": "^4.5.2",
-    "vite": "^2.6.14"
+    "vite": "^5.4.21"
   },
   "browserslist": {
     "production": [

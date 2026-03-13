@@ -1,0 +1,82 @@
+/* 菜单管理页样式 - 复用权限管理的布局 */
+
+.menu-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.menu-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-content {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.menu-content .tree-section {
+  flex: 3;
+  min-width: 0;
+  background: var(--bg-primary, #fff);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--border-light, #e2e8f0);
+  overflow: auto;
+  padding: 0;
+}
+
+.menu-content .detail-section {
+  flex: 2;
+  min-width: 320px;
+  background: var(--bg-primary, #fff);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--border-light, #e2e8f0);
+  overflow: auto;
+  padding: 0;
+}
+
+.menu-content .section-title {
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary, #0a1629);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+
+.menu-tree {
+  padding: 12px;
+}
+
+.menu-content .tree-node-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.menu-content .tree-node-icon {
+  color: var(--primary-color, #3f8cff);
+  font-size: 14px;
+}
+
+.menu-content .tree-node-name {
+  font-weight: 500;
+  color: var(--text-primary, #0a1629);
+}
+
+.menu-content .tree-node-path {
+  font-size: 12px;
+  color: var(--text-tertiary, #94a3b8);
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.menu-content .tree-node-tag {
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0 6px;
+}

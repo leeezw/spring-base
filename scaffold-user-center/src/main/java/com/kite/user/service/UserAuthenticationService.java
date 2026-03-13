@@ -12,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户认证服务实现
@@ -144,5 +147,52 @@ public class UserAuthenticationService implements AuthenticationService {
         loginUser.setPermissions(permissions);
         
         return loginUser;
+    }
+    
+    /**
+     * 预登录：验证用户名密码（跨租户），返回该用户所属的租户列表
+     * 用于两阶段登录流程：先验证身份，再选择租户
+     */
+    public List<Map<String, Object>> preLogin(String username, String password) {
+        // 跨租户查询所有匹配用户名的用户
+        TenantContext.setIgnore(true);
+        try {
+            List<SysUser> users = userMapper.selectList(
+                new LambdaQueryWrapper<SysUser>()
+                    .eq(SysUser::getUsername, username)
+                    .eq(SysUser::getDeleted, 0)
+                    .eq(SysUser::getStatus, 1)
+            );
+            
+            List<Map<String, Object>> tenantList = new ArrayList<>();
+            
+            for (SysUser user : users) {
+                // 验证密码
+                if (passwordEncoder.matches(password, user.getPassword())) {
+                    // 查询该用户所属的租户信息
+                    SysTenant tenant = tenantMapper.selectOne(
+                        new LambdaQueryWrapper<SysTenant>()
+                            .eq(SysTenant::getId, user.getTenantId())
+                            .eq(SysTenant::getDeleted, 0)
+                            .eq(SysTenant::getStatus, 1)
+                    );
+                    
+                    if (tenant != null) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("tenantId", tenant.getId());
+                        item.put("tenantCode", tenant.getTenantCode());
+                        item.put("tenantName", tenant.getTenantName());
+                        item.put("userId", user.getId());
+                        item.put("nickname", user.getNickname());
+                        item.put("avatar", user.getAvatar());
+                        tenantList.add(item);
+                    }
+                }
+            }
+            
+            return tenantList;
+        } finally {
+            TenantContext.clear();
+        }
     }
 }
