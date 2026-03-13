@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown, Drawer, Tree, Spin } from 'antd';
+import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown, Drawer } from 'antd';
 import {
  
   UserOutlined, 
@@ -11,7 +11,6 @@ import {
   PoweroffOutlined,
   DeleteOutlined,
   MoreOutlined,
-  ApartmentOutlined,
 } from '@ant-design/icons';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import request from '../api/index.js';
@@ -43,16 +42,12 @@ export default function UserList() {
   const [roleModalVisible, setRoleModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [deptTree, setDeptTree] = useState([]);
-  const [selectedDeptId, setSelectedDeptId] = useState(null);
-  const [deptLoading, setDeptLoading] = useState(false);
   const { statsVisible, setStatsVisible, setShowStatsToggle } = usePageToolbar(); // 从 AppLayout 获取统计控制
   const debounceTimerRef = useRef(null);
   
   // 组件挂载时显示统计切换按钮
   useEffect(() => {
     setShowStatsToggle(true);
-    loadDeptTree();
     return () => {
       setShowStatsToggle(false);
     };
@@ -125,34 +120,6 @@ export default function UserList() {
   const handleDataChange = (data, total) => {
     console.log('handleDataChange', data, total);
     // 统计数据已从后端获取，这里不需要再计算
-  };
-
-  // 加载部门树
-  const loadDeptTree = async () => {
-    setDeptLoading(true);
-    try {
-      const res = await request.get('/system/dept/tree');
-      if (res.code === 200 && res.data) {
-        const transform = (nodes) => nodes.map(n => ({
-          key: n.id,
-          title: n.deptName,
-          children: n.children?.length > 0 ? transform(n.children) : undefined,
-        }));
-        setDeptTree(transform(res.data));
-      }
-    } catch (e) {
-      console.error('loadDeptTree error:', e);
-    } finally {
-      setDeptLoading(false);
-    }
-  };
-
-  // 点击部门树节点 → 筛选用户
-  const handleDeptSelect = (selectedKeys) => {
-    const deptId = selectedKeys.length > 0 ? selectedKeys[0] : null;
-    setSelectedDeptId(deptId);
-    setFilterParams(prev => ({ ...prev, deptId: deptId || undefined }));
-    handleRefresh();
   };
 
   const handleRefresh = () => {
@@ -382,52 +349,33 @@ export default function UserList() {
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: 80,
-      hideInSearch: true,
-      sorter: true,
-    },
-    {
       title: '用户名',
       dataIndex: 'username',
       key: 'username',
+      width: 120,
       ellipsis: true,
-      sorter: true,
+      fixed: 'left',
     },
     {
       title: '昵称',
       dataIndex: 'nickname',
       key: 'nickname',
+      width: 120,
       ellipsis: true,
-      hideInSearch: true,
       render: (text) => text || '-',
-      sorter: true,
-    },
-    {
-      title: '邮箱',
-      dataIndex: 'email',
-      key: 'email',
-      ellipsis: true,
-      hideInSearch: true,
-      render: (text) => text || '-',
-      sorter: true,
     },
     {
       title: '部门',
       dataIndex: 'deptName',
       key: 'deptName',
-      width: 120,
-      hideInSearch: true,
+      width: 100,
       render: (text) => text || '-',
     },
     {
       title: '角色',
       dataIndex: 'roles',
       key: 'roles',
-      width: 200,
-      hideInSearch: true,
+      width: 180,
       render: (_, record) => {
         const roles = record.roles || [];
         if (roles.length === 0) return <Tag>未分配</Tag>;
@@ -444,47 +392,24 @@ export default function UserList() {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      valueType: 'select',
-      valueEnum: {
-        1: {
-          text: '启用',
-          status: 'Success',
-        },
-        0: {
-          text: '禁用',
-          status: 'Error',
-        },
-      },
+      width: 80,
       render: (_, record) => (
         <Tag color={record.status === 1 ? 'success' : 'error'}>
           {record.status === 1 ? '启用' : '禁用'}
         </Tag>
       ),
-      sorter: true,
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
-      valueType: 'dateTime',
-      hideInSearch: true,
-      sorter: true,
-      width: 180,
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      key: 'updateTime',
-      valueType: 'dateTime',
-      hideInSearch: true,
-      sorter: true,
-      width: 180,
+      width: 160,
+      ellipsis: true,
     },
     {
       title: '操作',
       key: 'action',
-      valueType: 'option',
-      width: 180,
+      width: 140,
       fixed: 'right',
       render: (_, record) => (
         <Space size={4} wrap>
@@ -554,29 +479,6 @@ export default function UserList() {
         </Card>
         </div>
       )}
-
-      {/* 部门树 + 用户表格 双栏布局 */}
-      <div className="user-content-layout">
-        {/* 左侧部门树 */}
-        <Card className="dept-tree-card" size="small" title={<><ApartmentOutlined /> 组织架构</>}>
-          <Spin spinning={deptLoading}>
-            <Tree
-              treeData={deptTree}
-              selectedKeys={selectedDeptId ? [selectedDeptId] : []}
-              onSelect={handleDeptSelect}
-              defaultExpandAll
-              blockNode
-            />
-            {selectedDeptId && (
-              <Button type="link" size="small" onClick={() => handleDeptSelect([])} style={{ marginTop: 8 }}>
-                清除筛选
-              </Button>
-            )}
-          </Spin>
-        </Card>
-
-        {/* 右侧用户表格 */}
-        <div className="user-table-section">
 
       {/* 搜索表单区域 */}
       <div className="search-section">
@@ -665,6 +567,7 @@ export default function UserList() {
         rowKey="id"
         onDataChange={handleDataChange}
         search={false}
+        scroll={{ x: 900 }}
         defaultSort={{
           createTime: 'desc',
         }}
@@ -720,9 +623,6 @@ export default function UserList() {
         }}
         onOk={handleRoleAssignSuccess}
       />
-
-        </div>{/* user-table-section */}
-      </div>{/* user-content-layout */}
     </div>
   );
 }
