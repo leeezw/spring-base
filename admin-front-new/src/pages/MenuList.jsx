@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Select, Switch, InputNumber, message, Drawer, Divider, Row, Col } from 'antd';
+import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Select, Switch, InputNumber, message, Drawer, Divider, Row, Col, TreeSelect } from 'antd';
 import { 
   MenuOutlined,
   PlusOutlined,
@@ -52,6 +52,14 @@ export default function MenuList() {
   }, []);
 
   useEffect(() => { loadMenuTree(); }, [loadMenuTree]);
+
+  const buildMenuTreeSelect = (nodes, excludeId = null) => {
+    if (!nodes) return [];
+    return nodes.filter(n => n.id !== excludeId).map(n => ({
+      value: n.id, title: n.menuName,
+      children: n.children?.length > 0 ? buildMenuTreeSelect(n.children, excludeId) : undefined,
+    }));
+  };
 
   const renderTreeNodes = (nodes) => nodes.map(node => {
     const title = (
@@ -196,14 +204,14 @@ export default function MenuList() {
         </div>
       </div>
 
-      <Drawer title={drawerMode === 'edit' ? '编辑菜单' : '新增菜单'} placement="right" width={500}
+      <Drawer title={drawerMode === 'edit' ? '编辑菜单' : '新增菜单'} placement="right" width={480}
         open={drawerVisible} onClose={() => { setDrawerVisible(false); form.resetFields(); }}
         extra={<Space><Button onClick={() => setDrawerVisible(false)}>取消</Button><Button type="primary" loading={submitLoading} onClick={handleSubmit}>保存</Button></Space>}>
         <Form form={form} layout="vertical">
           <Divider orientation="left" plain>基础信息</Divider>
           <Row gutter={16}>
             <Col span={12}><Form.Item name="menuName" label="菜单名称" rules={[{ required: true, message: '请输入' }]}><Input placeholder="如 用户管理" /></Form.Item></Col>
-            <Col span={12}><Form.Item name="parentId" label="父级 ID"><InputNumber style={{ width: '100%' }} min={0} /></Form.Item></Col>
+            <Col span={12}><Form.Item name="parentId" label="上级菜单"><TreeSelect treeData={[{ value: 0, title: '无（顶级菜单）' }, ...buildMenuTreeSelect(menuTree, editingId)]} placeholder="请选择" treeDefaultExpandAll allowClear style={{ width: '100%' }} /></Form.Item></Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}><Form.Item name="path" label="路由路径"><Input placeholder="/system/user" /></Form.Item></Col>

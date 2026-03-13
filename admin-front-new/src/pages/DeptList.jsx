@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Switch, InputNumber, message, Drawer, Divider, Row, Col } from 'antd';
+import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Switch, InputNumber, message, Drawer, Divider, Row, Col, TreeSelect } from 'antd';
 import { 
   ApartmentOutlined,
   PlusOutlined,
@@ -146,6 +146,15 @@ export default function DeptList() {
     });
   };
 
+  // 部门树转为TreeSelect格式
+  const buildDeptTreeSelect = (nodes, excludeId = null) => {
+    if (!nodes) return [];
+    return nodes.filter(n => n.id !== excludeId).map(n => ({
+      value: n.id, title: n.deptName,
+      children: n.children?.length > 0 ? buildDeptTreeSelect(n.children, excludeId) : undefined,
+    }));
+  };
+
   const findDeptName = (nodes, id) => {
     for (const n of nodes) {
       if (n.id === id) return n.deptName;
@@ -210,8 +219,14 @@ export default function DeptList() {
           <Form.Item name="deptName" label="部门名称" rules={[{ required: true, message: '请输入' }]}>
             <Input placeholder="如 技术部" />
           </Form.Item>
-          <Form.Item name="parentId" label="上级部门 ID">
-            <InputNumber style={{ width: '100%' }} min={0} />
+          <Form.Item name="parentId" label="上级部门">
+            <TreeSelect
+              treeData={[{ value: 0, title: '无（顶级部门）' }, ...buildDeptTreeSelect(deptTree, editingId)]}
+              placeholder="请选择上级部门"
+              treeDefaultExpandAll
+              allowClear
+              style={{ width: '100%' }}
+            />
           </Form.Item>
           <Row gutter={16}>
             <Col span={12}><Form.Item name="phone" label="联系电话"><Input placeholder="010-12345678" prefix={<PhoneOutlined />} /></Form.Item></Col>

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Select, Switch, InputNumber, message, Drawer, Divider, Row, Col } from 'antd';
+import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Select, Switch, InputNumber, message, Drawer, Divider, Row, Col, TreeSelect } from 'antd';
 import { 
   ApiOutlined,
   MenuOutlined,
@@ -83,6 +83,14 @@ export default function PermissionList() {
   useEffect(() => {
     loadPermissionTree();
   }, [loadPermissionTree]);
+
+  const buildPermTreeSelect = (nodes, excludeId = null) => {
+    if (!nodes) return [];
+    return nodes.filter(n => n.id !== excludeId).map(n => ({
+      value: n.id, title: `${n.permissionName} (${n.permissionCode})`,
+      children: n.children?.length > 0 ? buildPermTreeSelect(n.children, excludeId) : undefined,
+    }));
+  };
 
   // 获取权限类型图标
   const getTypeIcon = (type) => {
@@ -424,7 +432,7 @@ export default function PermissionList() {
       <Drawer
         title={drawerMode === 'edit' ? '编辑权限' : '新增权限'}
         placement="right"
-        size={560}
+        width={520}
         open={drawerVisible}
         onClose={handleDrawerClose}
         extra={(
@@ -473,8 +481,11 @@ export default function PermissionList() {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="parentId" label="父级 ID">
-                <InputNumber style={{ width: '100%' }} min={0} />
+              <Form.Item name="parentId" label="上级权限">
+                <TreeSelect
+                  treeData={[{ value: 0, title: '无（顶级权限）' }, ...buildPermTreeSelect(permissionTree, editingId)]}
+                  placeholder="请选择" treeDefaultExpandAll allowClear style={{ width: '100%' }}
+                />
               </Form.Item>
             </Col>
           </Row>

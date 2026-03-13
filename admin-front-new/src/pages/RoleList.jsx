@@ -613,7 +613,7 @@ export default function RoleList() {
       <Drawer
         title={grantRole ? `${grantType === 'permission' ? '分配权限' : '分配菜单'} - ${grantRole.roleName || grantRole.roleCode}` : '分配'}
         placement="right"
-        size={420}
+        width={520}
         open={grantDrawerVisible}
         onClose={() => {
           setGrantDrawerVisible(false);

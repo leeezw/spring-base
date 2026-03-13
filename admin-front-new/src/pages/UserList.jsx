@@ -592,7 +592,7 @@ export default function UserList() {
         title={editingUser ? '编辑用户' : '新增用户'}
         open={modalVisible}
         onClose={handleCancel}
-        width={560}
+        width={480}
         destroyOnClose
         extra={
           <Space>
