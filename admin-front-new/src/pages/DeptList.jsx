@@ -146,6 +146,14 @@ export default function DeptList() {
     });
   };
 
+  const findDeptName = (nodes, id) => {
+    for (const n of nodes) {
+      if (n.id === id) return n.deptName;
+      if (n.children?.length > 0) { const f = findDeptName(n.children, id); if (f) return f; }
+    }
+    return null;
+  };
+
   return (
     <div className="permission-list-page">
       <div className="permission-toolbar">
@@ -175,7 +183,9 @@ export default function DeptList() {
           {selectedDept ? (
             <Descriptions column={1} bordered className="permission-detail-descriptions">
               <Descriptions.Item label="部门名称">{selectedDept.deptName || '-'}</Descriptions.Item>
-              <Descriptions.Item label="上级部门ID">{selectedDept.parentId || '顶级'}</Descriptions.Item>
+              <Descriptions.Item label="上级部门">
+                {selectedDept.parentId ? `${findDeptName(deptTree, selectedDept.parentId) || '未知'} (ID: ${selectedDept.parentId})` : '无（顶级部门）'}
+              </Descriptions.Item>
               <Descriptions.Item label="联系电话">
                 {selectedDept.phone ? <><PhoneOutlined style={{ marginRight: 6 }} />{selectedDept.phone}</> : '-'}
               </Descriptions.Item>
