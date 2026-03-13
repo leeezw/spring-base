@@ -168,11 +168,11 @@ export default function PermissionList() {
 
   const openDrawer = (mode, parentId = 0, permission = null) => {
     if (mode === 'create' && !hasPermission('system:permission:add')) {
-      message.warning('暂无新增权限');
+      message.warning('无新增权限的操作权限');
       return;
     }
     if (mode === 'edit' && !hasPermission('system:permission:edit')) {
-      message.warning('暂无编辑权限');
+      message.warning('无编辑权限的操作权限');
       return;
     }
     setDrawerMode(mode);
@@ -257,7 +257,7 @@ export default function PermissionList() {
       return;
     }
     if (!hasPermission('system:permission:delete')) {
-      message.warning('暂无删除权限');
+      message.warning('无删除权限的操作权限');
       return;
     }
     Modal.confirm({
@@ -286,7 +286,7 @@ export default function PermissionList() {
         <Space>
           {hasPermission('system:permission:add') && (
             <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create', 0)}>
-              新增顶级菜单
+              新增顶级权限
             </Button>
           )}
           {hasPermission('system:permission:add') && (
@@ -295,7 +295,7 @@ export default function PermissionList() {
               disabled={!selectedPermission}
               onClick={() => openDrawer('create', selectedPermission?.id || 0)}
             >
-              新增子节点
+              新增子权限
             </Button>
           )}
           {hasPermission('system:permission:edit') && (
@@ -422,7 +422,7 @@ export default function PermissionList() {
       </div>
 
       <Drawer
-        title={drawerMode === 'edit' ? '编辑权限/菜单' : '新增权限/菜单'}
+        title={drawerMode === 'edit' ? '编辑权限' : '新增权限'}
         placement="right"
         size={560}
         open={drawerVisible}
