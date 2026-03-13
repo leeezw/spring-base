@@ -18,6 +18,8 @@ const DeptList = lazy(() => import('./pages/DeptList.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const GenCode = lazy(() => import('./pages/GenCode.jsx'));
 const FileList = lazy(() => import('./pages/FileList.jsx'));
+const LogList = lazy(() => import('./pages/LogList.jsx'));
+const TenantList = lazy(() => import('./pages/TenantList.jsx'));
 
 // 懒加载 fallback
 const PageLoading = () => (
@@ -63,6 +65,8 @@ export default function App() {
         <Route path="system/dict" element={<Suspense fallback={<PageLoading />}><DictList /></Suspense>} />
         <Route path="tool/gen" element={<Suspense fallback={<PageLoading />}><GenCode /></Suspense>} />
         <Route path="system/file" element={<Suspense fallback={<PageLoading />}><FileList /></Suspense>} />
+        <Route path="system/log" element={<Suspense fallback={<PageLoading />}><LogList /></Suspense>} />
+        <Route path="system/tenant" element={<Suspense fallback={<PageLoading />}><TenantList /></Suspense>} />
         <Route path="profile" element={<Suspense fallback={<PageLoading />}><Profile /></Suspense>} />
         
         {/* 兼容旧路径 */}

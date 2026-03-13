@@ -40,6 +40,12 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
         
+        <!-- Spring Boot JDBC (for JdbcTemplate in log aspect) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        
         <!-- Hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>

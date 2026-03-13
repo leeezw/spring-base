@@ -6,12 +6,20 @@ import com.kite.auth.service.AuthenticationService;
 import com.kite.mybatis.context.TenantContext;
 import com.kite.user.entity.SysTenant;
 import com.kite.user.entity.SysUser;
+import com.kite.user.entity.SysLoginLog;
 import com.kite.user.mapper.SysTenantMapper;
 import com.kite.user.mapper.SysUserMapper;
+import com.kite.user.mapper.SysLoginLogMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +30,16 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserAuthenticationService implements AuthenticationService {
     
     private final SysUserMapper userMapper;
     private final SysTenantMapper tenantMapper;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final SysLoginLogMapper loginLogMapper;
+
+    @Value("${app.log.login.enabled:true}")
+    private boolean loginLogEnabled;
     
     @Override
     public LoginUser loadUserByUsername(String username) {
@@ -71,6 +84,7 @@ public class UserAuthenticationService implements AuthenticationService {
         );
         
         if (tenant == null || tenant.getStatus() != 1) {
+            saveLoginLog(username, 0, "租户不存在或已禁用", null);
             return null;
         }
         
@@ -87,19 +101,23 @@ public class UserAuthenticationService implements AuthenticationService {
             );
             
             if (user == null) {
+                saveLoginLog(username, 0, "用户不存在", tenantId);
                 return null;
             }
             
             // 4. 验证密码
             if (!passwordEncoder.matches(password, user.getPassword())) {
+                saveLoginLog(username, 0, "密码错误", tenantId);
                 return null;
             }
             
             // 5. 检查状态
             if (user.getStatus() != 1) {
+                saveLoginLog(username, 0, "账号已禁用", tenantId);
                 return null;
             }
             
+            saveLoginLog(username, 1, "登录成功", tenantId);
             return buildLoginUser(user);
         } finally {
             // 清除临时租户上下文
@@ -192,6 +210,36 @@ public class UserAuthenticationService implements AuthenticationService {
             }
             
             return tenantList;
+        } finally {
+            TenantContext.clear();
+        }
+    }
+
+    private void saveLoginLog(String username, int status, String msg, Long tenantId) {
+        if (!loginLogEnabled) return;
+        try {
+            TenantContext.setIgnore(true);
+            SysLoginLog logEntry = new SysLoginLog();
+            logEntry.setUsername(username);
+            logEntry.setStatus(status);
+            logEntry.setMessage(msg);
+            logEntry.setTenantId(tenantId != null ? tenantId : 0L);
+            logEntry.setLoginTime(LocalDateTime.now());
+
+            ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                HttpServletRequest req = attrs.getRequest();
+                String ip = req.getHeader("X-Forwarded-For");
+                if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) ip = req.getHeader("X-Real-IP");
+                if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) ip = req.getRemoteAddr();
+                if (ip != null && ip.contains(",")) ip = ip.split(",")[0].trim();
+                logEntry.setIp(ip);
+                logEntry.setUserAgent(req.getHeader("User-Agent"));
+            }
+
+            loginLogMapper.insert(logEntry);
+        } catch (Exception e) {
+            log.warn("保存登录日志失败: {}", e.getMessage());
         } finally {
             TenantContext.clear();
         }

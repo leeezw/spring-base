@@ -11,6 +11,7 @@ import {
   PoweroffOutlined,
   DeleteOutlined,
   MoreOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import request from '../api/index.js';
@@ -123,6 +124,36 @@ export default function UserList() {
 
   const handleRefresh = () => {
     actionRef.current?.reload();
+  };
+
+  const handleBatchStatus = (status) => {
+    Modal.confirm({
+      title: status === 1 ? '批量启用' : '批量禁用',
+      content: `确定将选中的 ${selectedRowKeys.length} 个用户${status === 1 ? '启用' : '禁用'}？`,
+      onOk: async () => {
+        const res = await request.put('/system/user/batch-status', { ids: selectedRowKeys, status });
+        if (res.code === 200) { message.success('操作成功'); setSelectedRowKeys([]); actionRef.current?.reload(); }
+        else message.error(res.message);
+      }
+    });
+  };
+
+  const handleBatchDelete = () => {
+    Modal.confirm({
+      title: '批量删除',
+      content: `确定删除选中的 ${selectedRowKeys.length} 个用户？此操作不可恢复！`,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        const res = await request.delete('/system/user/batch', { data: selectedRowKeys });
+        if (res.code === 200) { message.success('删除成功'); setSelectedRowKeys([]); actionRef.current?.reload(); }
+        else message.error(res.message);
+      }
+    });
+  };
+
+  const handleExportUsers = () => {
+    const token = localStorage.getItem('uc_token');
+    window.open(`/api/system/export/users?token=${token}`, '_blank');
   };
 
   const handleAddUser = () => {
@@ -267,81 +298,6 @@ export default function UserList() {
     setRoleModalVisible(false);
     setSelectedUser(null);
     handleRefresh();
-  };
-
-  // 批量操作 - 批量删除
-  const handleBatchDelete = () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请先选择要删除的用户');
-      return;
-    }
-    
-    Modal.confirm({
-      title: '确认批量删除',
-      content: `确定要删除选中的 ${selectedRowKeys.length} 个用户吗？此操作不可恢复。`,
-      okText: '确认删除',
-      cancelText: '取消',
-      okType: 'danger',
-      onOk: async () => {
-        try {
-          const res = await request.delete('/system/user/batch', {
-            data: { ids: selectedRowKeys }
-          });
-          if (res.code === 200) {
-            message.success('批量删除成功');
-            setSelectedRowKeys([]);
-            handleRefresh();
-          } else {
-            message.error(res.message || '批量删除失败');
-          }
-        } catch (error) {
-          message.error(error.message || '批量删除失败');
-        }
-      }
-    });
-  };
-
-  // 批量操作 - 批量修改状态
-  const handleBatchChangeStatus = (newStatus) => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请先选择要操作的用户');
-      return;
-    }
-    
-    const statusText = newStatus === 1 ? '启用' : '禁用';
-    Modal.confirm({
-      title: `确认批量${statusText}`,
-      content: `确定要${statusText}选中的 ${selectedRowKeys.length} 个用户吗？`,
-      okText: `确认${statusText}`,
-      cancelText: '取消',
-      onOk: async () => {
-        try {
-          const res = await request.put('/system/user/batch/status', {
-            ids: selectedRowKeys,
-            status: newStatus
-          });
-          if (res.code === 200) {
-            message.success(`已成功${statusText} ${selectedRowKeys.length} 个用户`);
-            setSelectedRowKeys([]);
-            handleRefresh();
-          } else {
-            message.error(res.message || `批量${statusText}失败`);
-          }
-        } catch (error) {
-          message.error(error.message || `批量${statusText}失败`);
-        }
-      }
-    });
-  };
-
-  // 批量操作 - 批量授予角色
-  const handleBatchAssignRoles = () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning('请先选择要操作的用户');
-      return;
-    }
-    // TODO: 实现批量授予角色功能
-    message.info('批量授予角色功能开发中');
   };
 
   // 行选择配置
@@ -544,57 +500,6 @@ export default function UserList() {
       </div>
 
       {/* 批量操作区域 */}
-      {selectedRowKeys.length > 0 && (
-        <div className="batch-actions-section">
-          <div className="batch-actions-info">
-            <span className="selected-count">已选择 {selectedRowKeys.length} 项</span>
-          </div>
-          <div className="batch-actions-buttons">
-            <Space>
-              {hasPermission('system:user:edit') && (
-                <Button
-                  icon={<CheckCircleOutlined />}
-                  onClick={() => handleBatchChangeStatus(1)}
-                >
-                  批量启用
-                </Button>
-              )}
-              {hasPermission('system:user:edit') && (
-                <Button
-                  icon={<StopOutlined />}
-                  onClick={() => handleBatchChangeStatus(0)}
-                >
-                  批量禁用
-                </Button>
-              )}
-              {hasPermission('system:user:edit') && (
-                <Button
-                  icon={<SafetyOutlined />}
-                  onClick={handleBatchAssignRoles}
-                >
-                  批量授予角色
-                </Button>
-              )}
-              {hasPermission('system:user:delete') && (
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={handleBatchDelete}
-                >
-                  批量删除
-                </Button>
-              )}
-              <Button
-                type="text"
-                onClick={() => setSelectedRowKeys([])}
-              >
-                取消选择
-              </Button>
-            </Space>
-          </div>
-        </div>
-      )}
-
       {/* 数据表格 */}
       <ProTableV2
         actionRef={actionRef}
@@ -611,6 +516,26 @@ export default function UserList() {
         rowSelection={rowSelection}
         toolbar={{
           actions: [
+            selectedRowKeys.length > 0 && hasPermission('system:user:edit') && (
+              <Button key="batch-enable" onClick={() => handleBatchStatus(1)}>
+                批量启用 ({selectedRowKeys.length})
+              </Button>
+            ),
+            selectedRowKeys.length > 0 && hasPermission('system:user:edit') && (
+              <Button key="batch-disable" danger onClick={() => handleBatchStatus(0)}>
+                批量禁用 ({selectedRowKeys.length})
+              </Button>
+            ),
+            selectedRowKeys.length > 0 && hasPermission('system:user:delete') && (
+              <Button key="batch-delete" danger type="primary" onClick={handleBatchDelete}>
+                批量删除 ({selectedRowKeys.length})
+              </Button>
+            ),
+            hasPermission('system:user:query') && (
+              <Button key="export" icon={<DownloadOutlined />} onClick={handleExportUsers}>
+                导出Excel
+              </Button>
+            ),
             hasPermission('system:user:add') && (
               <Button 
                 key="add" 

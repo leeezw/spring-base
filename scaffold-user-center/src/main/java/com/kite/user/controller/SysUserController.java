@@ -8,6 +8,7 @@ import com.kite.permission.annotation.RequiresPermissions;
 import com.kite.user.entity.SysUser;
 import com.kite.user.service.SysUserService;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,6 +94,36 @@ public class SysUserController {
     @OperationLog(module = "用户管理", type = OperationType.UPDATE, description = "重置密码")
     public Result<Void> resetPassword(@PathVariable Long id, @RequestBody String newPassword) {
         userService.resetPassword(id, newPassword);
+        return Result.success();
+    }
+
+    /**
+     * 批量启用/禁用
+     */
+    @PutMapping("/batch-status")
+    @RequiresPermissions("system:user:edit")
+    @OperationLog(module = "用户管理", type = OperationType.UPDATE, description = "批量修改状态")
+    public Result<Void> batchUpdateStatus(@RequestBody Map<String, Object> body) {
+        @SuppressWarnings("unchecked")
+        List<Number> ids = (List<Number>) body.get("ids");
+        Integer status = (Integer) body.get("status");
+        if (ids == null || ids.isEmpty() || status == null) return Result.fail("参数错误");
+        userService.lambdaUpdate()
+            .in(SysUser::getId, ids.stream().map(Number::longValue).toList())
+            .set(SysUser::getStatus, status)
+            .update();
+        return Result.success();
+    }
+
+    /**
+     * 批量删除
+     */
+    @DeleteMapping("/batch")
+    @RequiresPermissions("system:user:delete")
+    @OperationLog(module = "用户管理", type = OperationType.DELETE, description = "批量删除用户")
+    public Result<Void> batchDelete(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return Result.fail("参数错误");
+        userService.removeByIds(ids);
         return Result.success();
     }
 }

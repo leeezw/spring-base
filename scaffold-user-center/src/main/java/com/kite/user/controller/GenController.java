@@ -77,6 +77,35 @@ public class GenController {
     }
 
     /**
+     * 生成代码到项目
+     */
+    @PostMapping("/{id}/generate")
+    public Result<Map<String, String>> generate(@PathVariable Long id) {
+        return Result.success(genTableService.generateToProject(id));
+    }
+
+    /**
+     * 下载ZIP
+     */
+    @GetMapping("/{id}/download")
+    public void download(@PathVariable Long id, jakarta.servlet.http.HttpServletResponse response) throws Exception {
+        byte[] zip = genTableService.downloadZip(id);
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=code.zip");
+        response.getOutputStream().write(zip);
+        response.getOutputStream().flush();
+    }
+
+    /**
+     * 同步表结构（重新读取数据库列信息）
+     */
+    @PostMapping("/{id}/sync")
+    public Result<Void> syncTable(@PathVariable Long id) {
+        genTableService.syncTable(id);
+        return Result.success();
+    }
+
+    /**
      * 删除表配置
      */
     @DeleteMapping("/{id}")
