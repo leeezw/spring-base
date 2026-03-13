@@ -13,6 +13,7 @@ export default function UserForm({ form, initialValues, onFinish }) {
   const isEdit = !!initialValues;
   const [deptTree, setDeptTree] = useState([]);
   const [roleList, setRoleList] = useState([]);
+  const [postList, setPostList] = useState([]);
   const [userRoleIds, setUserRoleIds] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -30,15 +31,19 @@ export default function UserForm({ form, initialValues, onFinish }) {
   const loadFormData = useCallback(async () => {
     setLoading(true);
     try {
-      const [deptRes, roleRes] = await Promise.all([
+      const [deptRes, roleRes, postRes] = await Promise.all([
         request.get('/system/dept/tree'),
         request.get('/system/role/list'),
+        request.get('/system/post/list?status=1'),
       ]);
       if (deptRes.code === 200 && deptRes.data) {
         setDeptTree(transformDeptTree(deptRes.data));
       }
       if (roleRes.code === 200 && roleRes.data) {
         setRoleList(roleRes.data);
+      }
+      if (postRes.code === 200 && postRes.data) {
+        setPostList(postRes.data);
       }
 
       // 编辑模式：加载用户已有的角色
@@ -47,6 +52,10 @@ export default function UserForm({ form, initialValues, onFinish }) {
         if (relRes.code === 200 && relRes.data) {
           setUserRoleIds(relRes.data);
           form.setFieldsValue({ roleIds: relRes.data });
+        }
+        const postRelRes = await request.get(`/system/relation/user/${initialValues.id}/posts`);
+        if (postRelRes.code === 200 && postRelRes.data) {
+          form.setFieldsValue({ postIds: postRelRes.data });
         }
       }
     } catch (e) {
@@ -62,7 +71,7 @@ export default function UserForm({ form, initialValues, onFinish }) {
 
   // 包装 onFinish，附带 roleIds
   const handleFinish = (values) => {
-    onFinish?.({ ...values, roleIds: values.roleIds || [] });
+    onFinish?.({ ...values, roleIds: values.roleIds || [], postIds: values.postIds || [] });
   };
 
   return (
@@ -70,7 +79,7 @@ export default function UserForm({ form, initialValues, onFinish }) {
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ status: 1, deptId: null, roleIds: [], ...initialValues }}
+        initialValues={{ status: 1, deptId: null, roleIds: [], postIds: [], ...initialValues }}
         onFinish={handleFinish}
         className="user-form"
       >
@@ -133,6 +142,21 @@ export default function UserForm({ form, initialValues, onFinish }) {
             {roleList.map(role => (
               <Option key={role.id} value={role.id} disabled={role.status !== 1}>
                 {role.roleName}（{role.roleCode}）
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item name="postIds" label="岗位">
+          <Select
+            mode="multiple"
+            placeholder="请选择岗位"
+            allowClear
+            style={{ width: '100%' }}
+          >
+            {postList.map(post => (
+              <Option key={post.id} value={post.id}>
+                {post.postName}{post.deptName ? ` — ${post.deptName}` : ''}
               </Option>
             ))}
           </Select>

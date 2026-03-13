@@ -9,10 +9,14 @@ import com.kite.user.entity.SysDept;
 import com.kite.user.entity.SysRole;
 import com.kite.user.entity.SysUser;
 import com.kite.user.entity.SysUserRole;
+import com.kite.user.entity.SysPost;
+import com.kite.user.entity.SysUserPost;
 import com.kite.user.mapper.SysDeptMapper;
 import com.kite.user.mapper.SysRoleMapper;
 import com.kite.user.mapper.SysUserMapper;
 import com.kite.user.mapper.SysUserRoleMapper;
+import com.kite.user.mapper.SysPostMapper;
+import com.kite.user.mapper.SysUserPostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,8 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
     private final SysDeptMapper deptMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMapper roleMapper;
+    private final SysUserPostMapper userPostMapper;
+    private final SysPostMapper postMapper;
     
     /**
      * 分页查询用户（含部门名、角色列表）
@@ -93,6 +99,32 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
                     .map(r -> new SysUser.RoleInfo(r.getId(), r.getRoleCode(), r.getRoleName()))
                     .collect(Collectors.toList());
                 user.setRoles(roleInfos);
+            });
+            
+            // 批量查用户-岗位关联
+            List<SysUserPost> allUserPosts = userPostMapper.selectList(
+                new LambdaQueryWrapper<SysUserPost>().in(SysUserPost::getUserId, userIds));
+            Map<Long, List<Long>> userPostMap = allUserPosts.stream()
+                .collect(Collectors.groupingBy(SysUserPost::getUserId,
+                    Collectors.mapping(SysUserPost::getPostId, Collectors.toList())));
+            
+            // 批量查岗位信息
+            Set<Long> allPostIds = allUserPosts.stream().map(SysUserPost::getPostId).collect(Collectors.toSet());
+            Map<Long, SysPost> postInfoMap = new HashMap<>();
+            if (!allPostIds.isEmpty()) {
+                List<SysPost> posts = postMapper.selectBatchIds(allPostIds);
+                posts.forEach(p -> postInfoMap.put(p.getId(), p));
+            }
+            
+            // 填充岗位
+            records.forEach(user -> {
+                List<Long> postIds = userPostMap.getOrDefault(user.getId(), Collections.emptyList());
+                List<SysUser.PostInfo> postInfos = postIds.stream()
+                    .map(postInfoMap::get)
+                    .filter(Objects::nonNull)
+                    .map(p -> new SysUser.PostInfo(p.getId(), p.getPostCode(), p.getPostName()))
+                    .collect(Collectors.toList());
+                user.setPosts(postInfos);
             });
         }
         

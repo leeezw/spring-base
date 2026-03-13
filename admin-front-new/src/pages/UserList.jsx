@@ -154,7 +154,7 @@ export default function UserList() {
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     try {
-      const { roleIds, ...userData } = values;
+      const { roleIds, postIds, ...userData } = values;
       
       // 编辑模式下，如果密码为空则移除密码字段
       if (editingUser && !userData.password) {
@@ -187,6 +187,15 @@ export default function UserList() {
           await request.post(`/system/relation/user/${userId}/roles`, { ids: roleIds });
         } catch (e) {
           console.warn('角色分配失败:', e);
+        }
+      }
+
+      // 分配岗位
+      if (userId && postIds && postIds.length > 0) {
+        try {
+          await request.post(`/system/relation/user/${userId}/posts`, { ids: postIds });
+        } catch (e) {
+          console.warn('岗位分配失败:', e);
         }
       }
       
@@ -389,9 +398,24 @@ export default function UserList() {
       },
     },
     {
+      title: '岗位',
+      dataIndex: 'posts',
+      key: 'posts',
+      width: 150,
+      render: (_, record) => {
+        const posts = record.posts || [];
+        if (posts.length === 0) return <Tag>未分配</Tag>;
+        return (
+          <Space size={[0, 4]} wrap>
+            {posts.map(p => (
+              <Tag key={p.id} color="cyan">{p.postName}</Tag>
+            ))}
+          </Space>
+        );
+      },
+    },
+    {
       title: '状态',
-      dataIndex: 'status',
-      key: 'status',
       width: 80,
       render: (_, record) => (
         <Tag color={record.status === 1 ? 'success' : 'error'}>

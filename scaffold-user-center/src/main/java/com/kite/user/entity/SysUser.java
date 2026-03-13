@@ -30,6 +30,10 @@ public class SysUser extends BaseEntity {
     @TableField(exist = false)
     private List<RoleInfo> roles;
     
+    /** 岗位列表（非数据库字段） */
+    @TableField(exist = false)
+    private List<PostInfo> posts;
+    
     public Long getTenantId() { return tenantId; }
     public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
@@ -63,6 +67,9 @@ public class SysUser extends BaseEntity {
     public List<RoleInfo> getRoles() { return roles; }
     public void setRoles(List<RoleInfo> roles) { this.roles = roles; }
     
+    public List<PostInfo> getPosts() { return posts; }
+    public void setPosts(List<PostInfo> posts) { this.posts = posts; }
+    
     /**
      * 角色简要信息
      */
@@ -82,5 +89,26 @@ public class SysUser extends BaseEntity {
         public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
         public String getRoleName() { return roleName; }
         public void setRoleName(String roleName) { this.roleName = roleName; }
+    }
+
+    /**
+     * 岗位简要信息
+     */
+    public static class PostInfo {
+        private Long id;
+        private String postCode;
+        private String postName;
+
+        public PostInfo() {}
+        public PostInfo(Long id, String postCode, String postName) {
+            this.id = id; this.postCode = postCode; this.postName = postName;
+        }
+
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        public String getPostCode() { return postCode; }
+        public void setPostCode(String postCode) { this.postCode = postCode; }
+        public String getPostName() { return postName; }
+        public void setPostName(String postName) { this.postName = postName; }
     }
 }

@@ -20,7 +20,8 @@ public class CustomTenantHandler implements TenantLineHandler {
             "sys_tenant",           // 租户表本身
             "sys_user_role",        // 关联表
             "sys_role_permission",  // 关联表
-            "sys_role_menu"         // 关联表
+            "sys_role_menu",        // 关联表
+            "sys_user_post"         // 关联表
     );
     
     /**

@@ -5,6 +5,7 @@ import com.kite.log.annotation.OperationLog;
 import com.kite.log.annotation.OperationLog.OperationType;
 import com.kite.permission.annotation.RequiresPermissions;
 import com.kite.user.service.SysRelationService;
+import com.kite.user.service.SysPostService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import java.util.List;
 public class SysRelationController {
     
     private final SysRelationService relationService;
+    private final SysPostService postService;
     
     /**
      * 查询用户的角色ID列表
@@ -84,5 +86,27 @@ public class SysRelationController {
     @Data
     public static class AssignRequest {
         private List<Long> ids;
+    }
+
+    // ============ 用户-岗位 ============
+
+    /**
+     * 查询用户的岗位ID列表
+     */
+    @GetMapping("/user/{userId}/posts")
+    @RequiresPermissions("system:user:query")
+    public Result<List<Long>> getUserPosts(@PathVariable Long userId) {
+        return Result.success(postService.getUserPostIds(userId));
+    }
+
+    /**
+     * 分配用户岗位
+     */
+    @PostMapping("/user/{userId}/posts")
+    @RequiresPermissions("system:user:edit")
+    @OperationLog(module = "用户管理", type = OperationType.UPDATE, description = "分配用户岗位")
+    public Result<Void> assignUserPosts(@PathVariable Long userId, @RequestBody AssignRequest request) {
+        postService.assignUserPosts(userId, request.getIds());
+        return Result.success();
     }
 }
