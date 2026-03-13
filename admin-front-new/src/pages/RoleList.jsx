@@ -552,16 +552,21 @@ export default function RoleList() {
         params={filterParams}
       />
 
-      {/* 新增/编辑角色弹窗 */}
-      <Modal
+      {/* 新增/编辑角色抽屉 */}
+      <Drawer
         title={editingRole ? '编辑角色' : '新增角色'}
         open={modalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={600}
-        className="role-form-modal"
-        centered
-        destroyOnHidden
+        onClose={handleCancel}
+        width={520}
+        destroyOnClose
+        extra={
+          <Space>
+            <Button onClick={handleCancel}>取消</Button>
+            <Button type="primary" onClick={() => form.submit()} loading={submitLoading}>
+              {editingRole ? '更新' : '创建'}
+            </Button>
+          </Space>
+        }
       >
         <RoleForm
           key={editingRole ? `edit-${editingRole.id}` : 'add'}
@@ -571,19 +576,7 @@ export default function RoleList() {
           permissionTree={permissionTree}
           permissionTreeLoading={permissionTreeLoading}
         />
-        <div className="modal-footer">
-          <Button onClick={handleCancel}>
-            取消
-          </Button>
-          <Button 
-            type="primary" 
-            onClick={() => form.submit()}
-            loading={submitLoading}
-          >
-            {editingRole ? '更新' : '创建'}
-          </Button>
-        </div>
-      </Modal>
+      </Drawer>
 
       <Drawer
         title={grantRole ? `菜单授权 - ${grantRole.roleName || grantRole.roleCode}` : '菜单授权'}

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown } from 'antd';
+import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown, Drawer } from 'antd';
 import { 
   UserOutlined, 
   CheckCircleOutlined, 
@@ -596,16 +596,21 @@ export default function UserList() {
         params={filterParams}
       />
 
-      {/* 新增/编辑用户弹窗 */}
-      <Modal
+      {/* 新增/编辑用户抽屉 */}
+      <Drawer
         title={editingUser ? '编辑用户' : '新增用户'}
         open={modalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={600}
-        className="user-form-modal"
-        centered
-        destroyOnHidden
+        onClose={handleCancel}
+        width={560}
+        destroyOnClose
+        extra={
+          <Space>
+            <Button onClick={handleCancel}>取消</Button>
+            <Button type="primary" onClick={() => form.submit()} loading={submitLoading}>
+              {editingUser ? '更新' : '创建'}
+            </Button>
+          </Space>
+        }
       >
         <UserForm
           key={editingUser ? `edit-${editingUser.id}` : 'add'}
@@ -613,19 +618,7 @@ export default function UserList() {
           initialValues={editingUser}
           onFinish={handleSubmit}
         />
-        <div className="modal-footer">
-          <Button onClick={handleCancel}>
-            取消
-          </Button>
-          <Button 
-            type="primary" 
-            onClick={() => form.submit()}
-            loading={submitLoading}
-          >
-            {editingUser ? '更新' : '创建'}
-          </Button>
-        </div>
-      </Modal>
+      </Drawer>
 
       {/* 授予角色弹窗 */}
       <RoleSelectModal
