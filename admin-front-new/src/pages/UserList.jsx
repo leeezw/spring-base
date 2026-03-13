@@ -413,28 +413,34 @@ export default function UserList() {
       fixed: 'right',
       render: (_, record) => (
         <Space size={4} wrap>
-          <Button 
-            type="text" 
-            icon={<EditOutlined />} 
-            size="small"
-            title="编辑"
-            onClick={() => handleEditUser(record)}
-          />
-          <Button 
-            type="text" 
-            icon={<PoweroffOutlined />}
-            size="small"
-            title={record.status === 1 ? '禁用' : '启用'}
-            danger={record.status === 1}
-            onClick={() => handleChangeStatus(record)}
-          />
-          <Button 
-            type="text" 
-            icon={<SafetyOutlined />} 
-            size="small"
-            title="授予角色"
-            onClick={() => handleAssignRoles(record)}
-          />
+          {hasPermission('system:user:edit') && (
+            <Button 
+              type="text" 
+              icon={<EditOutlined />} 
+              size="small"
+              title="编辑"
+              onClick={() => handleEditUser(record)}
+            />
+          )}
+          {hasPermission('system:user:edit') && (
+            <Button 
+              type="text" 
+              icon={<PoweroffOutlined />}
+              size="small"
+              title={record.status === 1 ? '禁用' : '启用'}
+              danger={record.status === 1}
+              onClick={() => handleChangeStatus(record)}
+            />
+          )}
+          {hasPermission('system:user:edit') && (
+            <Button 
+              type="text" 
+              icon={<SafetyOutlined />} 
+              size="small"
+              title="授予角色"
+              onClick={() => handleAssignRoles(record)}
+            />
+          )}
         </Space>
       ),
     },
@@ -522,31 +528,39 @@ export default function UserList() {
           </div>
           <div className="batch-actions-buttons">
             <Space>
-              <Button
-                icon={<CheckCircleOutlined />}
-                onClick={() => handleBatchChangeStatus(1)}
-              >
-                批量启用
-              </Button>
-              <Button
-                icon={<StopOutlined />}
-                onClick={() => handleBatchChangeStatus(0)}
-              >
-                批量禁用
-              </Button>
-              <Button
-                icon={<SafetyOutlined />}
-                onClick={handleBatchAssignRoles}
-              >
-                批量授予角色
-              </Button>
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={handleBatchDelete}
-              >
-                批量删除
-              </Button>
+              {hasPermission('system:user:edit') && (
+                <Button
+                  icon={<CheckCircleOutlined />}
+                  onClick={() => handleBatchChangeStatus(1)}
+                >
+                  批量启用
+                </Button>
+              )}
+              {hasPermission('system:user:edit') && (
+                <Button
+                  icon={<StopOutlined />}
+                  onClick={() => handleBatchChangeStatus(0)}
+                >
+                  批量禁用
+                </Button>
+              )}
+              {hasPermission('system:user:edit') && (
+                <Button
+                  icon={<SafetyOutlined />}
+                  onClick={handleBatchAssignRoles}
+                >
+                  批量授予角色
+                </Button>
+              )}
+              {hasPermission('system:user:delete') && (
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleBatchDelete}
+                >
+                  批量删除
+                </Button>
+              )}
               <Button
                 type="text"
                 onClick={() => setSelectedRowKeys([])}
@@ -574,15 +588,17 @@ export default function UserList() {
         rowSelection={rowSelection}
         toolbar={{
           actions: [
-            <Button 
-              key="add" 
-              type="primary" 
-              icon={<PlusOutlined />} 
-              onClick={handleAddUser}
-            >
-              新增用户
-            </Button>,
-          ],
+            hasPermission('system:user:add') && (
+              <Button 
+                key="add" 
+                type="primary" 
+                icon={<PlusOutlined />} 
+                onClick={handleAddUser}
+              >
+                新增用户
+              </Button>
+            ),
+          ].filter(Boolean),
         }}
         params={filterParams}
       />

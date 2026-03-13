@@ -10,11 +10,13 @@ import {
 } from '@ant-design/icons';
 import request from '../api/index.js';
 import { formatDateTime } from '../utils/dateUtils.js';
+import { usePermission } from '../hooks/usePermission.jsx';
 import './PermissionList.css'; // 复用权限管理的样式
 
 const { TreeNode } = Tree;
 
 export default function MenuList() {
+  const { hasPermission } = usePermission();
   const [menuTree, setMenuTree] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
@@ -160,10 +162,10 @@ export default function MenuList() {
     <div className="permission-list-page">
       <div className="permission-toolbar">
         <Space>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create', 0)}>新增顶级菜单</Button>
-          <Button icon={<PlusOutlined />} disabled={!selectedMenu} onClick={() => openDrawer('create', selectedMenu?.id || 0)}>新增子菜单</Button>
-          <Button icon={<EditOutlined />} disabled={!selectedMenu} onClick={() => openDrawer('edit', selectedMenu?.parentId || 0, selectedMenu)}>编辑</Button>
-          <Button danger icon={<DeleteOutlined />} disabled={!selectedMenu} onClick={handleDelete}>删除</Button>
+          {hasPermission('system:menu:add') && <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create', 0)}>新增顶级菜单</Button>}
+          {hasPermission('system:menu:add') && <Button icon={<PlusOutlined />} disabled={!selectedMenu} onClick={() => openDrawer('create', selectedMenu?.id || 0)}>新增子菜单</Button>}
+          {hasPermission('system:menu:edit') && <Button icon={<EditOutlined />} disabled={!selectedMenu} onClick={() => openDrawer('edit', selectedMenu?.parentId || 0, selectedMenu)}>编辑</Button>}
+          {hasPermission('system:menu:delete') && <Button danger icon={<DeleteOutlined />} disabled={!selectedMenu} onClick={handleDelete}>删除</Button>}
         </Space>
       </div>
 

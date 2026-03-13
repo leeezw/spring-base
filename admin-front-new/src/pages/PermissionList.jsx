@@ -13,6 +13,7 @@ import request from '../api/index.js';
 import { formatDateTime } from '../utils/dateUtils.js';
 import './PermissionList.css';
 import { useAuthContext } from '../hooks/AuthProvider.jsx';
+import { usePermission } from '../hooks/usePermission.jsx';
 
 const { TreeNode } = Tree;
 
@@ -29,18 +30,7 @@ export default function PermissionList() {
   const [currentParentId, setCurrentParentId] = useState(0);
   const [editingId, setEditingId] = useState(null);
   const { user } = useAuthContext();
-
-  const hasPermission = useCallback((required) => {
-    if (!required) {
-      return true;
-    }
-    const requiredList = Array.isArray(required) ? required : [required];
-    const permissions = user?.permissions || [];
-    if (permissions.includes('*:*:*')) {
-      return true;
-    }
-    return requiredList.some(code => permissions.includes(code));
-  }, [user]);
+  const { hasPermission } = usePermission();
 
   // 加载权限树
   const loadPermissionTree = useCallback(async () => {

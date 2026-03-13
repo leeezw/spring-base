@@ -10,11 +10,13 @@ import {
 } from '@ant-design/icons';
 import request from '../api/index.js';
 import { formatDateTime } from '../utils/dateUtils.js';
+import { usePermission } from '../hooks/usePermission.jsx';
 import './PermissionList.css'; // 复用权限管理的样式
 
 const { TreeNode } = Tree;
 
 export default function DeptList() {
+  const { hasPermission } = usePermission();
   const [deptTree, setDeptTree] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
@@ -167,10 +169,10 @@ export default function DeptList() {
     <div className="permission-list-page">
       <div className="permission-toolbar">
         <Space>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create', 0)}>新增顶级部门</Button>
-          <Button icon={<PlusOutlined />} disabled={!selectedDept} onClick={() => openDrawer('create', selectedDept?.id || 0)}>新增子部门</Button>
-          <Button icon={<EditOutlined />} disabled={!selectedDept} onClick={() => openDrawer('edit', selectedDept?.parentId || 0, selectedDept)}>编辑</Button>
-          <Button danger icon={<DeleteOutlined />} disabled={!selectedDept} onClick={handleDelete}>删除</Button>
+          {hasPermission('system:dept:add') && <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create', 0)}>新增顶级部门</Button>}
+          {hasPermission('system:dept:add') && <Button icon={<PlusOutlined />} disabled={!selectedDept} onClick={() => openDrawer('create', selectedDept?.id || 0)}>新增子部门</Button>}
+          {hasPermission('system:dept:edit') && <Button icon={<EditOutlined />} disabled={!selectedDept} onClick={() => openDrawer('edit', selectedDept?.parentId || 0, selectedDept)}>编辑</Button>}
+          {hasPermission('system:dept:delete') && <Button danger icon={<DeleteOutlined />} disabled={!selectedDept} onClick={handleDelete}>删除</Button>}
         </Space>
       </div>
 

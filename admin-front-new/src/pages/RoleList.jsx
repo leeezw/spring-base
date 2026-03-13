@@ -15,9 +15,11 @@ import RoleForm from '../components/RoleForm.jsx';
 import TableSearchForm from '../components/TableSearchForm.jsx';
 import ProTableV2 from '../components/ProTableV2.jsx';
 import { usePageToolbar } from '../components/AppLayout.jsx';
+import { usePermission } from '../hooks/usePermission.jsx';
 import './RoleList.css';
 
 export default function RoleList() {
+  const { hasPermission } = usePermission();
   const actionRef = useRef();
   const [stats, setStats] = useState({
     total: 0,
@@ -444,43 +446,53 @@ export default function RoleList() {
       fixed: 'right',
       render: (_, record) => (
         <Space size={4} wrap>
-          <Button 
-            type="text" 
-            icon={<SafetyOutlined />} 
-            size="small"
-            title="分配权限"
-            onClick={() => handleOpenGrantDrawer(record, 'permission')}
-          />
-          <Button 
-            type="text" 
-            icon={<MenuOutlined />} 
-            size="small"
-            title="分配菜单"
-            onClick={() => handleOpenGrantDrawer(record, 'menu')}
-          />
-          <Button 
-            type="text" 
-            icon={<EditOutlined />} 
-            size="small"
-            title="编辑"
-            onClick={() => handleEditRole(record)}
-          />
-          <Button 
-            type="text" 
-            icon={<PoweroffOutlined />} 
-            size="small"
-            title={record.status === 1 ? '禁用' : '启用'}
-            danger={record.status === 1}
-            onClick={() => handleChangeStatus(record)}
-          />
-          <Button 
-            type="text" 
-            icon={<DeleteOutlined />} 
-            size="small"
-            danger
-            title="删除"
-            onClick={() => handleDeleteRole(record)}
-          />
+          {hasPermission('system:role:edit') && (
+            <Button 
+              type="text" 
+              icon={<SafetyOutlined />} 
+              size="small"
+              title="分配权限"
+              onClick={() => handleOpenGrantDrawer(record, 'permission')}
+            />
+          )}
+          {hasPermission('system:role:edit') && (
+            <Button 
+              type="text" 
+              icon={<MenuOutlined />} 
+              size="small"
+              title="分配菜单"
+              onClick={() => handleOpenGrantDrawer(record, 'menu')}
+            />
+          )}
+          {hasPermission('system:role:edit') && (
+            <Button 
+              type="text" 
+              icon={<EditOutlined />} 
+              size="small"
+              title="编辑"
+              onClick={() => handleEditRole(record)}
+            />
+          )}
+          {hasPermission('system:role:edit') && (
+            <Button 
+              type="text" 
+              icon={<PoweroffOutlined />} 
+              size="small"
+              title={record.status === 1 ? '禁用' : '启用'}
+              danger={record.status === 1}
+              onClick={() => handleChangeStatus(record)}
+            />
+          )}
+          {hasPermission('system:role:delete') && (
+            <Button 
+              type="text" 
+              icon={<DeleteOutlined />} 
+              size="small"
+              danger
+              title="删除"
+              onClick={() => handleDeleteRole(record)}
+            />
+          )}
         </Space>
       ),
     },
@@ -571,15 +583,17 @@ export default function RoleList() {
         pagination={false}
         toolbar={{
           actions: [
-            <Button 
-              key="add" 
-              type="primary" 
-              icon={<PlusOutlined />} 
-              onClick={handleAddRole}
-            >
-              新增角色
-            </Button>,
-          ],
+            hasPermission('system:role:add') && (
+              <Button 
+                key="add" 
+                type="primary" 
+                icon={<PlusOutlined />} 
+                onClick={handleAddRole}
+              >
+                新增角色
+              </Button>
+            ),
+          ].filter(Boolean),
         }}
         params={filterParams}
       />
