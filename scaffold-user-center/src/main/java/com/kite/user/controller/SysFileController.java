@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -25,6 +27,23 @@ import java.util.Map;
 public class SysFileController {
 
     private final SysFileService fileService;
+
+    /**
+     * 文件分页列表
+     */
+    @GetMapping("/list")
+    public Result<?> list(
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String originalName) {
+        LambdaQueryWrapper<SysFile> wrapper = new LambdaQueryWrapper<>();
+        if (originalName != null && !originalName.isEmpty()) {
+            wrapper.like(SysFile::getOriginalName, originalName);
+        }
+        wrapper.orderByDesc(SysFile::getCreateTime);
+        Page<SysFile> page = fileService.page(new Page<>(pageNum, pageSize), wrapper);
+        return Result.success(page);
+    }
 
     /**
      * 上传文件
