@@ -8,6 +8,7 @@ import RolePermConfig from './pages/RolePermConfig.jsx';
 import PostList from './pages/PostList.jsx';
 import DictList from './pages/DictList.jsx';
 import Profile from './pages/Profile.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 import MenuList from './pages/MenuList.jsx';
 import DeptList from './pages/DeptList.jsx';
 import SessionList from './pages/SessionList.jsx';
@@ -35,8 +36,11 @@ export default function App() {
           </PrivateRoute>
         )}
       >
-        {/* 默认首页重定向到用户管理 */}
-        <Route index element={<Navigate to="/system/user" replace />} />
+        {/* 默认首页 */}
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        
+        {/* 数据看板 */}
+        <Route path="dashboard" element={<Dashboard />} />
         
         {/* 系统管理 */}
         <Route path="system/user" element={<UserList />} />
@@ -50,7 +54,6 @@ export default function App() {
         <Route path="profile" element={<Profile />} />
         
         {/* 数据分析 */}
-        <Route path="dashboard" element={<UserList />} />
         
         {/* 会话管理 */}
         <Route path="sessions" element={<SessionList />} />
