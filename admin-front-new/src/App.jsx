@@ -4,6 +4,7 @@ import Login from './pages/Login.jsx';
 import UserList from './pages/UserList.jsx';
 import RoleList from './pages/RoleList.jsx';
 import PermissionList from './pages/PermissionList.jsx';
+import RolePermConfig from './pages/RolePermConfig.jsx';
 import MenuList from './pages/MenuList.jsx';
 import DeptList from './pages/DeptList.jsx';
 import SessionList from './pages/SessionList.jsx';
@@ -38,6 +39,7 @@ export default function App() {
         {/* 系统管理 */}
         <Route path="system/user" element={<UserList />} />
         <Route path="system/role" element={<RoleList />} />
+        <Route path="system/role/config" element={<RolePermConfig />} />
         <Route path="system/permission" element={<PermissionList />} />
         <Route path="system/menu" element={<MenuList />} />
         <Route path="system/dept" element={<DeptList />} />

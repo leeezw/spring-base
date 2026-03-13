@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Drawer, Tree, Spin } from 'antd';
 import { 
   SafetyOutlined, 
@@ -9,6 +10,7 @@ import {
   DeleteOutlined,
   PoweroffOutlined,
   MenuOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import request from '../api/index.js';
 import RoleForm from '../components/RoleForm.jsx';
@@ -20,6 +22,7 @@ import './RoleList.css';
 
 export default function RoleList() {
   const { hasPermission } = usePermission();
+  const navigate = useNavigate();
   const actionRef = useRef();
   const [stats, setStats] = useState({
     total: 0,
@@ -583,6 +586,15 @@ export default function RoleList() {
         pagination={false}
         toolbar={{
           actions: [
+            hasPermission('system:role:edit') && (
+              <Button
+                key="config"
+                icon={<SettingOutlined />}
+                onClick={() => navigate('/system/role/config')}
+              >
+                权限配置
+              </Button>
+            ),
             hasPermission('system:role:add') && (
               <Button 
                 key="add" 
