@@ -1,13 +1,13 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { Space, Tag, Tree, Descriptions, Empty, Skeleton, Button, Modal, Form, Input, Select, Switch, InputNumber, message, Drawer, Divider, Row, Col, TreeSelect, Badge } from 'antd';
+import { Space, Tag, Tree, Empty, Skeleton, Button, Modal, Form, Input, Select, Switch, InputNumber, message, Drawer, Row, Col, TreeSelect, Badge, Tooltip } from 'antd';
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, IdcardOutlined, TeamOutlined,
+  ApartmentOutlined, UserOutlined, SearchOutlined,
 } from '@ant-design/icons';
 import request from '../api/index.js';
-import { formatDateTime } from '../utils/dateUtils.js';
 import { usePermission } from '../hooks/usePermission.jsx';
 import { useDict } from '../hooks/useDict.jsx';
-import './PermissionList.css';
+import './PostList.css';
 
 export default function PostList() {
   const { hasPermission } = usePermission();
@@ -22,8 +22,8 @@ export default function PostList() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [deptTree, setDeptTree] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
-  // 加载部门树（给表单用）
   const loadDeptTree = useCallback(async () => {
     try {
       const res = await request.get('/system/dept/tree');
@@ -31,7 +31,6 @@ export default function PostList() {
     } catch (e) { /* ignore */ }
   }, []);
 
-  // 加载部门-岗位树
   const loadPostTree = useCallback(async () => {
     setLoading(true);
     try {
@@ -51,45 +50,67 @@ export default function PostList() {
 
   useEffect(() => { loadPostTree(); loadDeptTree(); }, [loadPostTree, loadDeptTree]);
 
+  // 总岗位数
+  const totalCount = useMemo(() => {
+    return postTree.reduce((sum, dept) => sum + (dept.children || []).length, 0);
+  }, [postTree]);
+
+  // 搜索过滤
+  const filteredTree = useMemo(() => {
+    if (!searchText.trim()) return postTree;
+    const keyword = searchText.toLowerCase();
+    return postTree.map(dept => {
+      const filteredChildren = (dept.children || []).filter(p =>
+        p.title.toLowerCase().includes(keyword) ||
+        (p.postCode || '').toLowerCase().includes(keyword)
+      );
+      if (filteredChildren.length > 0 || dept.title.toLowerCase().includes(keyword)) {
+        return { ...dept, children: filteredChildren };
+      }
+      return null;
+    }).filter(Boolean);
+  }, [postTree, searchText]);
+
   // 树节点渲染
   const treeData = useMemo(() => {
-    return postTree.map(dept => ({
+    return filteredTree.map(dept => ({
       key: dept.key,
       title: (
-        <span className="tree-node-content">
-          <TeamOutlined style={{ marginRight: 6, color: '#8c8c8c' }} />
-          <strong>{dept.title}</strong>
-        </span>
+        <div className="post-dept-node">
+          <TeamOutlined />
+          <span>{dept.title}</span>
+          <span className="dept-count">{(dept.children || []).length} 个岗位</span>
+        </div>
       ),
       selectable: false,
       children: (dept.children || []).map(post => ({
         key: post.key,
         title: (
-          <span className="tree-node-content">
-            <IdcardOutlined style={{ marginRight: 6 }} />
-            <span>{post.title}</span>
-            {' '}
-            <Tag color={getCategoryColor(post.postCategory)} style={{ fontSize: 11, lineHeight: '18px', padding: '0 4px' }}>
-              {getCategoryLabel(post.postCategory)}
-            </Tag>
-            <Tag color={post.status === 1 ? 'success' : 'default'} style={{ fontSize: 11, lineHeight: '18px', padding: '0 4px' }}>
-              {post.status === 1 ? '启用' : '停用'}
-            </Tag>
-            {post.userCount > 0 && (
-              <Badge count={post.userCount} size="small" style={{ backgroundColor: '#3f8cff', marginLeft: 4 }} />
-            )}
-          </span>
+          <div className="post-item-node">
+            <IdcardOutlined />
+            <span className="post-name">{post.title}</span>
+            <div className="post-tags">
+              <Tag color={getCategoryColor(post.postCategory)}>
+                {getCategoryLabel(post.postCategory)}
+              </Tag>
+              {post.status !== 1 && <Tag color="default">停用</Tag>}
+              {post.userCount > 0 && (
+                <Badge count={post.userCount} size="small"
+                  className="post-user-badge"
+                  style={{ backgroundColor: '#3f8cff' }}
+                />
+              )}
+            </div>
+          </div>
         ),
         postData: post,
       })),
     }));
-  }, [postTree]);
+  }, [filteredTree, getCategoryColor, getCategoryLabel]);
 
-  // 选中岗位 — 需要从原始数据找
   const handleSelect = useCallback((selectedKeys) => {
     if (selectedKeys.length === 0) return;
     const key = selectedKeys[0];
-    // 从postTree找
     for (const dept of postTree) {
       for (const post of (dept.children || [])) {
         if (post.key === key) {
@@ -100,13 +121,11 @@ export default function PostList() {
     }
   }, [postTree]);
 
-  // 打开抽屉
   const openDrawer = useCallback((mode, post = null) => {
     setDrawerMode(mode);
     setDrawerVisible(true);
     if (mode === 'edit' && post) {
       setEditingId(post.key);
-      // 需要从API获取完整岗位信息
       request.get('/system/post/list').then(res => {
         if (res.code === 200) {
           const fullPost = res.data.find(p => p.id.toString() === post.key);
@@ -129,15 +148,10 @@ export default function PostList() {
     }
   }, [form]);
 
-  // 提交
   const handleSubmit = useCallback(async (values) => {
     setSubmitLoading(true);
     try {
-      const payload = {
-        ...values,
-        status: values.status ? 1 : 0,
-        deptId: values.deptId || null,
-      };
+      const payload = { ...values, status: values.status ? 1 : 0, deptId: values.deptId || null };
       if (drawerMode === 'edit' && editingId) {
         payload.id = parseInt(editingId);
         const res = await request.put('/system/post', payload);
@@ -155,7 +169,6 @@ export default function PostList() {
     }
   }, [drawerMode, editingId, loadPostTree]);
 
-  // 删除
   const handleDelete = useCallback(() => {
     if (!selectedPost) return;
     Modal.confirm({
@@ -172,7 +185,6 @@ export default function PostList() {
     });
   }, [selectedPost, loadPostTree]);
 
-  // 部门树选择数据
   const buildDeptTreeSelect = (nodes) => {
     if (!nodes) return [];
     return nodes.map(n => ({
@@ -182,28 +194,52 @@ export default function PostList() {
   };
 
   return (
-    <div className="permission-page">
-      <div className="permission-layout">
-        {/* 左侧岗位树 */}
-        <div className="permission-tree-panel">
-          <div className="permission-toolbar">
-            <Space>
-              {hasPermission('system:post:add') && (
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create')}>新增岗位</Button>
-              )}
-              {hasPermission('system:post:edit') && (
-                <Button icon={<EditOutlined />} disabled={!selectedPost} onClick={() => openDrawer('edit', selectedPost)}>编辑</Button>
-              )}
-              {hasPermission('system:post:delete') && (
-                <Button danger icon={<DeleteOutlined />} disabled={!selectedPost} onClick={handleDelete}>删除</Button>
-              )}
-            </Space>
+    <div className="post-page">
+      {/* 工具栏 */}
+      <div className="post-toolbar">
+        <Space>
+          {hasPermission('system:post:add') && (
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer('create')}>新增岗位</Button>
+          )}
+          {hasPermission('system:post:edit') && (
+            <Button icon={<EditOutlined />} disabled={!selectedPost} onClick={() => openDrawer('edit', selectedPost)}>编辑</Button>
+          )}
+          {hasPermission('system:post:delete') && (
+            <Button danger icon={<DeleteOutlined />} disabled={!selectedPost} onClick={handleDelete}>删除</Button>
+          )}
+        </Space>
+      </div>
+
+      {/* 主内容区 */}
+      <div className="post-content">
+        {/* 左侧树 */}
+        <div className="post-tree-panel">
+          <div className="post-tree-header">
+            <h3>
+              <ApartmentOutlined />
+              组织岗位
+              <Tag color="processing" style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 400 }}>
+                共 {totalCount} 个岗位
+              </Tag>
+            </h3>
+            <div className="tree-subtitle">按部门分组展示所有岗位</div>
           </div>
 
-          <div className="tree-title">按部门分组</div>
+          <div className="post-tree-search">
+            <Input
+              placeholder="搜索岗位名称 / 编码"
+              prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+              allowClear
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              style={{ borderRadius: 8 }}
+            />
+          </div>
 
-          {loading ? <Skeleton active paragraph={{ rows: 8 }} style={{ padding: 16 }} /> : (
-            treeData.length > 0 ? (
+          <div className="post-tree-body">
+            {loading ? (
+              <Skeleton active paragraph={{ rows: 10 }} style={{ padding: '8px 12px' }} />
+            ) : treeData.length > 0 ? (
               <Tree
                 treeData={treeData}
                 expandedKeys={expandedKeys}
@@ -211,53 +247,96 @@ export default function PostList() {
                 selectedKeys={selectedPost ? [selectedPost.key] : []}
                 onSelect={handleSelect}
                 blockNode
-                style={{ padding: '8px 12px' }}
               />
             ) : (
-              <Empty description="暂无岗位数据" style={{ marginTop: 60 }} />
-            )
-          )}
+              <Empty description={searchText ? '无匹配结果' : '暂无岗位数据'} style={{ marginTop: 60 }} />
+            )}
+          </div>
         </div>
 
         {/* 右侧详情 */}
-        <div className="permission-detail-panel">
+        <div className="post-detail-panel">
           {selectedPost ? (
-            <div className="detail-content">
-              <div className="detail-header">
-                <IdcardOutlined style={{ fontSize: 20, color: '#3f8cff' }} />
-                <span className="detail-title">{selectedPost.title}</span>
-                <Tag color={getCategoryColor(selectedPost.postCategory)}>
-                  {getCategoryLabel(selectedPost.postCategory)}
-                </Tag>
-                <Tag color={selectedPost.status === 1 ? 'success' : 'default'}>
-                  {selectedPost.status === 1 ? '启用' : '停用'}
-                </Tag>
-              </div>
-              <Divider style={{ margin: '12px 0' }} />
-              <Descriptions column={1} size="small" labelStyle={{ width: 100, color: '#8c8c8c' }}>
-                <Descriptions.Item label="岗位编码">
-                  <code style={{ background: '#f5f5f5', padding: '2px 8px', borderRadius: 4 }}>{selectedPost.postCode}</code>
-                </Descriptions.Item>
-                <Descriptions.Item label="所属部门">
-                  {selectedPost.deptType === 'global' ? '全局岗位（不限部门）' : selectedPost.deptTitle}
-                </Descriptions.Item>
-                <Descriptions.Item label="岗位类别">
+            <>
+              <div className="post-detail-header">
+                <div className="post-detail-icon">
+                  <IdcardOutlined />
+                </div>
+                <div className="post-detail-title-area">
+                  <h3>{selectedPost.title}</h3>
+                  <div className="post-code">{selectedPost.postCode}</div>
+                </div>
+                <div className="post-detail-tags">
                   <Tag color={getCategoryColor(selectedPost.postCategory)}>
                     {getCategoryLabel(selectedPost.postCategory)}
                   </Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label="在岗人数">
-                  <Badge count={selectedPost.userCount || 0} showZero size="small" style={{ backgroundColor: selectedPost.userCount > 0 ? '#3f8cff' : '#d9d9d9' }} />
-                </Descriptions.Item>
-                <Descriptions.Item label="状态">
                   <Tag color={selectedPost.status === 1 ? 'success' : 'default'}>
                     {selectedPost.status === 1 ? '启用' : '停用'}
                   </Tag>
-                </Descriptions.Item>
-              </Descriptions>
-            </div>
+                </div>
+              </div>
+
+              <div className="post-detail-body">
+                {/* 统计卡片 */}
+                <div className="post-stats">
+                  <div className="post-stat-card">
+                    <div className="stat-icon"><UserOutlined /></div>
+                    <div className="stat-text">
+                      <span className="stat-number">{selectedPost.userCount || 0}</span>
+                      <span className="stat-label">在岗人数</span>
+                    </div>
+                  </div>
+                  <div className="post-stat-card warning">
+                    <div className="stat-icon"><ApartmentOutlined /></div>
+                    <div className="stat-text">
+                      <span className="stat-number">{selectedPost.deptType === 'global' ? '全局' : '部门'}</span>
+                      <span className="stat-label">岗位归属</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 信息网格 */}
+                <div className="post-info-grid" style={{ marginTop: 24 }}>
+                  <div className="post-info-item">
+                    <span className="post-info-label">岗位编码</span>
+                    <span className="post-info-value"><code>{selectedPost.postCode}</code></span>
+                  </div>
+                  <div className="post-info-item">
+                    <span className="post-info-label">岗位类别</span>
+                    <span className="post-info-value">
+                      <Tag color={getCategoryColor(selectedPost.postCategory)}>
+                        {getCategoryLabel(selectedPost.postCategory)}
+                      </Tag>
+                    </span>
+                  </div>
+                  <div className="post-info-item">
+                    <span className="post-info-label">所属部门</span>
+                    <span className="post-info-value">
+                      {selectedPost.deptType === 'global' ? '全局岗位（不限部门）' : selectedPost.deptTitle}
+                    </span>
+                  </div>
+                  <div className="post-info-item">
+                    <span className="post-info-label">状态</span>
+                    <span className="post-info-value">
+                      <Tag color={selectedPost.status === 1 ? 'success' : 'default'}>
+                        {selectedPost.status === 1 ? '启用' : '停用'}
+                      </Tag>
+                    </span>
+                  </div>
+                  {selectedPost.description && (
+                    <div className="post-info-item full-width">
+                      <span className="post-info-label">岗位描述</span>
+                      <span className="post-info-value">{selectedPost.description}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
           ) : (
-            <Empty description="请在左侧选择一个岗位" style={{ marginTop: 120 }} />
+            <div className="post-detail-empty">
+              <IdcardOutlined />
+              <p>请在左侧选择一个岗位查看详情</p>
+            </div>
           )}
         </div>
       </div>
@@ -266,7 +345,7 @@ export default function PostList() {
       <Drawer
         title={drawerMode === 'edit' ? '编辑岗位' : '新增岗位'}
         placement="right"
-        width={480}
+        width={520}
         open={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         destroyOnClose
@@ -295,7 +374,7 @@ export default function PostList() {
               <Form.Item name="postCategory" label="岗位类别" rules={[{ required: true }]}>
                 <Select options={categoryItems.map(i => ({
                   value: parseInt(i.itemValue),
-                  label: <span><Tag color={i.itemColor} style={{ marginRight: 4 }}>{i.itemLabel}</Tag>{i.description || ''}</span>,
+                  label: <span><Tag color={i.itemColor} style={{ marginRight: 4 }}>{i.itemLabel}</Tag></span>,
                 }))} />
               </Form.Item>
             </Col>
