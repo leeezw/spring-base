@@ -129,10 +129,10 @@ export default function DeptList() {
       };
       setSubmitLoading(true);
       if (drawerMode === 'edit' && editingId) {
-        await request.put('/system/dept/update', { ...payload, id: editingId });
+        await request.put('/system/dept', { ...payload, id: editingId });
         message.success('更新成功');
       } else {
-        await request.post('/system/dept/save', payload);
+        await request.post('/system/dept', payload);
         message.success('新增成功');
       }
       handleDrawerClose();
@@ -155,7 +155,7 @@ export default function DeptList() {
       cancelText: '取消',
       onOk: async () => {
         try {
-          await request.delete(`/system/dept/delete/${selectedDept.id}`);
+          await request.delete(`/system/dept/${selectedDept.id}`);
           message.success('删除成功');
           setSelectedDept(null);
           setSelectedKeys([]);

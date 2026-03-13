@@ -120,7 +120,7 @@ export default function RoleSelectModal({
       const userRes = await request.get(`/system/user/${userId}`);
       if (userRes.code !== 200 || !userRes.data) throw new Error('获取用户信息失败');
       const userData = userRes.data;
-      const res = await request.put('/system/user/update', {
+      const res = await request.put('/system/user', {
         id: userId,
         nickname: userData.nickname,
         email: userData.email,

@@ -171,7 +171,7 @@ export default function RoleList() {
       
       if (editingRole) {
         // 编辑角色
-        const res = await request.put('/system/role/update', { ...submitData, id: editingRole.id });
+        const res = await request.put('/system/role', { ...submitData, id: editingRole.id });
         if (res.code === 200) {
           message.success('角色更新成功');
           setModalVisible(false);
@@ -183,7 +183,7 @@ export default function RoleList() {
         }
       } else {
         // 新增角色
-        const res = await request.post('/system/role/save', submitData);
+        const res = await request.post('/system/role', submitData);
         if (res.code === 200) {
           message.success('角色创建成功');
           setModalVisible(false);
@@ -301,7 +301,7 @@ export default function RoleList() {
       onOk: async () => {
         try {
           // 更新角色状态
-          const res = await request.put('/system/role/update', {
+          const res = await request.put('/system/role', {
             id: record.id,
             roleCode: record.roleCode,
             roleName: record.roleName,
@@ -331,7 +331,7 @@ export default function RoleList() {
       okType: 'danger',
       onOk: async () => {
         try {
-          const res = await request.delete(`/system/role/delete/${record.id}`);
+          const res = await request.delete(`/system/role/${record.id}`);
           if (res.code === 200) {
             message.success('角色删除成功');
             handleRefresh();

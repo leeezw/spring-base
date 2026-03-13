@@ -158,7 +158,7 @@ export default function UserList() {
 
       if (editingUser) {
         // 编辑用户
-        const res = await request.put('/system/user/update', { ...values, id: editingUser.id });
+        const res = await request.put('/system/user', { ...values, id: editingUser.id });
         if (res.code === 200) {
           message.success('用户更新成功');
           setModalVisible(false);
@@ -170,7 +170,7 @@ export default function UserList() {
         }
       } else {
         // 新增用户
-        const res = await request.post('/system/user/save', values);
+        const res = await request.post('/system/user', values);
         if (res.code === 200) {
           message.success('用户创建成功');
           setModalVisible(false);
@@ -224,7 +224,7 @@ export default function UserList() {
         try {
           // 根据 OpenAPI 规范：/api/users/status PUT
           // Request: { id, status }
-          const res = await request.put('/system/user/update', {
+          const res = await request.put('/system/user', {
             id: record.id,
             status: newStatus
           });

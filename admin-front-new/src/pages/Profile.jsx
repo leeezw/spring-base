@@ -42,7 +42,7 @@ export default function Profile() {
   const handleUpdateProfile = async (values) => {
     setLoading(true);
     try {
-      const res = await request.put('/system/user/update', { ...values, id: user.id });
+      const res = await request.put('/system/user', { ...values, id: user.id });
       if (res.code === 200) {
         message.success('个人信息更新成功');
         setUser({ ...user, ...values });
@@ -91,7 +91,7 @@ export default function Profile() {
       const avatarUrl = info.file.response?.data?.url || info.file.response?.url;
       if (avatarUrl) {
         try {
-          const res = await request.put('/system/user/update', { id: user.id, avatar: avatarUrl });
+          const res = await request.put('/system/user', { id: user.id, avatar: avatarUrl });
           if (res.code === 200) {
             setUser({ ...user, avatar: avatarUrl });
             message.success('头像更新成功');

@@ -234,10 +234,10 @@ export default function PermissionList() {
       };
       setSubmitLoading(true);
       if (drawerMode === 'create') {
-        await request.post('/system/permission/save', payload);
+        await request.post('/system/permission', payload);
         message.success('新增成功');
       } else if (editingId) {
-        await request.put('/system/permission/update', { ...payload, id: editingId });
+        await request.put('/system/permission', { ...payload, id: editingId });
         message.success('更新成功');
       }
       handleDrawerClose();
@@ -268,7 +268,7 @@ export default function PermissionList() {
       cancelText: '取消',
       onOk: async () => {
         try {
-          await request.delete(`/system/permission/delete/${selectedPermission.id}`);
+          await request.delete(`/system/permission/${selectedPermission.id}`);
           message.success('删除成功');
           setSelectedPermission(null);
           setSelectedKeys([]);
