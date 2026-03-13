@@ -140,6 +140,7 @@ public class UserAuthenticationService implements AuthenticationService {
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getId());
         loginUser.setTenantId(user.getTenantId());
+        loginUser.setDeptId(user.getDeptId());
         loginUser.setUsername(user.getUsername());
         loginUser.setNickname(user.getNickname());
         loginUser.setAvatar(user.getAvatar());

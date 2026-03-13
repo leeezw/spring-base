@@ -38,6 +38,7 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
     private final SysRoleMapper roleMapper;
     private final SysUserPostMapper userPostMapper;
     private final SysPostMapper postMapper;
+    private final DataScopeService dataScopeService;
     
     /**
      * 分页查询用户（含部门名、角色列表）
@@ -56,6 +57,28 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
                .eq(status != null, SysUser::getStatus, status)
                .eq(deptId != null, SysUser::getDeptId, deptId)
                .orderByDesc(SysUser::getCreateTime);
+        
+        // 数据权限过滤
+        DataScopeService.DataScope scope = dataScopeService.getDataScope();
+        if (!scope.isAll()) {
+            if (scope.isSelfOnly()) {
+                // 仅本人数据
+                wrapper.eq(SysUser::getId, scope.getUserId());
+            } else if (scope.getDeptIds() != null && !scope.getDeptIds().isEmpty()) {
+                // 按部门过滤（如果URL参数也指定了deptId，取交集）
+                if (deptId != null) {
+                    if (!scope.getDeptIds().contains(deptId)) {
+                        // 请求的部门不在权限范围内，返回空
+                        return new PageResult<>(Collections.emptyList(), 0L, (long) pageNum, (long) pageSize);
+                    }
+                } else {
+                    wrapper.in(SysUser::getDeptId, scope.getDeptIds());
+                }
+            } else {
+                // 无部门且非全部，只能看自己
+                wrapper.eq(SysUser::getId, scope.getUserId());
+            }
+        }
         
         Page<SysUser> page = page(new Page<>(pageNum, pageSize), wrapper);
         List<SysUser> records = page.getRecords();

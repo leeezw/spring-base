@@ -157,8 +157,8 @@ export default function RoleList() {
     form.setFieldsValue({
       code: record.roleCode,
       name: record.roleName,
+      dataScope: record.dataScope || 1,
       permissionIds: record.permissionIds || [],
-      // 编辑时不设置状态，状态通过独立的状态按钮修改
     });
     setModalVisible(true);
   };
@@ -172,6 +172,7 @@ export default function RoleList() {
         roleName: values.name,
         description: values.description || '',
         status: values.status ?? 1,
+        dataScope: values.dataScope ?? 1,
         permissionIds: Array.isArray(values.permissionIds) ? values.permissionIds : [],
       };
       
@@ -179,6 +180,10 @@ export default function RoleList() {
         // 编辑角色
         const res = await request.put('/system/role', { ...submitData, id: editingRole.id });
         if (res.code === 200) {
+          // 如果是自定义部门，保存关联
+          if (values.dataScope === 5 && values.customDeptIds?.length > 0) {
+            await request.post(`/system/relation/role/${editingRole.id}/depts`, { ids: values.customDeptIds });
+          }
           message.success('角色更新成功');
           setModalVisible(false);
           form.resetFields();
@@ -414,6 +419,18 @@ export default function RoleList() {
           {record.status === 1 ? '启用' : '禁用'}
         </Tag>
       ),
+    },
+    {
+      title: '数据权限',
+      dataIndex: 'dataScope',
+      key: 'dataScope',
+      width: 120,
+      hideInSearch: true,
+      render: (v) => {
+        const map = { 1: { text: '全部', color: 'blue' }, 2: { text: '本部门', color: 'cyan' }, 3: { text: '部门及下级', color: 'green' }, 4: { text: '仅本人', color: 'orange' }, 5: { text: '自定义', color: 'purple' } };
+        const item = map[v] || map[1];
+        return <Tag color={item.color}>{item.text}</Tag>;
+      },
     },
     {
       title: '权限数量',

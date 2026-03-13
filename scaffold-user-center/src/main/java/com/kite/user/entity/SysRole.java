@@ -16,6 +16,11 @@ public class SysRole extends BaseEntity {
     private Integer sortOrder;
     private Integer status;
     
+    /**
+     * 数据权限范围: 1全部 2本部门 3本部门及下级 4仅本人 5自定义部门
+     */
+    private Integer dataScope;
+    
     public Long getTenantId() { return tenantId; }
     public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
     
@@ -33,4 +38,7 @@ public class SysRole extends BaseEntity {
     
     public Integer getStatus() { return status; }
     public void setStatus(Integer status) { this.status = status; }
+    
+    public Integer getDataScope() { return dataScope; }
+    public void setDataScope(Integer dataScope) { this.dataScope = dataScope; }
 }

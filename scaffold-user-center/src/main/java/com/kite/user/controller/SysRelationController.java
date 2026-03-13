@@ -6,6 +6,7 @@ import com.kite.log.annotation.OperationLog.OperationType;
 import com.kite.permission.annotation.RequiresPermissions;
 import com.kite.user.service.SysRelationService;
 import com.kite.user.service.SysPostService;
+import com.kite.user.service.DataScopeService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ public class SysRelationController {
     
     private final SysRelationService relationService;
     private final SysPostService postService;
+    private final DataScopeService dataScopeService;
     
     /**
      * 查询用户的角色ID列表
@@ -107,6 +109,28 @@ public class SysRelationController {
     @OperationLog(module = "用户管理", type = OperationType.UPDATE, description = "分配用户岗位")
     public Result<Void> assignUserPosts(@PathVariable Long userId, @RequestBody AssignRequest request) {
         postService.assignUserPosts(userId, request.getIds());
+        return Result.success();
+    }
+
+    // ========== 角色-部门（数据权限） ==========
+
+    /**
+     * 查询角色的自定义部门ID列表
+     */
+    @GetMapping("/role/{roleId}/depts")
+    @RequiresPermissions("system:role:query")
+    public Result<List<Long>> getRoleDepts(@PathVariable Long roleId) {
+        return Result.success(dataScopeService.getRoleDeptIds(roleId));
+    }
+
+    /**
+     * 设置角色的自定义部门
+     */
+    @PostMapping("/role/{roleId}/depts")
+    @RequiresPermissions("system:role:edit")
+    @OperationLog(module = "角色管理", type = OperationType.UPDATE, description = "设置角色数据权限部门")
+    public Result<Void> assignRoleDepts(@PathVariable Long roleId, @RequestBody AssignRequest request) {
+        dataScopeService.saveRoleDepts(roleId, request.getIds());
         return Result.success();
     }
 }

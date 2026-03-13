@@ -24,6 +24,11 @@ public class LoginUser implements Serializable {
     private Long tenantId;
     
     /**
+     * 部门ID
+     */
+    private Long deptId;
+    
+    /**
      * 用户名
      */
     private String username;
