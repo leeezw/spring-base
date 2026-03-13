@@ -107,7 +107,7 @@ export default function ProTableV2({
 
       // 处理响应格式
       if (res.code === 200) {
-        const list = res.data?.list || res.data?.pageData?.list || res.data || [];
+        const list = res.data?.list || res.data?.records || res.data?.pageData?.list || res.data || [];
         const total = res.data?.total || res.data?.pageData?.total || list.length || 0;
 
         // 触发数据变化回调

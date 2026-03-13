@@ -6,12 +6,12 @@ import {
 import request from '../api/index.js';
 import { formatDateTime } from '../utils/dateUtils.js';
 import { usePermission } from '../hooks/usePermission.jsx';
+import { useDict } from '../hooks/useDict.jsx';
 import './PermissionList.css';
-
-const CATEGORY_MAP = { 1: { label: '高管', color: 'red' }, 2: { label: '中层', color: 'orange' }, 3: { label: '基层', color: 'blue' } };
 
 export default function PostList() {
   const { hasPermission } = usePermission();
+  const { items: categoryItems, getLabel: getCategoryLabel, getColor: getCategoryColor } = useDict('post_category');
   const [loading, setLoading] = useState(false);
   const [postTree, setPostTree] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
@@ -69,8 +69,8 @@ export default function PostList() {
             <IdcardOutlined style={{ marginRight: 6 }} />
             <span>{post.title}</span>
             {' '}
-            <Tag color={CATEGORY_MAP[post.postCategory]?.color || 'default'} style={{ fontSize: 11, lineHeight: '18px', padding: '0 4px' }}>
-              {CATEGORY_MAP[post.postCategory]?.label || '未知'}
+            <Tag color={getCategoryColor(post.postCategory)} style={{ fontSize: 11, lineHeight: '18px', padding: '0 4px' }}>
+              {getCategoryLabel(post.postCategory)}
             </Tag>
             <Tag color={post.status === 1 ? 'success' : 'default'} style={{ fontSize: 11, lineHeight: '18px', padding: '0 4px' }}>
               {post.status === 1 ? '启用' : '停用'}
@@ -226,8 +226,8 @@ export default function PostList() {
               <div className="detail-header">
                 <IdcardOutlined style={{ fontSize: 20, color: '#3f8cff' }} />
                 <span className="detail-title">{selectedPost.title}</span>
-                <Tag color={CATEGORY_MAP[selectedPost.postCategory]?.color || 'default'}>
-                  {CATEGORY_MAP[selectedPost.postCategory]?.label || '未知'}
+                <Tag color={getCategoryColor(selectedPost.postCategory)}>
+                  {getCategoryLabel(selectedPost.postCategory)}
                 </Tag>
                 <Tag color={selectedPost.status === 1 ? 'success' : 'default'}>
                   {selectedPost.status === 1 ? '启用' : '停用'}
@@ -242,8 +242,8 @@ export default function PostList() {
                   {selectedPost.deptType === 'global' ? '全局岗位（不限部门）' : selectedPost.deptTitle}
                 </Descriptions.Item>
                 <Descriptions.Item label="岗位类别">
-                  <Tag color={CATEGORY_MAP[selectedPost.postCategory]?.color}>
-                    {CATEGORY_MAP[selectedPost.postCategory]?.label}
+                  <Tag color={getCategoryColor(selectedPost.postCategory)}>
+                    {getCategoryLabel(selectedPost.postCategory)}
                   </Tag>
                 </Descriptions.Item>
                 <Descriptions.Item label="在岗人数">
@@ -293,11 +293,10 @@ export default function PostList() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="postCategory" label="岗位类别" rules={[{ required: true }]}>
-                <Select options={[
-                  { value: 1, label: '高管 — 公司/事业部级' },
-                  { value: 2, label: '中层 — 部门级管理' },
-                  { value: 3, label: '基层 — 一线执行' },
-                ]} />
+                <Select options={categoryItems.map(i => ({
+                  value: parseInt(i.itemValue),
+                  label: <span><Tag color={i.itemColor} style={{ marginRight: 4 }}>{i.itemLabel}</Tag>{i.description || ''}</span>,
+                }))} />
               </Form.Item>
             </Col>
             <Col span={12}>

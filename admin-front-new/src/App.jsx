@@ -6,6 +6,7 @@ import RoleList from './pages/RoleList.jsx';
 import PermissionList from './pages/PermissionList.jsx';
 import RolePermConfig from './pages/RolePermConfig.jsx';
 import PostList from './pages/PostList.jsx';
+import DictList from './pages/DictList.jsx';
 import MenuList from './pages/MenuList.jsx';
 import DeptList from './pages/DeptList.jsx';
 import SessionList from './pages/SessionList.jsx';
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="system/menu" element={<MenuList />} />
         <Route path="system/dept" element={<DeptList />} />
         <Route path="system/post" element={<PostList />} />
+        <Route path="system/dict" element={<DictList />} />
         
         {/* 数据分析 */}
         <Route path="dashboard" element={<UserList />} />
