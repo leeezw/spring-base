@@ -7,11 +7,11 @@ import PermissionList from './pages/PermissionList.jsx';
 import RolePermConfig from './pages/RolePermConfig.jsx';
 import PostList from './pages/PostList.jsx';
 import DictList from './pages/DictList.jsx';
+import Profile from './pages/Profile.jsx';
 import MenuList from './pages/MenuList.jsx';
 import DeptList from './pages/DeptList.jsx';
 import SessionList from './pages/SessionList.jsx';
 import NotificationCenter from './pages/NotificationCenter.jsx';
-import Profile from './pages/Profile.jsx';
 import ComponentShowcase from './pages/ComponentShowcase.jsx';
 import AppLayout from './components/AppLayout.jsx';
 
@@ -47,6 +47,7 @@ export default function App() {
         <Route path="system/dept" element={<DeptList />} />
         <Route path="system/post" element={<PostList />} />
         <Route path="system/dict" element={<DictList />} />
+        <Route path="profile" element={<Profile />} />
         
         {/* 数据分析 */}
         <Route path="dashboard" element={<UserList />} />
@@ -56,7 +57,6 @@ export default function App() {
         
         {/* 公共页面 */}
         <Route path="notifications" element={<NotificationCenter />} />
-        <Route path="profile" element={<Profile />} />
         <Route path="components" element={<ComponentShowcase />} />
         
         {/* 兼容旧路径 */}

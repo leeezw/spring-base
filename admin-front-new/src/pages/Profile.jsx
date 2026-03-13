@@ -1,377 +1,185 @@
-import { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Avatar, Upload, message, Divider, Space, Tag, Descriptions, Modal } from 'antd';
-import { 
-  UserOutlined,
-  EditOutlined,
-  CameraOutlined,
-  LockOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  SafetyOutlined,
-} from '@ant-design/icons';
-import { useAuthContext } from '../hooks/AuthProvider.jsx';
+import { useState, useEffect, useCallback } from 'react';
+import { Card, Form, Input, Button, message, Tabs, Descriptions, Tag, Space, Avatar, Divider, Row, Col, Spin } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, EditOutlined, SafetyOutlined, IdcardOutlined } from '@ant-design/icons';
 import request from '../api/index.js';
-import FormField from '../components/FormField.jsx';
+import { useAuthContext } from '../hooks/AuthProvider.jsx';
 import './Profile.css';
 
-const { TextArea } = Input;
-
 export default function Profile() {
-  const { user, setUser } = useAuthContext();
-  const [form] = Form.useForm();
+  const { user: authUser } = useAuthContext();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [passwordLoading, setPasswordLoading] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      form.setFieldsValue({
-        username: user.username,
-        nickname: user.nickname,
-        email: user.email,
-        phone: user.phone,
-        avatar: user.avatar,
-        remark: user.remark,
-      });
-    }
-  }, [user, form]);
-
-  // 更新个人信息
-  const handleUpdateProfile = async (values) => {
+  const loadProfile = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await request.put('/system/user', { ...values, id: user.id });
+      const res = await request.get('/auth/profile');
       if (res.code === 200) {
-        message.success('个人信息更新成功');
-        setUser({ ...user, ...values });
-        setEditMode(false);
-      } else {
-        message.error(res.message || '更新失败');
+        setProfile(res.data);
+        profileForm.setFieldsValue({
+          nickname: res.data.user?.nickname || '',
+          email: res.data.user?.email || '',
+          phone: res.data.user?.phone || '',
+        });
       }
-    } catch (error) {
-      message.error(error.message || '更新失败');
-    } finally {
-      setLoading(false);
-    }
+    } catch (e) { message.error('加载失败'); }
+    finally { setLoading(false); }
+  }, [profileForm]);
+
+  useEffect(() => { loadProfile(); }, [loadProfile]);
+
+  const handleUpdateProfile = async (values) => {
+    setProfileSaving(true);
+    try {
+      const res = await request.put('/auth/profile', values);
+      if (res.code === 200) {
+        message.success('个人信息已更新');
+        loadProfile();
+      } else {
+        message.error(res.message);
+      }
+    } catch (e) { message.error('更新失败'); }
+    finally { setProfileSaving(false); }
   };
 
-  // 修改密码
   const handleChangePassword = async (values) => {
     if (values.newPassword !== values.confirmPassword) {
-      message.error('两次输入的密码不一致');
+      message.error('两次密码输入不一致');
       return;
     }
-    
-    setPasswordLoading(true);
+    setPasswordSaving(true);
     try {
       const res = await request.put('/auth/password', {
         oldPassword: values.oldPassword,
         newPassword: values.newPassword,
       });
       if (res.code === 200) {
-        message.success('密码修改成功，请重新登录');
-        setPasswordModalVisible(false);
+        message.success('密码修改成功');
         passwordForm.resetFields();
-        // 可以在这里触发登出
       } else {
-        message.error(res.message || '密码修改失败');
+        message.error(res.message);
       }
-    } catch (error) {
-      message.error(error.message || '密码修改失败');
-    } finally {
-      setPasswordLoading(false);
-    }
+    } catch (e) { message.error('修改失败'); }
+    finally { setPasswordSaving(false); }
   };
 
-  // 上传头像
-  const handleAvatarChange = async (info) => {
-    if (info.file.status === 'done') {
-      const avatarUrl = info.file.response?.data?.url || info.file.response?.url;
-      if (avatarUrl) {
-        try {
-          const res = await request.put('/system/user', { id: user.id, avatar: avatarUrl });
-          if (res.code === 200) {
-            setUser({ ...user, avatar: avatarUrl });
-            message.success('头像更新成功');
-          }
-        } catch (error) {
-          message.error('头像更新失败');
-        }
-      }
-    }
-  };
-
-  const getAvatarProps = () => {
-    if (user?.avatar && typeof user.avatar === 'string' && user.avatar.trim() !== '') {
-      return { src: user.avatar };
-    }
-    const name = user?.nickname || user?.username || '';
-    if (name) {
-      return { 
-        style: { backgroundColor: '#3f8cff', color: 'white' },
-        children: name.charAt(0).toUpperCase()
-      };
-    }
-    return { 
-      icon: <UserOutlined />,
-      style: { backgroundColor: '#3f8cff', color: 'white' }
-    };
-  };
+  const user = profile?.user;
 
   return (
     <div className="profile-page">
-      <div className="profile-header">
-        <h2>个人中心</h2>
-        <p className="profile-description">管理您的个人信息和账户设置</p>
-      </div>
-
-      <div className="profile-content">
-        {/* 基本信息卡片 */}
-        <Card className="profile-card" title="基本信息">
-          <div className="profile-avatar-section">
-            <Upload
-              name="avatar"
-              action="/api/upload/avatar"
-              showUploadList={false}
-              onChange={handleAvatarChange}
-              accept="image/*"
-              disabled={!editMode}
-            >
-              <Avatar
-                size={120}
-                {...getAvatarProps()}
-                className="profile-avatar"
-              >
-                {editMode && (
-                  <div className="avatar-overlay">
-                    <CameraOutlined />
-                    <span>更换头像</span>
-                  </div>
-                )}
-              </Avatar>
-            </Upload>
-            <div className="avatar-info">
-              <h3>{user?.nickname || user?.username || '用户'}</h3>
-              <p className="username-text">@{user?.username}</p>
-              <Tag color="success" className="status-tag">已启用</Tag>
-            </div>
-          </div>
-
-          <Divider />
-
-          {!editMode ? (
-            <Descriptions column={2} bordered className="profile-descriptions">
-              <Descriptions.Item label="用户名">
-                {user?.username || '-'}
-              </Descriptions.Item>
-              <Descriptions.Item label="昵称">
-                {user?.nickname || '-'}
-              </Descriptions.Item>
-              <Descriptions.Item label="邮箱">
-                {user?.email || '-'}
-              </Descriptions.Item>
-              <Descriptions.Item label="手机号">
-                {user?.phone || '-'}
-              </Descriptions.Item>
-              <Descriptions.Item label="备注" span={2}>
-                {user?.remark || '-'}
-              </Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={2}>
-                {user?.createTime ? new Date(user.createTime).toLocaleString() : '-'}
-              </Descriptions.Item>
-            </Descriptions>
-          ) : (
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleUpdateProfile}
-              className="profile-form"
-            >
-              <FormField
-                name="username"
-                label="用户名"
-                required
-              >
-                <Input disabled prefix={<UserOutlined />} />
-              </FormField>
-
-              <FormField
-                name="nickname"
-                label="昵称"
-                rules={[{ max: 50, message: '昵称最多50个字符' }]}
-              >
-                <Input placeholder="请输入昵称" />
-              </FormField>
-
-              <FormField
-                name="email"
-                label="邮箱"
-                rules={[
-                  { type: 'email', message: '请输入有效的邮箱地址' },
-                ]}
-              >
-                <Input prefix={<MailOutlined />} placeholder="请输入邮箱" />
-              </FormField>
-
-              <FormField
-                name="phone"
-                label="手机号"
-                rules={[
-                  { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' },
-                ]}
-              >
-                <Input prefix={<PhoneOutlined />} placeholder="请输入手机号" />
-              </FormField>
-
-              <FormField
-                name="remark"
-                label="备注"
-                rules={[{ max: 200, message: '备注最多200个字符' }]}
-              >
-                <TextArea rows={4} placeholder="请输入备注信息" />
-              </FormField>
-
-              <Form.Item>
-                <Space>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={loading}
-                  >
-                    保存
-                  </Button>
-                  <Button onClick={() => {
-                    form.resetFields();
-                    setEditMode(false);
-                  }}>
-                    取消
-                  </Button>
-                </Space>
-              </Form.Item>
-            </Form>
-          )}
-
-          {!editMode && (
-            <div className="profile-actions">
-              <Button
-                type="primary"
-                icon={<EditOutlined />}
-                onClick={() => setEditMode(true)}
-              >
-                编辑信息
-              </Button>
-              <Button
-                icon={<LockOutlined />}
-                onClick={() => setPasswordModalVisible(true)}
-              >
-                修改密码
-              </Button>
-            </div>
-          )}
-        </Card>
-
-        {/* 账户安全卡片 */}
-        <Card className="profile-card" title="账户安全">
-          <div className="security-item">
-            <div className="security-info">
-              <SafetyOutlined className="security-icon" />
-              <div>
-                <h4>登录密码</h4>
-                <p>定期更换密码可以保护账户安全</p>
+      <Spin spinning={loading}>
+        <Row gutter={16}>
+          {/* 左侧：用户卡片 */}
+          <Col xs={24} md={8}>
+            <Card className="profile-card">
+              <div className="profile-avatar-section">
+                <Avatar size={80} icon={<UserOutlined />} src={user?.avatar} className="profile-avatar" />
+                <h2 className="profile-name">{user?.nickname || user?.username || '-'}</h2>
+                <p className="profile-username">@{user?.username}</p>
               </div>
-            </div>
-            <Button
-              icon={<LockOutlined />}
-              onClick={() => setPasswordModalVisible(true)}
-            >
-              修改密码
-            </Button>
-          </div>
-        </Card>
-      </div>
 
-      {/* 修改密码弹窗 */}
-      <Modal
-        title="修改密码"
-        open={passwordModalVisible}
-        onCancel={() => {
-          setPasswordModalVisible(false);
-          passwordForm.resetFields();
-        }}
-        footer={null}
-        width={500}
-        className="password-modal"
-        centered
-        destroyOnHidden
-      >
-        <Form
-          form={passwordForm}
-          layout="vertical"
-          onFinish={handleChangePassword}
-          className="password-form"
-        >
-          <FormField
-            name="oldPassword"
-            label="当前密码"
-            rules={[{ required: true, message: '请输入当前密码' }]}
-            required
-          >
-            <Input.Password placeholder="请输入当前密码" />
-          </FormField>
+              <Divider style={{ margin: '16px 0' }} />
 
-          <FormField
-            name="newPassword"
-            label="新密码"
-            rules={[
-              { required: true, message: '请输入新密码' },
-              { min: 6, message: '密码至少6个字符' },
-            ]}
-            required
-          >
-            <Input.Password placeholder="请输入新密码（至少6个字符）" />
-          </FormField>
+              <div className="profile-info-list">
+                <div className="profile-info-item">
+                  <MailOutlined className="profile-info-icon" />
+                  <span>{user?.email || '未设置'}</span>
+                </div>
+                <div className="profile-info-item">
+                  <PhoneOutlined className="profile-info-icon" />
+                  <span>{user?.phone || '未设置'}</span>
+                </div>
+                <div className="profile-info-item">
+                  <SafetyOutlined className="profile-info-icon" />
+                  <Space size={[4, 4]} wrap>
+                    {(profile?.roles || []).map((r, i) => (
+                      <Tag key={i} color="blue">{typeof r === 'string' ? r : r.roleName || r}</Tag>
+                    ))}
+                    {(!profile?.roles || profile.roles.length === 0) && <Tag>未分配角色</Tag>}
+                  </Space>
+                </div>
+              </div>
 
-          <FormField
-            name="confirmPassword"
-            label="确认新密码"
-            rules={[
-              { required: true, message: '请再次输入新密码' },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('newPassword') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('两次输入的密码不一致'));
+              <Divider style={{ margin: '16px 0' }} />
+
+              <Descriptions column={1} size="small" labelStyle={{ color: '#8c8c8c', width: 80 }}>
+                <Descriptions.Item label="部门">{user?.deptName || '-'}</Descriptions.Item>
+                <Descriptions.Item label="状态">
+                  <Tag color={user?.status === 1 ? 'success' : 'default'}>{user?.status === 1 ? '正常' : '禁用'}</Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="注册时间">{user?.createTime?.split('T')[0] || '-'}</Descriptions.Item>
+              </Descriptions>
+            </Card>
+          </Col>
+
+          {/* 右侧：编辑表单 */}
+          <Col xs={24} md={16}>
+            <Card className="profile-edit-card">
+              <Tabs items={[
+                {
+                  key: 'info',
+                  label: <span><EditOutlined /> 修改信息</span>,
+                  children: (
+                    <Form form={profileForm} layout="vertical" onFinish={handleUpdateProfile} className="profile-form">
+                      <Form.Item name="nickname" label="昵称" rules={[{ max: 50, message: '最多50个字符' }]}>
+                        <Input prefix={<UserOutlined />} placeholder="请输入昵称" />
+                      </Form.Item>
+                      <Form.Item name="email" label="邮箱" rules={[{ type: 'email', message: '请输入有效邮箱' }]}>
+                        <Input prefix={<MailOutlined />} placeholder="请输入邮箱" />
+                      </Form.Item>
+                      <Form.Item name="phone" label="手机号" rules={[{ pattern: /^1\d{10}$/, message: '请输入有效手机号' }]}>
+                        <Input prefix={<PhoneOutlined />} placeholder="请输入手机号" />
+                      </Form.Item>
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={profileSaving} icon={<EditOutlined />}>
+                          保存修改
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ),
                 },
-              }),
-            ]}
-            required
-          >
-            <Input.Password placeholder="请再次输入新密码" />
-          </FormField>
-
-          <Form.Item>
-            <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={passwordLoading}
-              >
-                确认修改
-              </Button>
-              <Button onClick={() => {
-                setPasswordModalVisible(false);
-                passwordForm.resetFields();
-              }}>
-                取消
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
+                {
+                  key: 'password',
+                  label: <span><LockOutlined /> 修改密码</span>,
+                  children: (
+                    <Form form={passwordForm} layout="vertical" onFinish={handleChangePassword} className="profile-form">
+                      <Form.Item name="oldPassword" label="原密码" rules={[{ required: true, message: '请输入原密码' }]}>
+                        <Input.Password prefix={<LockOutlined />} placeholder="请输入原密码" />
+                      </Form.Item>
+                      <Form.Item name="newPassword" label="新密码" rules={[
+                        { required: true, message: '请输入新密码' },
+                        { min: 6, message: '密码至少6个字符' },
+                      ]}>
+                        <Input.Password prefix={<LockOutlined />} placeholder="请输入新密码" />
+                      </Form.Item>
+                      <Form.Item name="confirmPassword" label="确认新密码" rules={[
+                        { required: true, message: '请确认新密码' },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (!value || getFieldValue('newPassword') === value) return Promise.resolve();
+                            return Promise.reject(new Error('两次密码输入不一致'));
+                          },
+                        }),
+                      ]}>
+                        <Input.Password prefix={<LockOutlined />} placeholder="请再次输入新密码" />
+                      </Form.Item>
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={passwordSaving} icon={<LockOutlined />}>
+                          修改密码
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ),
+                },
+              ]} />
+            </Card>
+          </Col>
+        </Row>
+      </Spin>
     </div>
   );
 }
-

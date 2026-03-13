@@ -195,4 +195,22 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         user.setPassword(passwordEncoder.encode(newPassword));
         updateById(user);
     }
+
+    /**
+     * 修改密码（验证旧密码）
+     */
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BusinessException("原密码错误");
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new BusinessException("新密码至少6个字符");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        updateById(user);
+    }
 }

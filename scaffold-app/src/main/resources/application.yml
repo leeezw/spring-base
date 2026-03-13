@@ -55,7 +55,8 @@ scaffold:
       timeout: 86400
       single-login: false
     exclude-paths:
-      - /api/auth/**
+      - /api/auth/login
+      - /api/auth/pre-login
       - /doc.html
       - /swagger-ui/**
       - /v3/api-docs/**
