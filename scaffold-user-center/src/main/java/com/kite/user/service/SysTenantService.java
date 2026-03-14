@@ -124,16 +124,22 @@ public class SysTenantService {
             // 5. 绑定用户-角色
             userRoleMapper.insertUserRole(userId, roleId);
             
-            // 6. 给超级管理员角色分配全部菜单
+            // 6. 给超级管理员角色分配菜单（排除租户管理，那是平台级功能）
             List<Long> allMenuIds = menuMapper.selectAllMenuIds();
+            List<Long> tenantMenuExclude = menuMapper.selectMenuIdsByPath("/system/tenant");
             for (Long menuId : allMenuIds) {
-                roleMenuMapper.insertRoleMenu(roleId, menuId);
+                if (!tenantMenuExclude.contains(menuId)) {
+                    roleMenuMapper.insertRoleMenu(roleId, menuId);
+                }
             }
             
-            // 7. 给超级管理员角色分配全部系统内置权限
+            // 7. 给超级管理员角色分配系统内置权限（排除租户管理权限）
             List<Long> allPermIds = permissionMapper.selectBuiltinPermissionIds();
+            List<Long> tenantPermExclude = permissionMapper.selectPermissionIdsByCodePrefix("system:tenant");
             for (Long permId : allPermIds) {
-                rolePermissionMapper.insertRolePermission(roleId, permId);
+                if (!tenantPermExclude.contains(permId)) {
+                    rolePermissionMapper.insertRolePermission(roleId, permId);
+                }
             }
             
         } finally {

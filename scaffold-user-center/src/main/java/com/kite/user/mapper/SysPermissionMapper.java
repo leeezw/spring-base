@@ -18,4 +18,10 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
      */
     @Select("SELECT id FROM sys_permission WHERE deleted = 0 AND status = 1 AND tenant_id = 0")
     List<Long> selectBuiltinPermissionIds();
+
+    /**
+     * 根据权限编码前缀查询ID（用于排除特定权限）
+     */
+    @Select("SELECT id FROM sys_permission WHERE deleted = 0 AND permission_code LIKE #{prefix} || '%'")
+    List<Long> selectPermissionIdsByCodePrefix(String prefix);
 }

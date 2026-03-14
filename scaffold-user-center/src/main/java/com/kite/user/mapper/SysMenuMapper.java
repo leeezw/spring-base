@@ -31,4 +31,10 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      */
     @Select("SELECT id FROM sys_menu WHERE deleted = 0 AND status = 1")
     List<Long> selectAllMenuIds();
+
+    /**
+     * 根据路径查询菜单ID（用于排除特定菜单）
+     */
+    @Select("SELECT id FROM sys_menu WHERE deleted = 0 AND path = #{path}")
+    List<Long> selectMenuIdsByPath(String path);
 }
