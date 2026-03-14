@@ -1,0 +1,733 @@
+/* 用户列表页面样式 - 基于设计系统 */
+
+.user-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* ==================== 页面标题区域 ==================== */
+/* 页面标题已移至 AppLayout 工具栏，以下样式已不再使用 */
+/*
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs);
+  gap: var(--spacing-md);
+}
+
+.page-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.toggle-stats-btn {
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.toggle-stats-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: var(--info-bg);
+}
+
+.page-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: var(--font-family);
+  line-height: 1.5;
+}
+
+.page-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: var(--font-family);
+  line-height: 1.5;
+}
+*/
+
+/* ==================== 搜索区域 ==================== */
+.search-section {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: var(--spacing-md);
+}
+
+/* ==================== 批量操作区域 ==================== */
+.batch-actions-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--info-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.batch-actions-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.selected-count {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-color);
+  font-family: var(--font-family);
+}
+
+.batch-actions-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.batch-actions-section .ant-btn {
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .batch-actions-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .batch-actions-info {
+    width: 100%;
+  }
+
+  .batch-actions-buttons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* ==================== 统计卡片 ==================== */
+/* ==================== 内联统计指标 ==================== */
+.inline-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 0;
+  flex-shrink: 0;
+}
+
+.inline-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg-secondary, #f5f7fa);
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.inline-stat:hover {
+  background: var(--bg-tertiary, #eef1f6);
+}
+
+.inline-stat-label {
+  color: var(--text-secondary, #8c8c8c);
+  font-weight: 500;
+}
+
+.inline-stat-value {
+  color: var(--text-primary, #0a1629);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ==================== 搜索工具栏 ==================== */
+.search-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.search-toolbar .search-input {
+  width: 240px;
+  min-width: 200px;
+  flex: 1;
+}
+
+.search-toolbar .search-input .ant-input {
+  border-radius: 0.88rem; /* 与表单一致 */
+  border: solid 0.063rem #d8e0f0; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22); /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 0.88rem; /* 与表单一致 */
+  height: 3rem; /* 与表单一致 */
+  color: #7d8592; /* 与表单一致 */
+  transition: all 0.2s ease;
+}
+
+.search-toolbar .search-input .ant-input:hover {
+  border-color: #3f8cff; /* 与表单一致 */
+}
+
+.search-toolbar .search-input .ant-input:focus,
+.search-toolbar .search-input .ant-input-focused {
+  border-color: #3f8cff; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3); /* 与表单一致 */
+}
+
+.search-toolbar .search-input .ant-input-search-button {
+  border-radius: 0 0.88rem 0.88rem 0; /* 与表单一致 */
+  background-color: #3f8cff; /* 与表单一致 */
+  border-color: #3f8cff;
+  box-shadow: 0rem 0.38rem 0.75rem rgba(63, 140, 255, 0.26); /* 与表单一致 */
+  height: 3rem; /* 与表单一致 */
+}
+
+.search-toolbar .search-input .ant-input-search-button:hover {
+  background-color: #2e6fd9; /* 与表单一致 */
+  border-color: #2e6fd9;
+  box-shadow: 0rem 0.5rem 1rem rgba(63, 140, 255, 0.35); /* 与表单一致 */
+}
+
+.search-toolbar .status-select {
+  width: 140px;
+  height: 3rem; /* 与表单一致 */
+}
+
+.search-toolbar .status-select .ant-select-selector {
+  border-radius: 0.88rem; /* 与表单一致 */
+  border: solid 0.063rem #d8e0f0; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22); /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 0.88rem; /* 与表单一致 */
+  height: 3rem !important; /* 与表单一致 */
+  padding: 0 1rem; /* 与表单一致 */
+  transition: all 0.2s ease;
+}
+
+.search-toolbar .status-select .ant-select-selection-item {
+  line-height: 3rem;
+  height: 3rem;
+  font-size: 0.88rem; /* 与表单一致 */
+  color: #7d8592; /* 与表单一致 */
+}
+
+.search-toolbar .status-select:hover .ant-select-selector {
+  border-color: #3f8cff; /* 与表单一致 */
+}
+
+.search-toolbar .status-select.ant-select-focused .ant-select-selector {
+  border-color: #3f8cff; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3); /* 与表单一致 */
+}
+
+/* ==================== 筛选表单样式 ==================== */
+/* 筛选表单容器 */
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form,
+.user-list-page .filter-form {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* 筛选输入框样式 - 统一为表单样式 */
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-search-input,
+.user-list-page .filter-search-input {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+/* 移除外层容器的边框 - 针对 ant-form-item-control-input */
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form .ant-form-item-control-input,
+.user-list-page .filter-form .ant-form-item-control-input,
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-search-input .ant-form-item-control-input,
+.user-list-page .filter-search-input .ant-form-item-control-input {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 确保输入框本身保留边框 */
+/*.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-search-input .ant-input,*/
+/*.user-list-page .filter-search-input .ant-input,*/
+/*.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form .ant-input {*/
+/*  border-radius: 0.88rem !important; !* 与表单一致 *!*/
+/*  border: solid 0.063rem #d8e0f0 !important; !* 与表单一致，使用!important确保覆盖 *!*/
+/*  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22) !important; !* 与表单一致 *!*/
+/*  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;*/
+/*  font-size: 0.88rem !important; !* 与表单一致 *!*/
+/*  height: 3rem !important; !* 与表单一致 *!*/
+/*  color: #7d8592 !important; !* 与表单一致 *!*/
+/*  padding: 0 1rem !important; !* 与表单一致 *!*/
+/*  line-height: 3rem !important;*/
+/*  transition: all 0.2s ease;*/
+/*}*/
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-search-input .ant-input:hover,
+.user-list-page .filter-search-input .ant-input:hover,
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form .ant-input:hover {
+  border-color: #3f8cff !important; /* 与表单一致 */
+}
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-search-input .ant-input:focus,
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-search-input .ant-input-focused,
+.user-list-page .filter-search-input .ant-input:focus,
+.user-list-page .filter-search-input .ant-input-focused,
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form .ant-input:focus,
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form .ant-input-focused {
+  border-color: #3f8cff !important; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3) !important; /* 与表单一致 */
+}
+
+/* 筛选下拉框样式 - 统一为表单样式 */
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-status-select,
+.user-list-page .filter-status-select {
+  width: 140px;
+  height: 3rem; /* 与表单一致 */
+  flex-shrink: 0;
+}
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-status-select .ant-select-selector,
+.user-list-page .filter-status-select .ant-select-selector {
+  border-radius: 0.88rem; /* 与表单一致 */
+  border: solid 0.063rem #d8e0f0; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22); /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 0.88rem; /* 与表单一致 */
+  height: 3rem !important; /* 与表单一致 */
+  min-height: 3rem;
+  padding: 0 1rem; /* 与表单一致 */
+  transition: all 0.2s ease;
+}
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-status-select .ant-select-selector .ant-select-selection-item,
+.user-list-page .filter-status-select .ant-select-selector .ant-select-selection-item {
+  line-height: 3rem;
+  height: 3rem;
+  font-size: 0.88rem; /* 与表单一致 */
+  color: #7d8592; /* 与表单一致 */
+}
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-status-select .ant-select-selection-placeholder,
+.user-list-page .filter-status-select .ant-select-selection-placeholder {
+  line-height: 3rem;
+  height: 3rem;
+  font-size: 0.88rem; /* 与表单一致 */
+  color: #7d8592; /* 与表单一致 */
+  opacity: 1;
+}
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-status-select:hover .ant-select-selector,
+.user-list-page .filter-status-select:hover .ant-select-selector {
+  border-color: #3f8cff; /* 与表单一致 */
+}
+
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-status-select.ant-select-focused .ant-select-selector,
+.user-list-page .filter-status-select.ant-select-focused .ant-select-selector {
+  border-color: #3f8cff; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3); /* 与表单一致 */
+}
+
+/* 表单项样式 */
+.pro-table-v2 .ant-pro-table-list-toolbar-filter .filter-form .ant-form-item,
+.user-list-page .filter-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+/* 日期时间范围选择器在筛选表单中的样式 */
+.user-list-page .filter-form .date-range-picker-wrapper {
+  width: 360px;
+  flex-shrink: 0;
+}
+
+.user-list-page .filter-form .date-range-picker-wrapper .ant-picker {
+  width: 100%;
+  height: 3rem;
+}
+
+.user-list-page .filter-form .date-range-picker-wrapper .ant-picker .ant-picker-input {
+  height: 3rem;
+}
+
+.user-list-page .filter-form .date-range-picker-wrapper .ant-picker .ant-picker-input > input {
+  height: 3rem;
+  line-height: 3rem;
+}
+
+.search-toolbar .ant-btn-primary {
+  height: 2.75rem; /* 与表单一致 */
+  padding: 0 1.5rem; /* 与表单一致 */
+  border-radius: 0.88rem; /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-weight: 700;
+  font-size: 1rem; /* 与表单一致 */
+  box-shadow: 0rem 0.38rem 0.75rem rgba(63, 140, 255, 0.26); /* 与表单一致 */
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.search-toolbar .ant-btn-primary:hover {
+  background-color: #2e6fd9; /* 与表单一致 */
+  border-color: #2e6fd9;
+  box-shadow: 0rem 0.5rem 1rem rgba(63, 140, 255, 0.35); /* 与表单一致 */
+}
+
+.search-toolbar .ant-btn-primary:active {
+  transform: translateY(1px); /* 与表单一致 */
+}
+
+.search-toolbar .ant-btn-primary:hover,
+.search-toolbar .ant-btn-primary:focus {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-xl);
+}
+
+.search-toolbar .ant-btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* ==================== 数据表格卡片 ==================== */
+.data-table-card.ant-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.data-table-card .ant-card-head {
+  border-bottom: 1px solid var(--border-light);
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-height: 60px;
+}
+
+.data-table-card .ant-card-head-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.data-table-card .ant-card-extra {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.data-table-card .ant-card-body {
+  padding: var(--spacing-lg);
+}
+
+/* ==================== 表格样式 ==================== */
+.data-table-card .ant-table {
+  font-family: var(--font-family);
+}
+
+.data-table-card .ant-table-thead > tr > th {
+  background-color: var(--bg-tertiary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.data-table-card .ant-table-tbody > tr > td {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-md);
+}
+
+.data-table-card .ant-table-tbody > tr:hover > td {
+  background-color: var(--info-bg);
+}
+
+/* ==================== 分页 ==================== */
+.pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-color);
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+}
+
+.pagination-wrapper .ant-select {
+  margin: 0 var(--spacing-xs);
+}
+
+.pagination-wrapper .ant-pagination {
+  margin: 0;
+}
+
+/* ==================== 搜索框和按钮 ==================== */
+.data-table-card .ant-input-search {
+  width: 250px;
+}
+
+.data-table-card .ant-input-search .ant-input {
+  border-radius: 0.88rem; /* 与表单一致 */
+  border: solid 0.063rem #d8e0f0; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22); /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: 0.88rem; /* 与表单一致 */
+  height: 3rem; /* 与表单一致 */
+  color: #7d8592; /* 与表单一致 */
+  padding: 0 1rem; /* 与表单一致 */
+  line-height: 3rem;
+  transition: all 0.2s ease;
+}
+
+.data-table-card .ant-input-search .ant-input:hover {
+  border-color: #3f8cff; /* 与表单一致 */
+}
+
+.data-table-card .ant-input-search .ant-input:focus,
+.data-table-card .ant-input-search .ant-input-focused {
+  border-color: #3f8cff; /* 与表单一致 */
+  box-shadow: 0rem 0.063rem 0.13rem rgba(63, 140, 255, 0.3); /* 与表单一致 */
+}
+
+.data-table-card .ant-input-search .ant-input-search-button {
+  border-radius: 0 0.88rem 0.88rem 0; /* 与表单一致 */
+  background-color: #3f8cff; /* 与表单一致 */
+  border-color: #3f8cff;
+  box-shadow: 0rem 0.38rem 0.75rem rgba(63, 140, 255, 0.26); /* 与表单一致 */
+  height: 3rem; /* 与表单一致 */
+}
+
+.data-table-card .ant-input-search .ant-input-search-button:hover {
+  background-color: #2e6fd9; /* 与表单一致 */
+  border-color: #2e6fd9;
+  box-shadow: 0rem 0.5rem 1rem rgba(63, 140, 255, 0.35); /* 与表单一致 */
+}
+
+.data-table-card .ant-btn-primary {
+  border-radius: 0.88rem; /* 与表单一致 */
+  box-shadow: 0rem 0.38rem 0.75rem rgba(63, 140, 255, 0.26); /* 与表单一致 */
+  height: 2.75rem; /* 与表单一致 */
+  padding: 0 1.5rem; /* 与表单一致 */
+  font-weight: 700;
+  font-size: 1rem; /* 与表单一致 */
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+.data-table-card .ant-btn-primary:hover {
+  background-color: #2e6fd9; /* 与表单一致 */
+  border-color: #2e6fd9;
+  box-shadow: 0rem 0.5rem 1rem rgba(63, 140, 255, 0.35); /* 与表单一致 */
+}
+
+.data-table-card .ant-btn-primary:active {
+  transform: translateY(1px); /* 与表单一致 */
+}
+
+/* ==================== 用户表单弹窗 ==================== */
+.user-form-modal.ant-modal-centered .ant-modal {
+  top: 50%;
+  transform: translateY(-50%);
+  padding-bottom: 0;
+}
+
+.user-form-modal .ant-modal-content {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-form-modal .ant-modal-header {
+  border-bottom: 1px solid var(--border-light);
+  padding: var(--spacing-md) var(--spacing-lg); /* 减少上下内边距 */
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  flex-shrink: 0;
+}
+
+.user-form-modal .ant-modal-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+}
+
+.user-form-modal .ant-modal-body {
+  padding: var(--spacing-md) var(--spacing-lg); /* 减少上下内边距，第一个输入框更靠近分割线 */
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100vh - 300px);
+}
+
+.user-form-modal .ant-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.user-form-modal .ant-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.user-form-modal .ant-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.user-form-modal .ant-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+.user-form-modal .ant-modal-footer {
+  display: none;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm); /* 进一步减少顶部间距 */
+  padding-top: var(--spacing-sm); /* 进一步减少内边距 */
+  border-top: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.modal-footer .ant-btn {
+  min-height: 2.75rem; /* 设置最小高度，防止变形 */
+  height: 2.75rem; /* 固定高度 */
+  padding: 0 1.5rem; /* 简化内边距，使用固定高度 */
+  border-radius: 0.88rem; /* 与登录页面一致 */
+  font-size: 1rem; /* 与登录页面一致 */
+  font-weight: 700;
+  line-height: 1.19rem;
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.modal-footer .ant-btn-default {
+  background-color: transparent;
+  color: #7d8592;
+  border: 1px solid #d8e0f0;
+}
+
+.modal-footer .ant-btn-default:hover {
+  background-color: #f8f9fa;
+  border-color: #3f8cff;
+  color: #3f8cff;
+}
+
+.modal-footer .ant-btn-primary {
+  background-color: #3f8cff; /* 与登录页面一致 */
+  border-color: #3f8cff;
+  color: #ffffff;
+  box-shadow: 0rem 0.38rem 0.75rem rgba(63, 140, 255, 0.26); /* 与登录页面一致 */
+}
+
+.modal-footer .ant-btn-primary:hover:not(:disabled) {
+  background-color: #2e6fd9; /* 与登录页面一致 */
+  border-color: #2e6fd9;
+  box-shadow: 0rem 0.5rem 1rem rgba(63, 140, 255, 0.35); /* 与登录页面一致 */
+}
+
+.modal-footer .ant-btn-primary:active:not(:disabled) {
+  transform: translateY(1px); /* 与登录页面一致 */
+}
+
+.modal-footer .ant-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 1200px) {
+  .inline-stats {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inline-stats {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pagination-wrapper {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+
+  .pagination-wrapper .ant-pagination {
+    justify-content: center;
+  }
+
+  .data-table-card .ant-card-extra {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .data-table-card .ant-input-search {
+    width: 100%;
+  }
+
+  .search-toolbar .search-input {
+    width: 100%;
+  }
+
+  .search-toolbar .status-select {
+    width: 120px;
+  }
+
+  .user-form-modal {
+    width: 90% !important;
+    max-width: 600px;
+  }
+}
+

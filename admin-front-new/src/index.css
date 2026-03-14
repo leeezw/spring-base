@@ -1,0 +1,60 @@
+
+/* ==================== 全局 Drawer 样式优化 ==================== */
+.ant-drawer-content-wrapper {
+  max-width: 90vw !important;
+}
+
+.ant-drawer-header {
+  padding: 12px 16px !important;
+}
+
+.ant-drawer-header-title {
+  flex-wrap: nowrap !important;
+}
+
+.ant-drawer-title {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.ant-drawer-body {
+  padding: 16px !important;
+}
+
+/* Drawer 内表单统一样式 */
+.ant-drawer-body .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-drawer-body .ant-form-item-label > label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.ant-drawer-body .ant-divider {
+  margin: 12px 0 8px;
+  font-size: 13px;
+}
+
+.ant-drawer-body .ant-input,
+.ant-drawer-body .ant-input-password,
+.ant-drawer-body .ant-select-selector,
+.ant-drawer-body .ant-input-number,
+.ant-drawer-body .ant-tree-select .ant-select-selector,
+.ant-drawer-body .ant-picker {
+  border-radius: 8px !important;
+}
+
+.ant-drawer-extra {
+  flex-shrink: 0;
+}
+
+/* Drawer footer 按钮 */
+.ant-drawer-extra .ant-btn {
+  border-radius: 8px;
+  min-width: 64px;
+}

@@ -1,0 +1,554 @@
+/* 登录页面样式 - 仅保留表单 */
+
+.login-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'PingFang SC', 'PingFang TC', 'PingFang HK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background-color: #ffffff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 25.19rem;
+}
+
+.form-title {
+  margin: 0;
+  color: #0a1629;
+  font-size: 1.38rem;
+  font-weight: 700;
+  line-height: 1.63rem;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 2rem;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+/* 表单样式 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 错误提示 */
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: rgba(255, 222, 222, 1);
+  color: rgba(125, 40, 40, 1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'PingFang SC', sans-serif;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.login-error svg {
+  flex-shrink: 0;
+}
+
+/* 表单组 */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  padding: 0.88rem 0 1.19rem;
+  background-color: #ffffff;
+  overflow: hidden;
+  height: 6.13rem;
+}
+
+.form-group:last-of-type {
+  margin-top: 0.63rem;
+  padding: 1.25rem 0;
+}
+
+.form-label {
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #7d8592;
+  line-height: 1.5rem;
+  width: 5.69rem;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.input-wrapper {
+  margin-top: 0;
+  padding: 0;
+  background-color: #ffffff;
+  border-radius: 0.88rem;
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22);
+  width: 100%;
+  height: 3rem;
+  border: solid 0.063rem #d8e0f0;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0 1rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #7d8592;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'PingFang SC', sans-serif;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.form-input::placeholder {
+  color: #7d8592;
+}
+
+/* 密码输入框包装器 */
+.password-input-wrapper {
+  padding: 0.75rem 1.13rem 0.75rem 1.38rem;
+  background-color: #ffffff;
+  border-radius: 0.88rem;
+  box-shadow: 0rem 0.063rem 0.13rem rgba(184, 200, 224, 0.22);
+  border: solid 0.063rem #d8e0f0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.password-input {
+  flex: 1;
+  padding: 0;
+  font-size: 0.88rem;
+  line-height: 0.19rem;
+  color: #7d8592;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.password-input::placeholder {
+  color: #7d8592;
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.password-toggle svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* 表单选项 */
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.13rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: #3f8cff;
+  flex-shrink: 0;
+  margin: 0;
+  border: 1px solid #d8e0f0;
+  border-radius: 0.25rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.checkbox-input:checked {
+  background-color: #3f8cff;
+  border-color: #3f8cff;
+}
+
+.checkbox-input:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.4rem;
+  height: 0.7rem;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -60%) rotate(45deg);
+}
+
+.checkbox-input:hover {
+  border-color: #3f8cff;
+}
+
+.checkbox-input:focus {
+  outline: 2px solid rgba(63, 140, 255, 0.3);
+  outline-offset: 2px;
+}
+
+.checkbox-text {
+  font-size: 1rem;
+  color: #7d8592;
+  line-height: 1.19rem;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.forgot-password {
+  font-size: 1rem;
+  color: #7d8592;
+  line-height: 1.19rem;
+  text-align: right;
+  width: 8rem;
+  text-decoration: none;
+  font-family: 'PingFang SC', sans-serif;
+  transition: opacity 0.2s ease;
+}
+
+.forgot-password:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* 登录按钮 */
+.login-button {
+  margin-top: 3rem;
+  margin-left: 0;
+  padding: 1rem 0 0.75rem;
+  background-color: #3f8cff;
+  border-radius: 0.88rem;
+  box-shadow: 0rem 0.38rem 0.75rem rgba(63, 140, 255, 0.26);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  transition: all 0.2s ease;
+  font-family: 'PingFang SC', sans-serif;
+  width: 100%;
+}
+
+.login-button span {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.19rem;
+}
+
+.login-button .button-arrow {
+  font-size: 0.875rem;
+  color: #ffffff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-button:hover:not(:disabled) {
+  background-color: #2e6fd9;
+  box-shadow: 0rem 0.5rem 1rem rgba(63, 140, 255, 0.35);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.login-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-button svg {
+  flex-shrink: 0;
+}
+
+/* 加载动画 */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 表单页脚 */
+.form-footer {
+  margin-top: 1.31rem;
+  text-align: center;
+}
+
+.form-footer p {
+  margin: 0;
+  font-size: 1rem;
+  color: #3f8cff;
+  font-weight: 600;
+  line-height: 1.19rem;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+/* ============ 阶段过渡动画 ============ */
+
+.login-form-container {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-form-container.phase-entering {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* ============ 租户选择阶段 ============ */
+
+.tenant-phase {
+  animation: fadeSlideUp 0.4s ease-out;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tenant-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.tenant-check-icon {
+  font-size: 3rem;
+  color: #22c55e;
+  margin-bottom: 1rem;
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.tenant-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.38rem;
+  font-weight: 700;
+  color: #0a1629;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.tenant-subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #7d8592;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.tenant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.tenant-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border: 1.5px solid #d8e0f0;
+  border-radius: 0.88rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: left;
+  width: 100%;
+  font-family: 'PingFang SC', sans-serif;
+  animation: cardSlideIn 0.4s ease-out backwards;
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tenant-card:hover:not(:disabled) {
+  border-color: #3f8cff;
+  background: #f4f9fd;
+  box-shadow: 0 2px 12px rgba(63, 140, 255, 0.12);
+}
+
+.tenant-card-selected {
+  border-color: #3f8cff;
+  background: #f4f9fd;
+}
+
+.tenant-card-entering {
+  pointer-events: none;
+}
+
+.tenant-card-entering.tenant-card-selected {
+  animation: pulseGlow 1s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(63, 140, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(63, 140, 255, 0);
+  }
+}
+
+.tenant-card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, #3f8cff 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.tenant-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tenant-card-name {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: #0a1629;
+  margin-bottom: 0.125rem;
+}
+
+.tenant-card-code {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.tenant-card-arrow {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.tenant-card:hover .tenant-card-arrow {
+  transform: translateX(4px);
+  color: #3f8cff;
+}
+
+.back-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: none;
+  border: none;
+  color: #7d8592;
+  font-size: 0.88rem;
+  cursor: pointer;
+  font-family: 'PingFang SC', sans-serif;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover:not(:disabled) {
+  color: #3f8cff;
+}
+
+.back-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ 进入动画阶段 ============ */
+
+.entering-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.entering-spinner {
+  margin-bottom: 1.5rem;
+}
+
+.entering-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0a1629;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.entering-subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #94a3b8;
+  font-family: 'PingFang SC', sans-serif;
+}

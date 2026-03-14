@@ -5,6 +5,12 @@ spring:
   application:
     name: scaffold-app
   
+  # 文件上传
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+  
   # 数据源配置
   datasource:
     url: jdbc:postgresql://localhost:5432/scaffold_db
@@ -55,7 +61,8 @@ scaffold:
       timeout: 86400
       single-login: false
     exclude-paths:
-      - /api/auth/**
+      - /api/auth/login
+      - /api/auth/pre-login
       - /doc.html
       - /swagger-ui/**
       - /v3/api-docs/**
@@ -67,3 +74,27 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+# 应用配置
+app:
+  # 文件上传
+  upload:
+    path: /data/upload
+    max-size: 20
+    storage-type: local
+    oss:
+      endpoint:
+      bucket:
+      access-key:
+      secret-key:
+  # 代码生成
+  gen:
+    project-path: /root/.openclaw/workspace/scaffold-project
+    front-path: /root/.openclaw/workspace/scaffold-project/admin-front-new
+  # 日志开关
+  log:
+    operation:
+      enabled: true       # 操作日志总开关
+      save-response: false # 是否保存响应数据
+    login:
+      enabled: true        # 登录日志开关

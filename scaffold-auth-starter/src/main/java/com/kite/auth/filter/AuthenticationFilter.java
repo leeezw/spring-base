@@ -138,6 +138,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (StrUtil.isNotBlank(token) && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
+        // 支持URL参数传递token(用于文件下载/导出)
+        if (StrUtil.isBlank(token)) {
+            token = request.getParameter("token");
+        }
         return token;
     }
     

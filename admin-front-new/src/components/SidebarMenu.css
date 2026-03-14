@@ -1,0 +1,360 @@
+/* 侧边栏菜单样式 - 基于 Ant Design Menu，符合设计系统 */
+
+.sidebar-menu.ant-menu {
+  background-color: transparent;
+  border-right: none !important;
+  padding: var(--spacing-sm) 0;
+  width: 100%;
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+.sidebar-menu-collapsed.ant-menu {
+  width: 100%;
+  overflow: visible;
+}
+
+.sidebar-menu-collapsed.ant-menu,
+.sidebar-menu.ant-menu-inline-collapsed {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* 移除所有菜单项的边框 */
+.sidebar-menu .ant-menu-item,
+.sidebar-menu .ant-menu-submenu-title,
+.sidebar-menu .ant-menu-submenu,
+.sidebar-menu .ant-menu-submenu .ant-menu-item,
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu-title,
+.sidebar-menu .ant-menu-submenu .ant-menu,
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu .ant-menu {
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* ==================== 菜单项基础样式 ==================== */
+.sidebar-menu .ant-menu-item,
+.sidebar-menu .ant-menu-submenu-title {
+  height: 2.75rem;
+  line-height: 2.75rem;
+  margin-bottom: var(--spacing-xs);
+  border-radius: 0.88rem; /* 与表单一致 */
+  padding-left: var(--spacing-md) !important;
+  padding-right: var(--spacing-md) !important;
+  transition: all 0.2s ease;
+  color: var(--text-secondary); /* 使用主题色变量 */
+  font-family: var(--font-family);
+  font-size: 0.88rem; /* 与表单一致 */
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  border: none !important;
+}
+
+.sidebar-menu-collapsed .ant-menu-item,
+.sidebar-menu-collapsed .ant-menu-submenu-title {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible;
+  text-align: center;
+  margin: 0 auto !important;
+  position: relative;
+}
+
+.sidebar-menu-collapsed .ant-menu-item > *,
+.sidebar-menu-collapsed .ant-menu-submenu-title > * {
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-menu .ant-menu-item-icon,
+.sidebar-menu .ant-menu-submenu-title .ant-menu-item-icon {
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  transition: all 0.2s ease;
+  color: var(--text-secondary); /* 使用主题色变量 */
+  margin-right: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.sidebar-menu-collapsed .ant-menu-item-icon,
+.sidebar-menu-collapsed .ant-menu-submenu-title .ant-menu-item-icon {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0;
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+  font-size: 1.125rem !important;
+  position: relative !important;
+  z-index: 1;
+  margin: 0 auto !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+.sidebar-menu-collapsed .ant-menu-item .ant-menu-title-content,
+.sidebar-menu-collapsed .ant-menu-submenu-title .ant-menu-title-content {
+  display: none !important;
+  width: 0;
+  overflow: hidden;
+}
+
+/* 确保折叠状态下菜单项内容居中 */
+.sidebar-menu-collapsed .ant-menu-item,
+.sidebar-menu-collapsed .ant-menu-submenu-title {
+  text-align: center;
+}
+
+.sidebar-menu-collapsed .ant-menu-item-inner,
+.sidebar-menu-collapsed .ant-menu-submenu-title-inner {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100%;
+}
+
+/* Ant Design Menu 折叠状态下的特殊处理 */
+.sidebar-menu.ant-menu-inline-collapsed {
+  width: 100% !important;
+}
+
+.sidebar-menu.ant-menu-inline-collapsed > .ant-menu-item,
+.sidebar-menu.ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title {
+  padding: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item-icon,
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-submenu-title .ant-menu-item-icon {
+  margin: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+/* 确保菜单项内部容器也居中 */
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-item > *,
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-submenu-title > * {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto !important;
+  width: auto !important;
+}
+
+/* 隐藏折叠状态下的文字内容 */
+.sidebar-menu.ant-menu-inline-collapsed .ant-menu-title-content {
+  display: none !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+.sidebar-menu .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  transition: all var(--transition-base) var(--ease-out);
+  right: var(--spacing-md);
+}
+
+.sidebar-menu-collapsed .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  display: none;
+}
+
+.sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* ==================== 悬停状态 ==================== */
+.sidebar-menu .ant-menu-item:hover,
+.sidebar-menu .ant-menu-submenu-title:hover {
+  background-color: var(--info-bg); /* 使用主题色变量 */
+  color: var(--text-primary); /* 使用主题色变量 */
+}
+
+.sidebar-menu .ant-menu-item:hover .ant-menu-item-icon,
+.sidebar-menu .ant-menu-submenu-title:hover .ant-menu-item-icon {
+  color: var(--primary-color); /* 使用主题色变量 */
+  transform: scale(1.05);
+}
+
+.sidebar-menu .ant-menu-submenu-title:hover .ant-menu-submenu-arrow {
+  color: var(--primary-color); /* 使用主题色变量 */
+  opacity: 1;
+}
+
+/* ==================== 激活状态 ==================== */
+.sidebar-menu .ant-menu-item-selected {
+  background-color: var(--info-bg); /* 使用主题色变量 */
+  color: var(--primary-color); /* 使用主题色变量 */
+  font-weight: 600;
+  position: relative;
+}
+
+.sidebar-menu .ant-menu-item-selected .ant-menu-item-icon {
+  color: var(--primary-color); /* 使用主题色变量 */
+  transform: scale(1.05);
+}
+
+.sidebar-menu .ant-menu-item-selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.1875rem;
+  height: 60%;
+  background-color: var(--primary-color); /* 使用主题色变量 */
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.sidebar-menu-collapsed .ant-menu-item-selected::before {
+  display: none; /* 折叠状态下隐藏左侧指示条 */
+}
+
+/* ==================== 子菜单样式 - 内嵌式展开 ==================== */
+.sidebar-menu .ant-menu-submenu .ant-menu {
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  border-left: none;
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu-title {
+  padding-left: var(--spacing-md) !important;
+  padding-right: var(--spacing-md) !important;
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-item {
+  height: 2.5rem;
+  line-height: 2.5rem;
+  font-size: 0.875rem;
+  padding-left: var(--spacing-xl) !important;
+  padding-right: var(--spacing-md) !important;
+  margin-left: 0;
+  border: none !important;
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-item-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  margin-right: var(--spacing-sm);
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-item-selected::before {
+  height: 50%;
+}
+
+/* ==================== 子菜单激活状态 ==================== */
+.sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title {
+  color: var(--text-primary); /* 使用主题色变量 */
+}
+
+.sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-item-icon {
+  color: var(--primary-color); /* 使用主题色变量 */
+}
+
+/* ==================== 焦点状态（可访问性） ==================== */
+.sidebar-menu .ant-menu-item:focus-visible,
+.sidebar-menu .ant-menu-submenu-title:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* ==================== 分组样式 ==================== */
+.sidebar-menu .ant-menu-item-group-title {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-family);
+}
+
+.sidebar-menu .ant-menu-item-group-list {
+  margin: 0;
+  padding: 0;
+}
+
+/* ==================== 分隔符样式 ==================== */
+.sidebar-menu .ant-menu-item-divider {
+  margin: var(--spacing-md) var(--spacing-md);
+  background-color: var(--border-color);
+  height: 1px;
+}
+
+/* ==================== 三级及以上菜单样式 - 内嵌式展开 ==================== */
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu .ant-menu {
+  margin: 0;
+  padding: 0;
+  border-left: none;
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu .ant-menu-item {
+  height: 2.25rem;
+  line-height: 2.25rem;
+  font-size: 0.8125rem;
+  padding-left: calc(var(--spacing-xl) + var(--spacing-md)) !important;
+  padding-right: var(--spacing-md) !important;
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu .ant-menu-item-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  margin-right: var(--spacing-sm);
+}
+
+.sidebar-menu .ant-menu-submenu .ant-menu-submenu .ant-menu-submenu-title {
+  padding-left: calc(var(--spacing-xl) + var(--spacing-md)) !important;
+  padding-right: var(--spacing-md) !important;
+  font-size: 0.875rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+}
+
+/* ==================== 响应式优化 ==================== */
+@media (max-width: 768px) {
+  .sidebar-menu .ant-menu-item,
+  .sidebar-menu .ant-menu-submenu-title {
+    padding-left: var(--spacing-md) !important;
+    padding-right: var(--spacing-md) !important;
+  }
+  
+  .sidebar-menu .ant-menu-item-icon,
+  .sidebar-menu .ant-menu-submenu-title .ant-menu-item-icon {
+    font-size: 1.125rem;
+  }
+}

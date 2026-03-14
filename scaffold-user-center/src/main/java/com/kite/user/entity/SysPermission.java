@@ -1,7 +1,10 @@
 package com.kite.user.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kite.mybatis.entity.BaseEntity;
+
+import java.util.List;
 
 /**
  * 权限实体
@@ -19,6 +22,9 @@ public class SysPermission extends BaseEntity {
     private String icon;
     private Integer sortOrder;
     private Integer status;
+    
+    @TableField(exist = false)
+    private List<SysPermission> children;
     
     public Long getTenantId() { return tenantId; }
     public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
@@ -49,4 +55,7 @@ public class SysPermission extends BaseEntity {
     
     public Integer getStatus() { return status; }
     public void setStatus(Integer status) { this.status = status; }
+    
+    public List<SysPermission> getChildren() { return children; }
+    public void setChildren(List<SysPermission> children) { this.children = children; }
 }

@@ -1,0 +1,1 @@
+import{j as s,R as r}from"./index-Dk7inRSX.js";import{s as i,M as m}from"./item-hcSURD1S.js";function n(e){const{data:t=[]}=e;return s.jsxs("div",{className:i["message-list"],children:[t.map(a=>s.jsx(m,{data:a},a.id)),!t.length&&s.jsx(r,{status:"404"})]})}export{n as default};

@@ -46,6 +46,15 @@ public class SysPermissionController {
     }
     
     /**
+     * 获取权限树
+     */
+    @GetMapping("/tree")
+    @RequiresPermissions("system:permission:query")
+    public Result<List<SysPermission>> tree() {
+        return Result.success(permissionService.getPermissionTree());
+    }
+    
+    /**
      * 根据ID查询权限
      */
     @GetMapping("/{id}")

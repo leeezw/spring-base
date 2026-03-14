@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan("com.kite.mybatis")
-@MapperScan({"com.kite.*.mapper", "com.kite.**.mapper"})
+@MapperScan("com.kite.**.mapper")
 public class MybatisPlusAutoConfiguration {
     
     /**

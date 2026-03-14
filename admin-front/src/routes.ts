@@ -1,5 +1,7 @@
 import auth, { AuthParams } from '@/utils/authentication';
 import { useEffect, useMemo, useState } from 'react';
+import { getUserMenus } from '@/api/menu';
+import { convertMenuToRoutes, getCachedRoutes, cacheRoutes, clearCachedRoutes } from '@/utils/dynamicRoutes';
 
 export type IRoute = AuthParams & {
   name: string;
@@ -11,142 +13,35 @@ export type IRoute = AuthParams & {
   ignore?: boolean;
 };
 
-export const routes: IRoute[] = [
+// 默认静态路由（用于开发和fallback）
+export const defaultRoutes: IRoute[] = [
   {
-    name: 'menu.dashboard',
-    key: 'dashboard',
+    name: '系统管理',
+    key: 'system',
     children: [
       {
-        name: 'menu.dashboard.workplace',
-        key: 'dashboard/workplace',
+        name: '用户管理',
+        key: 'system/user',
       },
       {
-        name: 'menu.dashboard.monitor',
-        key: 'dashboard/monitor',
-        requiredPermissions: [
-          { resource: 'menu.dashboard.monitor', actions: ['write'] },
-        ],
-      },
-    ],
-  },
-  {
-    name: 'menu.visualization',
-    key: 'visualization',
-    children: [
-      {
-        name: 'menu.visualization.dataAnalysis',
-        key: 'visualization/data-analysis',
-        requiredPermissions: [
-          { resource: 'menu.visualization.dataAnalysis', actions: ['read'] },
-        ],
+        name: '角色管理',
+        key: 'system/role',
       },
       {
-        name: 'menu.visualization.multiDimensionDataAnalysis',
-        key: 'visualization/multi-dimension-data-analysis',
-        requiredPermissions: [
-          {
-            resource: 'menu.visualization.dataAnalysis',
-            actions: ['read', 'write'],
-          },
-          {
-            resource: 'menu.visualization.multiDimensionDataAnalysis',
-            actions: ['write'],
-          },
-        ],
-        oneOfPerm: true,
-      },
-    ],
-  },
-  {
-    name: 'menu.list',
-    key: 'list',
-    children: [
-      {
-        name: 'menu.list.searchTable',
-        key: 'list/search-table',
+        name: '权限管理',
+        key: 'system/permission',
       },
       {
-        name: 'menu.list.cardList',
-        key: 'list/card',
-      },
-    ],
-  },
-  {
-    name: 'menu.form',
-    key: 'form',
-    children: [
-      {
-        name: 'menu.form.group',
-        key: 'form/group',
-        requiredPermissions: [
-          { resource: 'menu.form.group', actions: ['read', 'write'] },
-        ],
+        name: '菜单管理',
+        key: 'system/menu',
       },
       {
-        name: 'menu.form.step',
-        key: 'form/step',
-        requiredPermissions: [
-          { resource: 'menu.form.step', actions: ['read'] },
-        ],
-      },
-    ],
-  },
-  {
-    name: 'menu.profile',
-    key: 'profile',
-    children: [
-      {
-        name: 'menu.profile.basic',
-        key: 'profile/basic',
-      },
-    ],
-  },
-
-  {
-    name: 'menu.result',
-    key: 'result',
-    children: [
-      {
-        name: 'menu.result.success',
-        key: 'result/success',
-        breadcrumb: false,
+        name: '部门管理',
+        key: 'system/dept',
       },
       {
-        name: 'menu.result.error',
-        key: 'result/error',
-        breadcrumb: false,
-      },
-    ],
-  },
-  {
-    name: 'menu.exception',
-    key: 'exception',
-    children: [
-      {
-        name: 'menu.exception.403',
-        key: 'exception/403',
-      },
-      {
-        name: 'menu.exception.404',
-        key: 'exception/404',
-      },
-      {
-        name: 'menu.exception.500',
-        key: 'exception/500',
-      },
-    ],
-  },
-  {
-    name: 'menu.user',
-    key: 'user',
-    children: [
-      {
-        name: 'menu.user.info',
-        key: 'user/info',
-      },
-      {
-        name: 'menu.user.setting',
-        key: 'user/setting',
+        name: '租户管理',
+        key: 'system/tenant',
       },
     ],
   },
@@ -166,7 +61,7 @@ export const getName = (path: string, routes) => {
 export const generatePermission = (role: string) => {
   const actions = role === 'admin' ? ['*'] : ['read'];
   const result = {};
-  routes.forEach((item) => {
+  defaultRoutes.forEach((item) => {
     if (item.children) {
       item.children.forEach((child) => {
         result[child.name] = actions;
@@ -177,6 +72,39 @@ export const generatePermission = (role: string) => {
 };
 
 const useRoute = (userPermission): [IRoute[], string] => {
+  const [routes, setRoutes] = useState<IRoute[]>(defaultRoutes);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 先尝试从缓存加载
+    const cached = getCachedRoutes();
+    if (cached && cached.length > 0) {
+      setRoutes(cached);
+      setLoading(false);
+      return;
+    }
+
+    // 从后端获取菜单
+    getUserMenus()
+      .then((res) => {
+        if (res.data.code === 200 && res.data.data) {
+          const menuRoutes = convertMenuToRoutes(res.data.data);
+          if (menuRoutes.length > 0) {
+            setRoutes(menuRoutes);
+            cacheRoutes(menuRoutes);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('获取用户菜单失败:', err);
+        // 失败时使用默认路由
+        setRoutes(defaultRoutes);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
   const filterRoute = (routes: IRoute[], arr = []): IRoute[] => {
     if (!routes.length) {
       return [];
@@ -210,7 +138,7 @@ const useRoute = (userPermission): [IRoute[], string] => {
   useEffect(() => {
     const newRoutes = filterRoute(routes);
     setPermissionRoute(newRoutes);
-  }, [JSON.stringify(userPermission)]);
+  }, [JSON.stringify(userPermission), JSON.stringify(routes)]);
 
   const defaultRoute = useMemo(() => {
     const first = permissionRoute[0];
@@ -225,3 +153,6 @@ const useRoute = (userPermission): [IRoute[], string] => {
 };
 
 export default useRoute;
+
+// 导出清除缓存的函数，用于登出时清理
+export { clearCachedRoutes };

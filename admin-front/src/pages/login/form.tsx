@@ -5,6 +5,8 @@ import {
   Link,
   Button,
   Space,
+  Select,
+  Message,
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
@@ -14,6 +16,8 @@ import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
+
+const Option = Select.Option;
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
@@ -26,31 +30,50 @@ export default function LoginForm() {
 
   const [rememberPassword, setRememberPassword] = useState(!!loginParams);
 
-  function afterLoginSuccess(params) {
+  function afterLoginSuccess(token: string, userInfo: any) {
+    // 保存Token
+    localStorage.setItem('token', token);
+    // 保存用户信息
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    // 记录登录状态
+    localStorage.setItem('userStatus', 'login');
+    
     // 记住密码
     if (rememberPassword) {
+      const params = formRef.current.getFieldsValue();
       setLoginParams(JSON.stringify(params));
     } else {
       removeLoginParams();
     }
-    // 记录登录状态
-    localStorage.setItem('userStatus', 'login');
+    
+    Message.success('登录成功');
+    
     // 跳转首页
-    window.location.href = '/';
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 500);
   }
 
   function login(params) {
     setErrorMessage('');
     setLoading(true);
+    
     axios
-      .post('/api/user/login', params)
+      .post('/api/auth/login', {
+        tenantCode: params.tenantCode,
+        username: params.userName,
+        password: params.password,
+      })
       .then((res) => {
-        const { status, msg } = res.data;
-        if (status === 'ok') {
-          afterLoginSuccess(params);
+        const { code, data, message } = res.data;
+        if (code === 200) {
+          afterLoginSuccess(data.token, data.userInfo);
         } else {
-          setErrorMessage(msg || t['login.form.login.errMsg']);
+          setErrorMessage(message || '登录失败');
         }
+      })
+      .catch((error) => {
+        setErrorMessage(error.response?.data?.message || '网络错误，请稍后重试');
       })
       .finally(() => {
         setLoading(false);
@@ -75,17 +98,32 @@ export default function LoginForm() {
 
   return (
     <div className={styles['login-form-wrapper']}>
-      <div className={styles['login-form-title']}>{t['login.form.title']}</div>
+      <div className={styles['login-form-title']}>🌰 Scaffold</div>
       <div className={styles['login-form-sub-title']}>
-        {t['login.form.title']}
+        企业级多租户SaaS脚手架
       </div>
       <div className={styles['login-form-error-msg']}>{errorMessage}</div>
       <Form
         className={styles['login-form']}
         layout="vertical"
         ref={formRef}
-        initialValues={{ userName: 'admin', password: 'admin' }}
+        initialValues={{ 
+          tenantCode: 'default',
+          userName: 'admin', 
+          password: 'admin123' 
+        }}
       >
+        <Form.Item
+          field="tenantCode"
+          rules={[{ required: true, message: '请选择租户' }]}
+        >
+          <Select placeholder="请选择租户">
+            <Option value="platform">平台管理</Option>
+            <Option value="default">默认租户</Option>
+            <Option value="test002">测试租户002</Option>
+          </Select>
+        </Form.Item>
+        
         <Form.Item
           field="userName"
           rules={[{ required: true, message: t['login.form.userName.errMsg'] }]}
@@ -96,6 +134,7 @@ export default function LoginForm() {
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
+        
         <Form.Item
           field="password"
           rules={[{ required: true, message: t['login.form.password.errMsg'] }]}
@@ -106,25 +145,24 @@ export default function LoginForm() {
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
+        
         <Space size={16} direction="vertical">
           <div className={styles['login-form-password-actions']}>
             <Checkbox checked={rememberPassword} onChange={setRememberPassword}>
               {t['login.form.rememberPassword']}
             </Checkbox>
-            <Link>{t['login.form.forgetPassword']}</Link>
           </div>
           <Button type="primary" long onClick={onSubmitClick} loading={loading}>
             {t['login.form.login']}
           </Button>
-          <Button
-            type="text"
-            long
-            className={styles['login-form-register-btn']}
-          >
-            {t['login.form.register']}
-          </Button>
         </Space>
       </Form>
+      
+      <div style={{ marginTop: 16, fontSize: 12, color: '#86909c', textAlign: 'center' }}>
+        <div>平台管理: platform_admin / admin123</div>
+        <div>默认租户: admin / admin123</div>
+        <div>测试租户: test_user / admin123</div>
+      </div>
     </div>
   );
 }

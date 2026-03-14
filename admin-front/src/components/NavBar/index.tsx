@@ -35,7 +35,7 @@ import Settings from '../Settings';
 import styles from './style/index.module.less';
 import defaultLocale from '@/locale';
 import useStorage from '@/utils/useStorage';
-import { generatePermission } from '@/routes';
+import { generatePermission, clearCachedRoutes } from '@/routes';
 
 function Navbar({ show }: { show: boolean }) {
   const t = useLocale();
@@ -49,6 +49,11 @@ function Navbar({ show }: { show: boolean }) {
 
   function logout() {
     setUserStatus('logout');
+    // 清除缓存的路由
+    clearCachedRoutes();
+    // 清除token和用户信息
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
     window.location.href = '/login';
   }
 
