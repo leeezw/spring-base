@@ -15,44 +15,40 @@
 }
 
 /* ==================== 统计卡片 ==================== */
-.role-list-page .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
+/* ==================== 内联统计指标 ==================== */
+.role-list-page .inline-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 0;
+  flex-shrink: 0;
 }
 
-.role-list-page .stats-grid .stat-card.ant-card {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-base) var(--ease-out);
+.role-list-page .inline-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg-secondary, #f5f7fa);
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s;
 }
 
-.role-list-page .stats-grid .stat-card.ant-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+.role-list-page .inline-stat:hover {
+  background: var(--bg-tertiary, #eef1f6);
 }
 
-.role-list-page .stats-grid .stat-card .ant-card-body {
-  padding: var(--spacing-md) var(--spacing-lg);
-}
-
-.role-list-page .stats-grid .stat-card .ant-statistic-title {
-  font-size: var(--font-size-xs);
-  color: var(--text-secondary);
+.role-list-page .inline-stat-label {
+  color: var(--text-secondary, #8c8c8c);
   font-weight: 500;
-  margin-bottom: 0.25rem;
 }
 
-.role-list-page .stats-grid .stat-card .ant-statistic-content {
-  font-size: 1.5rem;
+.role-list-page .inline-stat-value {
+  color: var(--text-primary, #0a1629);
   font-weight: 600;
-  color: var(--text-primary);
-}
-
-.role-list-page .stats-grid .stat-card .ant-statistic-content-prefix {
-  margin-right: var(--spacing-sm);
+  font-size: 14px;
 }
 
 /* ==================== 筛选表单样式 ==================== */

@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import ProTableV2 from '../components/ProTableV2.jsx';
 import request from '../api/index.js';
+import { usePermission } from '../hooks/usePermission.jsx';
 
 const FILE_ICONS = {
   'image/jpeg': <FileImageOutlined style={{ color: '#f5222d' }} />,
@@ -26,6 +27,7 @@ function formatSize(bytes) {
 }
 
 export default function FileList() {
+  const { hasPermission } = usePermission();
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewUrl, setPreviewUrl] = useState('');
   const tableRef = useRef();
@@ -140,9 +142,11 @@ export default function FileList() {
           <Tooltip title="下载/预览">
             <Button size="small" type="link" icon={<DownloadOutlined />} onClick={() => handlePreview(record)} />
           </Tooltip>
-          <Tooltip title="删除">
-            <Button size="small" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} />
-          </Tooltip>
+          {hasPermission('system:file:delete') && (
+            <Tooltip title="删除">
+              <Button size="small" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)} />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -157,16 +161,18 @@ export default function FileList() {
         request={(params) => request.get('/system/file/list', { params })}
         rowKey="id"
         toolBarRender={() => [
-          <Upload
-            key="upload"
-            showUploadList={false}
-            beforeUpload={() => false}
-            onChange={handleUpload}
-            multiple
-          >
-            <Button type="primary" icon={<CloudUploadOutlined />}>上传文件</Button>
-          </Upload>
-        ]}
+          hasPermission('system:file:upload') && (
+            <Upload
+              key="upload"
+              showUploadList={false}
+              beforeUpload={() => false}
+              onChange={handleUpload}
+              multiple
+            >
+              <Button type="primary" icon={<CloudUploadOutlined />}>上传文件</Button>
+            </Upload>
+          ),
+        ].filter(Boolean)}
       />
 
       <Image

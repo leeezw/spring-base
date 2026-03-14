@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Drawer, Tree, Spin } from 'antd';
+import { Button, Space, Tag, Modal, Form, message, Drawer, Tree, Spin } from 'antd';
 import { 
   SafetyOutlined, 
   CheckCircleOutlined, 
@@ -16,7 +16,6 @@ import request from '../api/index.js';
 import RoleForm from '../components/RoleForm.jsx';
 import TableSearchForm from '../components/TableSearchForm.jsx';
 import ProTableV2 from '../components/ProTableV2.jsx';
-import { usePageToolbar } from '../components/AppLayout.jsx';
 import { usePermission } from '../hooks/usePermission.jsx';
 import './RoleList.css';
 
@@ -43,16 +42,7 @@ export default function RoleList() {
   const [grantCheckedKeys, setGrantCheckedKeys] = useState([]);
   const [grantRole, setGrantRole] = useState(null);
   const [grantType, setGrantType] = useState('permission'); // 'permission' | 'menu'
-  const { statsVisible, setStatsVisible, setShowStatsToggle } = usePageToolbar();
   const debounceTimerRef = useRef(null);
-  
-  // 组件挂载时显示统计切换按钮
-  useEffect(() => {
-    setShowStatsToggle(true);
-    return () => {
-      setShowStatsToggle(false);
-    };
-  }, [setShowStatsToggle]);
 
   // 防抖处理筛选
   const handleFilterChange = useCallback(() => {
@@ -519,38 +509,26 @@ export default function RoleList() {
 
   return (
     <div className="role-list-page">
-      {/* 统计卡片 */}
-      {statsVisible && (
-        <div className="stats-grid">
-          <Card className="stat-card">
-            <Statistic
-              title="角色总数"
-              value={stats.total}
-              prefix={<SafetyOutlined style={{ color: '#3f8cff' }} />}
-              styles={{ content: { color: '#0a1629' } }}
-            />
-          </Card>
-          <Card className="stat-card">
-            <Statistic
-              title="已启用"
-              value={stats.enabled}
-              prefix={<CheckCircleOutlined style={{ color: '#22c55e' }} />}
-              styles={{ content: { color: '#0a1629' } }}
-            />
-          </Card>
-          <Card className="stat-card">
-            <Statistic
-              title="已禁用"
-              value={stats.disabled}
-              prefix={<StopOutlined style={{ color: '#fb923c' }} />}
-              styles={{ content: { color: '#0a1629' } }}
-            />
-          </Card>
-        </div>
-      )}
-
       {/* 搜索表单区域 */}
       <div className="search-section">
+        {/* 内联统计指标 */}
+        <div className="inline-stats">
+          <span className="inline-stat">
+            <SafetyOutlined style={{ color: '#3f8cff' }} />
+            <span className="inline-stat-label">总数</span>
+            <span className="inline-stat-value">{stats.total}</span>
+          </span>
+          <span className="inline-stat">
+            <CheckCircleOutlined style={{ color: '#22c55e' }} />
+            <span className="inline-stat-label">启用</span>
+            <span className="inline-stat-value">{stats.enabled}</span>
+          </span>
+          <span className="inline-stat">
+            <StopOutlined style={{ color: '#fb923c' }} />
+            <span className="inline-stat-label">禁用</span>
+            <span className="inline-stat-value">{stats.disabled}</span>
+          </span>
+        </div>
         <TableSearchForm
           form={filterForm}
           initialValues={{ status: 'all' }}

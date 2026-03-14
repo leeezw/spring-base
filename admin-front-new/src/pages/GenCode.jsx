@@ -6,6 +6,7 @@ import {
   SyncOutlined, CheckCircleOutlined,
 } from '@ant-design/icons';
 import request from '../api/index.js';
+import { usePermission } from '../hooks/usePermission.jsx';
 import './GenCode.css';
 
 const QUERY_TYPES = [
@@ -34,6 +35,7 @@ const HTML_TYPES = [
 const JAVA_TYPES = ['String', 'Integer', 'Long', 'Double', 'Boolean', 'LocalDateTime', 'LocalDate'];
 
 export default function GenCode() {
+  const { hasPermission } = usePermission();
   const [dbTables, setDbTables] = useState([]);
   const [dbLoading, setDbLoading] = useState(false);
   const [genTables, setGenTables] = useState([]);
@@ -209,12 +211,12 @@ export default function GenCode() {
       title: '操作', key: 'action', width: 320, fixed: 'right',
       render: (_, record) => (
         <Space size={4} wrap>
-          <Button size="small" type="link" icon={<EyeOutlined />} onClick={() => handlePreview(record)}>预览</Button>
-          <Button size="small" type="link" icon={<SettingOutlined />} onClick={() => handleOpenConfig(record)}>配置</Button>
-          <Button size="small" type="link" icon={<RocketOutlined />} loading={generating[record.id]} onClick={() => handleGenerate(record)}>生成</Button>
-          <Button size="small" type="link" icon={<DownloadOutlined />} onClick={() => handleDownload(record)}>ZIP</Button>
-          <Button size="small" type="link" icon={<SyncOutlined spin={syncing[record.id]} />} onClick={() => handleSync(record)}>同步</Button>
-          <Button size="small" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>删除</Button>
+          {hasPermission('dev:gen:query') && <Button size="small" type="link" icon={<EyeOutlined />} onClick={() => handlePreview(record)}>预览</Button>}
+          {hasPermission('dev:gen:edit') && <Button size="small" type="link" icon={<SettingOutlined />} onClick={() => handleOpenConfig(record)}>配置</Button>}
+          {hasPermission('dev:gen:generate') && <Button size="small" type="link" icon={<RocketOutlined />} loading={generating[record.id]} onClick={() => handleGenerate(record)}>生成</Button>}
+          {hasPermission('dev:gen:generate') && <Button size="small" type="link" icon={<DownloadOutlined />} onClick={() => handleDownload(record)}>ZIP</Button>}
+          {hasPermission('dev:gen:sync') && <Button size="small" type="link" icon={<SyncOutlined spin={syncing[record.id]} />} onClick={() => handleSync(record)}>同步</Button>}
+          {hasPermission('dev:gen:delete') && <Button size="small" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>删除</Button>}
         </Space>
       ),
     },
@@ -268,7 +270,7 @@ export default function GenCode() {
         extra={
           <Space>
             <Button icon={<ReloadOutlined />} onClick={loadGenTables}>刷新</Button>
-            <Button type="primary" icon={<ImportOutlined />} onClick={handleOpenImport}>导入表</Button>
+            {hasPermission('dev:gen:import') && <Button type="primary" icon={<ImportOutlined />} onClick={handleOpenImport}>导入表</Button>}
           </Space>
         }
       >

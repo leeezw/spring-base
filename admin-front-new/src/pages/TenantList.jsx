@@ -6,9 +6,11 @@ import {
 } from '@ant-design/icons';
 import ProTableV2 from '../components/ProTableV2.jsx';
 import request from '../api/index.js';
+import { usePermission } from '../hooks/usePermission.jsx';
 import dayjs from 'dayjs';
 
 export default function TenantList() {
+  const { hasPermission } = usePermission();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
@@ -104,12 +106,12 @@ export default function TenantList() {
       render: (_, record) => (
         <Space size={4}>
           <Button size="small" type="link" icon={<EyeOutlined />} onClick={() => handleDetail(record)}>详情</Button>
-          <Button size="small" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>编辑</Button>
-          <Button size="small" type="link" icon={record.status === 1 ? <StopOutlined /> : <CheckCircleOutlined />}
+          {hasPermission('system:tenant:edit') && <Button size="small" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>编辑</Button>}
+          {hasPermission('system:tenant:edit') && <Button size="small" type="link" icon={record.status === 1 ? <StopOutlined /> : <CheckCircleOutlined />}
             onClick={() => handleToggleStatus(record)}>
             {record.status === 1 ? '停用' : '启用'}
-          </Button>
-          {record.id !== 1 && <Button size="small" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>删除</Button>}
+          </Button>}
+          {record.id !== 1 && hasPermission('system:tenant:delete') && <Button size="small" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>删除</Button>}
         </Space>
       ),
     },
@@ -124,7 +126,7 @@ export default function TenantList() {
         request={(params) => request.get('/system/tenant/page', { params })}
         rowKey="id"
         toolBarRender={() => [
-          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={handleAdd}>新增租户</Button>
+          hasPermission('system:tenant:add') && <Button key="add" type="primary" icon={<PlusOutlined />} onClick={handleAdd}>新增租户</Button>
         ]}
       />
 

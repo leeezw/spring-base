@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kite.common.response.PageResult;
+import com.kite.mybatis.context.TenantContext;
 import com.kite.user.entity.SysPermission;
 import com.kite.user.mapper.SysPermissionMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,10 +22,24 @@ import java.util.stream.Collectors;
 public class SysPermissionService extends ServiceImpl<SysPermissionMapper, SysPermission> {
     
     /**
+     * 手动添加租户条件：系统内置(tenant_id=0) + 当前租户
+     * 非平台租户隐藏租户管理权限
+     */
+    private void addTenantCondition(LambdaQueryWrapper<SysPermission> wrapper) {
+        Long tenantId = TenantContext.getTenantId();
+        wrapper.in(SysPermission::getTenantId, tenantId == null ? Arrays.asList(0L) : Arrays.asList(0L, tenantId));
+        // 非平台租户隐藏租户管理权限
+        if (tenantId != null && tenantId != 0L) {
+            wrapper.notLike(SysPermission::getPermissionCode, "system:tenant");
+        }
+    }
+    
+    /**
      * 分页查询权限
      */
     public PageResult<SysPermission> pagePermissions(int pageNum, int pageSize, String permissionName, Integer status) {
         LambdaQueryWrapper<SysPermission> wrapper = new LambdaQueryWrapper<>();
+        addTenantCondition(wrapper);
         
         if (StringUtils.hasText(permissionName)) {
             wrapper.like(SysPermission::getPermissionName, permissionName);
@@ -43,6 +59,7 @@ public class SysPermissionService extends ServiceImpl<SysPermissionMapper, SysPe
      */
     public List<SysPermission> getPermissionTree() {
         LambdaQueryWrapper<SysPermission> wrapper = new LambdaQueryWrapper<>();
+        addTenantCondition(wrapper);
         wrapper.orderByAsc(SysPermission::getSortOrder);
         
         List<SysPermission> allPermissions = this.list(wrapper);
