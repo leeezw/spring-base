@@ -23,10 +23,15 @@ public class SysPermissionService extends ServiceImpl<SysPermissionMapper, SysPe
     
     /**
      * 手动添加租户条件：系统内置(tenant_id=0) + 当前租户
+     * 非平台租户隐藏租户管理权限
      */
     private void addTenantCondition(LambdaQueryWrapper<SysPermission> wrapper) {
         Long tenantId = TenantContext.getTenantId();
         wrapper.in(SysPermission::getTenantId, tenantId == null ? Arrays.asList(0L) : Arrays.asList(0L, tenantId));
+        // 非平台租户隐藏租户管理权限
+        if (tenantId != null && tenantId != 0L) {
+            wrapper.notLike(SysPermission::getPermissionCode, "system:tenant");
+        }
     }
     
     /**

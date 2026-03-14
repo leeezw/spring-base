@@ -54,8 +54,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         
         // 手动过滤：系统内置(tenant_id=0) + 当前租户的自建菜单
         LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(SysMenu::getTenantId, tenantId == null ? Arrays.asList(0L) : Arrays.asList(0L, tenantId))
-               .orderByAsc(SysMenu::getSortOrder);
+        wrapper.in(SysMenu::getTenantId, tenantId == null ? Arrays.asList(0L) : Arrays.asList(0L, tenantId));
+        
+        // 非平台租户(tenant_id != 0)隐藏租户管理菜单
+        if (tenantId != null && tenantId != 0L) {
+            wrapper.ne(SysMenu::getPath, "/system/tenant");
+        }
+        
+        wrapper.orderByAsc(SysMenu::getSortOrder);
         
         List<SysMenu> allMenus = list(wrapper);
         return buildMenuTree(allMenus, 0L);
