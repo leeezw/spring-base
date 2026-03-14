@@ -19,7 +19,6 @@ import UserForm from '../components/UserForm.jsx';
 import RoleSelectModal from '../components/RoleSelectModal.jsx';
 import TableSearchForm from '../components/TableSearchForm.jsx';
 import ProTableV2 from '../components/ProTableV2.jsx';
-import { usePageToolbar } from '../components/AppLayout.jsx';
 import { usePermission } from '../hooks/usePermission.jsx';
 import './UserList.css';
 
@@ -43,16 +42,7 @@ export default function UserList() {
   const [roleModalVisible, setRoleModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const { statsVisible, setStatsVisible, setShowStatsToggle } = usePageToolbar(); // 从 AppLayout 获取统计控制
   const debounceTimerRef = useRef(null);
-  
-  // 组件挂载时显示统计切换按钮
-  useEffect(() => {
-    setShowStatsToggle(true);
-    return () => {
-      setShowStatsToggle(false);
-    };
-  }, [setShowStatsToggle]);
 
   // 防抖处理筛选
   const handleFilterChange = useCallback(() => {
@@ -430,8 +420,7 @@ export default function UserList() {
       {/* 搜索表单区域 */}
       <div className="search-section">
         {/* 内联统计指标 */}
-        {statsVisible && (
-          <div className="inline-stats">
+        <div className="inline-stats">
             <span className="inline-stat">
               <UserOutlined style={{ color: '#3f8cff' }} />
               <span className="inline-stat-label">总数</span>
@@ -452,8 +441,7 @@ export default function UserList() {
               <span className="inline-stat-label">今日</span>
               <span className="inline-stat-value">{stats.today}</span>
             </span>
-          </div>
-        )}
+        </div>
         <TableSearchForm
           form={filterForm}
           initialValues={{ status: 'all' }}
