@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Card, Statistic, Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown, Drawer } from 'antd';
+import { Button, Space, Tag, Modal, Form, message, Input, Select, Checkbox, Dropdown, Drawer } from 'antd';
 import {
  
   UserOutlined, 
@@ -427,46 +427,33 @@ export default function UserList() {
 
   return (
     <div className="user-list-page">
-      {/* 统计卡片 */}
-      {statsVisible && (
-        <div className="stats-grid">
-        <Card className="stat-card">
-          <Statistic
-            title="用户总数"
-            value={stats.total}
-            prefix={<UserOutlined style={{ color: '#3f8cff' }} />}
-            styles={{ content: { color: '#0a1629' } }}
-          />
-        </Card>
-        <Card className="stat-card">
-          <Statistic
-            title="已启用"
-            value={stats.enabled}
-            prefix={<CheckCircleOutlined style={{ color: '#22c55e' }} />}
-            styles={{ content: { color: '#0a1629' } }}
-          />
-        </Card>
-        <Card className="stat-card">
-          <Statistic
-            title="已禁用"
-            value={stats.disabled}
-            prefix={<StopOutlined style={{ color: '#fb923c' }} />}
-            styles={{ content: { color: '#0a1629' } }}
-          />
-        </Card>
-        <Card className="stat-card">
-          <Statistic
-            title="今日新增"
-            value={stats.today}
-            prefix={<PlusOutlined style={{ color: '#a855f7' }} />}
-            styles={{ content: { color: '#0a1629' } }}
-          />
-        </Card>
-        </div>
-      )}
-
       {/* 搜索表单区域 */}
       <div className="search-section">
+        {/* 内联统计指标 */}
+        {statsVisible && (
+          <div className="inline-stats">
+            <span className="inline-stat">
+              <UserOutlined style={{ color: '#3f8cff' }} />
+              <span className="inline-stat-label">总数</span>
+              <span className="inline-stat-value">{stats.total}</span>
+            </span>
+            <span className="inline-stat">
+              <CheckCircleOutlined style={{ color: '#22c55e' }} />
+              <span className="inline-stat-label">启用</span>
+              <span className="inline-stat-value">{stats.enabled}</span>
+            </span>
+            <span className="inline-stat">
+              <StopOutlined style={{ color: '#fb923c' }} />
+              <span className="inline-stat-label">禁用</span>
+              <span className="inline-stat-value">{stats.disabled}</span>
+            </span>
+            <span className="inline-stat">
+              <PlusOutlined style={{ color: '#a855f7' }} />
+              <span className="inline-stat-label">今日</span>
+              <span className="inline-stat-value">{stats.today}</span>
+            </span>
+          </div>
+        )}
         <TableSearchForm
           form={filterForm}
           initialValues={{ status: 'all' }}
