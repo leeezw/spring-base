@@ -28,7 +28,9 @@ public class SysTenantService {
     private final SysUserMapper userMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMenuMapper roleMenuMapper;
+    private final SysRolePermissionMapper rolePermissionMapper;
     private final SysMenuMapper menuMapper;
+    private final SysPermissionMapper permissionMapper;
     private final PasswordEncoder passwordEncoder;
     
     /**
@@ -128,8 +130,11 @@ public class SysTenantService {
                 roleMenuMapper.insertRoleMenu(roleId, menuId);
             }
             
-            // 7. 给超级管理员角色分配全部权限
-            // 权限通过角色-权限关联表，这里暂不处理，由管理员手动分配
+            // 7. 给超级管理员角色分配全部系统内置权限
+            List<Long> allPermIds = permissionMapper.selectBuiltinPermissionIds();
+            for (Long permId : allPermIds) {
+                rolePermissionMapper.insertRolePermission(roleId, permId);
+            }
             
         } finally {
             // 恢复原租户上下文
