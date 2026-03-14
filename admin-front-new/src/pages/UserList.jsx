@@ -283,6 +283,29 @@ export default function UserList() {
     setRoleModalVisible(true);
   };
 
+  // 删除用户
+  const handleDeleteUser = (record) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: `确定要删除用户「${record.nickname || record.username}」吗？`,
+      okText: '删除',
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          const res = await request.delete(`/system/user/${record.id}`);
+          if (res.code === 200) {
+            message.success('删除成功');
+            handleRefresh();
+          } else {
+            message.error(res.message || '删除失败');
+          }
+        } catch (e) {
+          message.error('操作失败');
+        }
+      },
+    });
+  };
+
   // 角色授予成功回调
   const handleRoleAssignSuccess = () => {
     setRoleModalVisible(false);
@@ -408,6 +431,16 @@ export default function UserList() {
               size="small"
               title="授予角色"
               onClick={() => handleAssignRoles(record)}
+            />
+          )}
+          {hasPermission('system:user:delete') && (
+            <Button 
+              type="text" 
+              icon={<DeleteOutlined />} 
+              size="small"
+              title="删除"
+              danger
+              onClick={() => handleDeleteUser(record)}
             />
           )}
         </Space>

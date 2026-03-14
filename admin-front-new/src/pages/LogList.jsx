@@ -6,6 +6,7 @@ import {
 } from '@ant-design/icons';
 import ProTableV2 from '../components/ProTableV2.jsx';
 import request from '../api/index.js';
+import { usePermission } from '../hooks/usePermission.jsx';
 
 const OP_TYPE_MAP = {
   QUERY: { text: '查询', color: 'blue' },
@@ -18,6 +19,7 @@ const OP_TYPE_MAP = {
 };
 
 export default function LogList() {
+  const { hasPermission } = usePermission();
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailRecord, setDetailRecord] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -121,8 +123,8 @@ export default function LogList() {
               request={(params) => request.get('/system/log/operation', { params })}
               rowKey="id"
               toolBarRender={() => [
-                <Button key="clean" danger icon={<ClearOutlined />} onClick={handleCleanOperation}>清空</Button>
-              ]}
+                hasPermission('system:log:delete') && <Button key="clean" danger icon={<ClearOutlined />} onClick={handleCleanOperation}>清空</Button>
+              ].filter(Boolean)}
             />
           ),
         },
@@ -136,8 +138,8 @@ export default function LogList() {
               request={(params) => request.get('/system/log/login', { params })}
               rowKey="id"
               toolBarRender={() => [
-                <Button key="clean" danger icon={<ClearOutlined />} onClick={handleCleanLogin}>清空</Button>
-              ]}
+                hasPermission('system:log:delete') && <Button key="clean" danger icon={<ClearOutlined />} onClick={handleCleanLogin}>清空</Button>
+              ].filter(Boolean)}
             />
           ),
         },
@@ -159,7 +161,7 @@ export default function LogList() {
                   { title: '租户', dataIndex: 'tenantId', width: 80, render: (v) => <Tag>{v === 0 ? '平台' : `#${v}`}</Tag> },
                   { title: '剩余有效期', dataIndex: 'ttl', width: 120, render: (v) => v > 0 ? `${Math.floor(v / 60)}分钟` : '-' },
                   { title: '操作', width: 100, render: (_, record) => (
-                    <Button size="small" danger icon={<LogoutOutlined />} onClick={() => handleForceLogout(record)}>强制下线</Button>
+                    hasPermission('system:log:force-logout') && <Button size="small" danger icon={<LogoutOutlined />} onClick={() => handleForceLogout(record)}>强制下线</Button>
                   )},
                 ]}
               />
