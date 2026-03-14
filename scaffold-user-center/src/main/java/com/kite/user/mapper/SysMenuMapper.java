@@ -25,4 +25,10 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
             "AND m.status = 1 " +
             "AND m.visible = 1")
     List<Long> selectMenuIdsByUserId(Long userId);
+
+    /**
+     * 查询所有有效菜单ID
+     */
+    @Select("SELECT id FROM sys_menu WHERE deleted = 0 AND status = 1")
+    List<Long> selectAllMenuIds();
 }

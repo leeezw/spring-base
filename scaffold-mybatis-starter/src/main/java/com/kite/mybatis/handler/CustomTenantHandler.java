@@ -18,6 +18,8 @@ public class CustomTenantHandler implements TenantLineHandler {
      */
     private static final List<String> IGNORE_TABLES = Arrays.asList(
             "sys_tenant",           // 租户表本身
+            "sys_menu",             // 菜单表（全局共享）
+            "sys_permission",       // 权限表（全局共享）
             "sys_user_role",        // 关联表
             "sys_role_permission",  // 关联表
             "sys_role_menu",        // 关联表

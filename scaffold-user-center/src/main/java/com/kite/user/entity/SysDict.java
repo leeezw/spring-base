@@ -1,7 +1,7 @@
 package com.kite.user.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.kite.user.entity.BaseEntity;
+import com.kite.mybatis.entity.BaseEntity;
 import java.time.LocalDateTime;
 import lombok.Data;
 
