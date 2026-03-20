@@ -19,7 +19,8 @@ public class SysTenant extends BaseEntity {
     private LocalDateTime expireTime;
     private Integer accountCount;
     private Integer status;
-    
+    private String logo;
+
     public String getTenantCode() { return tenantCode; }
     public void setTenantCode(String tenantCode) { this.tenantCode = tenantCode; }
     
@@ -43,4 +44,7 @@ public class SysTenant extends BaseEntity {
     
     public Integer getStatus() { return status; }
     public void setStatus(Integer status) { this.status = status; }
+
+    public String getLogo() { return logo; }
+    public void setLogo(String logo) { this.logo = logo; }
 }

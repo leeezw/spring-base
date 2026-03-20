@@ -42,6 +42,16 @@ public class LoginUser implements Serializable {
      * 头像
      */
     private String avatar;
+
+    /**
+     * 租户名称
+     */
+    private String tenantName;
+
+    /**
+     * 租户Logo
+     */
+    private String tenantLogo;
     
     /**
      * 角色列表

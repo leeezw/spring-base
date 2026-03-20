@@ -9,6 +9,7 @@ CREATE TABLE sys_tenant (
     expire_time TIMESTAMP,
     account_count INT DEFAULT 0,
     status INT DEFAULT 1,
+    logo VARCHAR(500),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     create_by BIGINT,
@@ -25,6 +26,7 @@ COMMENT ON COLUMN sys_tenant.contact_email IS '联系邮箱';
 COMMENT ON COLUMN sys_tenant.expire_time IS '过期时间';
 COMMENT ON COLUMN sys_tenant.account_count IS '账号数量';
 COMMENT ON COLUMN sys_tenant.status IS '状态：0-禁用 1-正常';
+COMMENT ON COLUMN sys_tenant.logo IS '租户Logo URL';
 
 -- 给所有业务表添加tenant_id字段
 ALTER TABLE sys_user ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 1;

@@ -154,7 +154,11 @@ public class UserAuthenticationService implements AuthenticationService {
     private LoginUser buildLoginUser(SysUser user) {
         List<String> roles = userMapper.selectRolesByUserId(user.getId());
         List<String> permissions = userMapper.selectPermissionsByUserId(user.getId());
-        
+
+        TenantContext.setIgnore(true);
+        SysTenant tenant = tenantMapper.selectById(user.getTenantId());
+        TenantContext.clear();
+
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getId());
         loginUser.setTenantId(user.getTenantId());
@@ -164,7 +168,11 @@ public class UserAuthenticationService implements AuthenticationService {
         loginUser.setAvatar(user.getAvatar());
         loginUser.setRoles(roles);
         loginUser.setPermissions(permissions);
-        
+        if (tenant != null) {
+            loginUser.setTenantName(tenant.getTenantName());
+            loginUser.setTenantLogo(tenant.getLogo());
+        }
+
         return loginUser;
     }
     
