@@ -66,7 +66,30 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception e, HttpServletRequest request) {
+        String duplicateMessage = resolveDuplicateKeyMessage(e);
+        if (duplicateMessage != null) {
+            log.warn("唯一约束冲突: {} - {}", request.getRequestURI(), duplicateMessage);
+            return Result.fail(ResultCode.BAD_REQUEST.getCode(), duplicateMessage);
+        }
         log.error("系统异常: {} - {}", request.getRequestURI(), e.getMessage(), e);
         return Result.fail(ResultCode.SYSTEM_ERROR);
+    }
+    
+    private String resolveDuplicateKeyMessage(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            String msg = current.getMessage();
+            if (msg != null && msg.contains("duplicate key value violates unique constraint")) {
+                if (msg.contains("sys_role_role_code_key") || msg.contains("uk_sys_role_tenant_code")) {
+                    return "角色编码已存在";
+                }
+                if (msg.contains("sys_user_username_key") || msg.contains("uk_sys_user_tenant_username")) {
+                    return "用户名已存在";
+                }
+                return "数据重复，请检查唯一字段后重试";
+            }
+            current = current.getCause();
+        }
+        return null;
     }
 }

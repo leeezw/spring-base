@@ -35,9 +35,23 @@ ALTER TABLE sys_permission ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 1;
 ALTER TABLE sys_menu ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 1;
 ALTER TABLE sys_dept ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 1;
 
+-- 将历史全局唯一约束调整为租户内唯一
+ALTER TABLE sys_role DROP CONSTRAINT IF EXISTS sys_role_role_code_key;
+ALTER TABLE sys_role DROP CONSTRAINT IF EXISTS uk_sys_role_tenant_code;
+ALTER TABLE sys_user DROP CONSTRAINT IF EXISTS sys_user_username_key;
+ALTER TABLE sys_user DROP CONSTRAINT IF EXISTS uk_sys_user_tenant_username;
+
+ALTER TABLE sys_role ADD CONSTRAINT uk_sys_role_tenant_code UNIQUE (tenant_id, role_code);
+ALTER TABLE sys_user ADD CONSTRAINT uk_sys_user_tenant_username UNIQUE (tenant_id, username);
+
+-- 清理重复唯一约束：sys_role_permission 仅保留一条 (role_id, permission_id)
+ALTER TABLE sys_role_permission DROP CONSTRAINT IF EXISTS uk_role_perm;
+
 -- 添加索引
 CREATE INDEX idx_user_tenant ON sys_user(tenant_id);
 CREATE INDEX idx_role_tenant ON sys_role(tenant_id);
+CREATE INDEX idx_user_tenant_username ON sys_user(tenant_id, username);
+CREATE INDEX idx_role_tenant_code ON sys_role(tenant_id, role_code);
 CREATE INDEX idx_permission_tenant ON sys_permission(tenant_id);
 CREATE INDEX idx_menu_tenant ON sys_menu(tenant_id);
 CREATE INDEX idx_dept_tenant ON sys_dept(tenant_id);

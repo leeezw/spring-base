@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kite.common.exception.BusinessException;
 import com.kite.common.response.PageResult;
+import com.kite.mybatis.context.TenantContext;
 import com.kite.user.entity.SysDept;
 import com.kite.user.entity.SysRole;
 import com.kite.user.entity.SysUser;
@@ -158,12 +159,11 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
      * 新增用户
      */
     public void addUser(SysUser user) {
-        // 检查用户名是否存在
-        long count = count(new LambdaQueryWrapper<SysUser>()
-            .eq(SysUser::getUsername, user.getUsername()));
-        if (count > 0) {
-            throw new BusinessException("用户名已存在");
-        }
+        String username = normalizeUsername(user.getUsername());
+        user.setUsername(username);
+        Long tenantId = resolveTenantId(user.getTenantId());
+        user.setTenantId(tenantId);
+        ensureUsernameNotExists(username, tenantId, null);
         
         // 加密密码
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -180,14 +180,18 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
             throw new BusinessException("用户不存在");
         }
         
+        String newUsername = user.getUsername();
+        if (!StringUtils.hasText(newUsername)) {
+            newUsername = existUser.getUsername();
+        }
+        newUsername = normalizeUsername(newUsername);
+        user.setUsername(newUsername);
+        Long tenantId = existUser.getTenantId();
+        user.setTenantId(tenantId);
+        
         // 如果修改了用户名，检查是否重复
-        if (!existUser.getUsername().equals(user.getUsername())) {
-            long count = count(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getUsername, user.getUsername())
-                .ne(SysUser::getId, user.getId()));
-            if (count > 0) {
-                throw new BusinessException("用户名已存在");
-            }
+        if (!existUser.getUsername().equals(newUsername)) {
+            ensureUsernameNotExists(newUsername, tenantId, user.getId());
         }
         
         // 不更新密码
@@ -235,5 +239,36 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         updateById(user);
+    }
+
+    private String normalizeUsername(String username) {
+        if (!StringUtils.hasText(username)) {
+            throw new BusinessException("用户名不能为空");
+        }
+        return username.trim();
+    }
+
+    private void ensureUsernameNotExists(String username, Long tenantId, Long excludeId) {
+        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<SysUser>()
+            .eq(SysUser::getTenantId, tenantId)
+            .eq(SysUser::getUsername, username);
+        if (excludeId != null) {
+            wrapper.ne(SysUser::getId, excludeId);
+        }
+        long count = count(wrapper);
+        if (count > 0) {
+            throw new BusinessException("用户名已存在");
+        }
+    }
+
+    private Long resolveTenantId(Long tenantId) {
+        if (tenantId != null) {
+            return tenantId;
+        }
+        Long currentTenantId = TenantContext.getTenantId();
+        if (currentTenantId != null) {
+            return currentTenantId;
+        }
+        return 1L;
     }
 }

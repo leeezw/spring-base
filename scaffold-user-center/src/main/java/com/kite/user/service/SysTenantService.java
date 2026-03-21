@@ -3,6 +3,7 @@ package com.kite.user.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kite.common.exception.BusinessException;
 import com.kite.common.response.PageResult;
 import com.kite.mybatis.context.TenantContext;
 import com.kite.user.entity.SysRole;
@@ -99,6 +100,14 @@ public class SysTenantService {
             TenantContext.setTenantId(tenantId);
             
             // 3. 创建超级管理员角色
+            long roleCodeCount = roleMapper.selectCount(
+                new LambdaQueryWrapper<SysRole>()
+                    .eq(SysRole::getRoleCode, "super_admin")
+            );
+            if (roleCodeCount > 0) {
+                throw new BusinessException("初始化租户失败：角色编码 super_admin 已存在");
+            }
+
             SysRole adminRole = new SysRole();
             adminRole.setTenantId(tenantId);
             adminRole.setRoleCode("super_admin");
@@ -112,6 +121,14 @@ public class SysTenantService {
             
             // 4. 创建 admin 用户（username = tenantCode_admin 避免全局唯一冲突）
             String adminUsername = tenant.getTenantCode() + "_admin";
+            long usernameCount = userMapper.selectCount(
+                new LambdaQueryWrapper<SysUser>()
+                    .eq(SysUser::getUsername, adminUsername)
+            );
+            if (usernameCount > 0) {
+                throw new BusinessException("初始化租户失败：用户名 " + adminUsername + " 已存在");
+            }
+
             SysUser adminUser = new SysUser();
             adminUser.setTenantId(tenantId);
             adminUser.setUsername(adminUsername);

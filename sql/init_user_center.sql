@@ -1,7 +1,7 @@
 -- 用户表
 CREATE TABLE sys_user (
     id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL,
     nickname VARCHAR(50),
     avatar VARCHAR(500),
@@ -18,7 +18,7 @@ CREATE TABLE sys_user (
 -- 角色表
 CREATE TABLE sys_role (
     id BIGSERIAL PRIMARY KEY,
-    role_code VARCHAR(50) NOT NULL UNIQUE,
+    role_code VARCHAR(50) NOT NULL,
     role_name VARCHAR(50) NOT NULL,
     description VARCHAR(200),
     sort_order INT DEFAULT 0,

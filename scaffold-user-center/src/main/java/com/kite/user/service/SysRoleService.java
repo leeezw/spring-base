@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kite.common.exception.BusinessException;
 import com.kite.common.response.PageResult;
+import com.kite.mybatis.context.TenantContext;
 import com.kite.user.entity.SysRole;
 import com.kite.user.mapper.SysRoleMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +36,11 @@ public class SysRoleService extends ServiceImpl<SysRoleMapper, SysRole> {
      * 新增角色
      */
     public void addRole(SysRole role) {
-        // 检查角色编码是否存在
-        long count = count(new LambdaQueryWrapper<SysRole>()
-            .eq(SysRole::getRoleCode, role.getRoleCode()));
-        if (count > 0) {
-            throw new BusinessException("角色编码已存在");
-        }
+        String roleCode = normalizeRoleCode(role.getRoleCode());
+        role.setRoleCode(roleCode);
+        Long tenantId = resolveTenantId(role.getTenantId());
+        role.setTenantId(tenantId);
+        ensureRoleCodeNotExists(roleCode, tenantId, null);
         
         save(role);
     }
@@ -54,14 +54,18 @@ public class SysRoleService extends ServiceImpl<SysRoleMapper, SysRole> {
             throw new BusinessException("角色不存在");
         }
         
+        String newRoleCode = role.getRoleCode();
+        if (!StringUtils.hasText(newRoleCode)) {
+            newRoleCode = existRole.getRoleCode();
+        }
+        newRoleCode = normalizeRoleCode(newRoleCode);
+        role.setRoleCode(newRoleCode);
+        Long tenantId = existRole.getTenantId();
+        role.setTenantId(tenantId);
+        
         // 如果修改了角色编码，检查是否重复
-        if (!existRole.getRoleCode().equals(role.getRoleCode())) {
-            long count = count(new LambdaQueryWrapper<SysRole>()
-                .eq(SysRole::getRoleCode, role.getRoleCode())
-                .ne(SysRole::getId, role.getId()));
-            if (count > 0) {
-                throw new BusinessException("角色编码已存在");
-            }
+        if (!existRole.getRoleCode().equals(newRoleCode)) {
+            ensureRoleCodeNotExists(newRoleCode, tenantId, role.getId());
         }
         
         updateById(role);
@@ -75,5 +79,36 @@ public class SysRoleService extends ServiceImpl<SysRoleMapper, SysRole> {
             throw new BusinessException("不能删除超级管理员角色");
         }
         removeById(id);
+    }
+
+    private String normalizeRoleCode(String roleCode) {
+        if (!StringUtils.hasText(roleCode)) {
+            throw new BusinessException("角色编码不能为空");
+        }
+        return roleCode.trim();
+    }
+
+    private void ensureRoleCodeNotExists(String roleCode, Long tenantId, Long excludeId) {
+        LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<SysRole>()
+            .eq(SysRole::getTenantId, tenantId)
+            .eq(SysRole::getRoleCode, roleCode);
+        if (excludeId != null) {
+            wrapper.ne(SysRole::getId, excludeId);
+        }
+        long count = count(wrapper);
+        if (count > 0) {
+            throw new BusinessException("角色编码已存在");
+        }
+    }
+
+    private Long resolveTenantId(Long tenantId) {
+        if (tenantId != null) {
+            return tenantId;
+        }
+        Long currentTenantId = TenantContext.getTenantId();
+        if (currentTenantId != null) {
+            return currentTenantId;
+        }
+        return 1L;
     }
 }
