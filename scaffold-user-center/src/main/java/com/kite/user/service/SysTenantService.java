@@ -53,6 +53,7 @@ public class SysTenantService {
                .orderByDesc(SysTenant::getCreateTime);
         
         IPage<SysTenant> result = tenantMapper.selectPage(page, wrapper);
+        result.getRecords().forEach(this::fillLoginAccount);
         return PageResult.of(result);
     }
     
@@ -60,18 +61,22 @@ public class SysTenantService {
      * 查询所有租户
      */
     public List<SysTenant> list() {
-        return tenantMapper.selectList(
+        List<SysTenant> list = tenantMapper.selectList(
             new LambdaQueryWrapper<SysTenant>()
                 .eq(SysTenant::getDeleted, 0)
                 .orderByDesc(SysTenant::getCreateTime)
         );
+        list.forEach(this::fillLoginAccount);
+        return list;
     }
     
     /**
      * 根据ID查询租户
      */
     public SysTenant getById(Long id) {
-        return tenantMapper.selectById(id);
+        SysTenant tenant = tenantMapper.selectById(id);
+        fillLoginAccount(tenant);
+        return tenant;
     }
     
     /**
@@ -184,5 +189,14 @@ public class SysTenantService {
         tenant.setId(id);
         tenant.setDeleted(1);
         tenantMapper.updateById(tenant);
+    }
+
+    private void fillLoginAccount(SysTenant tenant) {
+        if (tenant == null) {
+            return;
+        }
+        if (tenant.getTenantCode() != null && !tenant.getTenantCode().isEmpty()) {
+            tenant.setLoginAccount(tenant.getTenantCode() + "_admin");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.kite.user.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kite.mybatis.entity.BaseEntity;
 
@@ -20,6 +21,9 @@ public class SysTenant extends BaseEntity {
     private Integer accountCount;
     private Integer status;
     private String logo;
+    
+    @TableField(exist = false)
+    private String loginAccount;
 
     public String getTenantCode() { return tenantCode; }
     public void setTenantCode(String tenantCode) { this.tenantCode = tenantCode; }
@@ -47,4 +51,7 @@ public class SysTenant extends BaseEntity {
 
     public String getLogo() { return logo; }
     public void setLogo(String logo) { this.logo = logo; }
+
+    public String getLoginAccount() { return loginAccount; }
+    public void setLoginAccount(String loginAccount) { this.loginAccount = loginAccount; }
 }
