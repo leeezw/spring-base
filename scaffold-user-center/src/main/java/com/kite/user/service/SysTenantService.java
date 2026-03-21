@@ -96,6 +96,10 @@ public class SysTenantService {
     @Transactional(rollbackFor = Exception.class)
     public void save(SysTenant tenant) {
         // 1. 插入租户
+        if (tenant.getAccountCount() <= 0) {
+            tenant.setAccountCount(1);
+
+        }
         tenantMapper.insert(tenant);
         Long tenantId = tenant.getId();
         
@@ -177,6 +181,10 @@ public class SysTenantService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void update(SysTenant tenant) {
+        if (tenant.getAccountCount() <= 0) {
+            tenant.setAccountCount(1);
+
+        }
         tenantMapper.updateById(tenant);
     }
     
