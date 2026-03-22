@@ -4,7 +4,11 @@ server:
 spring:
   application:
     name: scaffold-app
-  
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
   # 文件上传
   servlet:
     multipart:
