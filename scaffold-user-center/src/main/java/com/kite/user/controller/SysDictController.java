@@ -1,9 +1,12 @@
 package com.kite.user.controller;
 
 import com.kite.common.response.Result;
+import com.kite.user.dto.request.DictRequests;
+import com.kite.user.dto.request.RequestConverters;
 import com.kite.user.entity.SysDict;
 import com.kite.user.entity.SysDictItem;
 import com.kite.user.service.SysDictService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +22,6 @@ public class SysDictController {
         this.dictService = dictService;
     }
 
-    // ============ 字典类型 ============
-
     @GetMapping("/page")
     public Result<Object> page(
             @RequestParam(defaultValue = "1") int page,
@@ -35,14 +36,14 @@ public class SysDictController {
     }
 
     @PostMapping
-    public Result<Void> create(@RequestBody SysDict dict) {
-        dictService.createDict(dict);
+    public Result<Void> create(@Valid @RequestBody DictRequests.Save request) {
+        dictService.createDict(RequestConverters.toDict(request));
         return Result.success();
     }
 
     @PutMapping
-    public Result<Void> update(@RequestBody SysDict dict) {
-        dictService.updateDict(dict);
+    public Result<Void> update(@Valid @RequestBody DictRequests.Update request) {
+        dictService.updateDict(RequestConverters.toDict(request));
         return Result.success();
     }
 
@@ -52,35 +53,30 @@ public class SysDictController {
         return Result.success();
     }
 
-    // ============ 字典数据 ============
-
-    /** 根据字典编码获取数据项（最常用） */
     @GetMapping("/items/{dictCode}")
     public Result<List<SysDictItem>> getItemsByCode(@PathVariable String dictCode) {
         return Result.success(dictService.getItemsByCode(dictCode));
     }
 
-    /** 批量获取多个字典 */
     @GetMapping("/items/batch")
     public Result<Map<String, List<SysDictItem>>> getItemsBatch(@RequestParam List<String> codes) {
         return Result.success(dictService.getItemsByCodes(codes));
     }
 
-    /** 字典下的数据项列表 */
     @GetMapping("/{dictId}/items")
     public Result<List<SysDictItem>> listItems(@PathVariable Long dictId) {
         return Result.success(dictService.listItemsByDictId(dictId));
     }
 
     @PostMapping("/item")
-    public Result<Void> createItem(@RequestBody SysDictItem item) {
-        dictService.createItem(item);
+    public Result<Void> createItem(@Valid @RequestBody DictRequests.ItemSave request) {
+        dictService.createItem(RequestConverters.toDictItem(request));
         return Result.success();
     }
 
     @PutMapping("/item")
-    public Result<Void> updateItem(@RequestBody SysDictItem item) {
-        dictService.updateItem(item);
+    public Result<Void> updateItem(@Valid @RequestBody DictRequests.ItemUpdate request) {
+        dictService.updateItem(RequestConverters.toDictItem(request));
         return Result.success();
     }
 

@@ -1,9 +1,12 @@
 package com.kite.user.controller;
 
 import com.kite.common.response.Result;
+import com.kite.user.dto.request.PostRequests;
+import com.kite.user.dto.request.RequestConverters;
 import com.kite.user.entity.SysPost;
 import com.kite.user.entity.SysPosition;
 import com.kite.user.service.SysPostService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,14 +45,14 @@ public class SysPostController {
     }
 
     @PostMapping
-    public Result<Void> create(@RequestBody SysPost post) {
-        postService.create(post);
+    public Result<Void> create(@Valid @RequestBody PostRequests.Save request) {
+        postService.create(RequestConverters.toPost(request));
         return Result.success();
     }
 
     @PutMapping
-    public Result<Void> update(@RequestBody SysPost post) {
-        postService.update(post);
+    public Result<Void> update(@Valid @RequestBody PostRequests.Update request) {
+        postService.update(RequestConverters.toPost(request));
         return Result.success();
     }
 

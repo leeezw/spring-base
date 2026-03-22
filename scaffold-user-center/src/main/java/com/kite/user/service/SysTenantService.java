@@ -9,7 +9,14 @@ import com.kite.mybatis.context.TenantContext;
 import com.kite.user.entity.SysRole;
 import com.kite.user.entity.SysTenant;
 import com.kite.user.entity.SysUser;
-import com.kite.user.mapper.*;
+import com.kite.user.mapper.SysMenuMapper;
+import com.kite.user.mapper.SysPermissionMapper;
+import com.kite.user.mapper.SysRoleMapper;
+import com.kite.user.mapper.SysRoleMenuMapper;
+import com.kite.user.mapper.SysRolePermissionMapper;
+import com.kite.user.mapper.SysTenantMapper;
+import com.kite.user.mapper.SysUserMapper;
+import com.kite.user.mapper.SysUserRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,13 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * 租户服务
- */
 @Service
 @RequiredArgsConstructor
 public class SysTenantService {
-    
+
     private final SysTenantMapper tenantMapper;
     private final SysRoleMapper roleMapper;
     private final SysUserMapper userMapper;
@@ -33,88 +37,53 @@ public class SysTenantService {
     private final SysMenuMapper menuMapper;
     private final SysPermissionMapper permissionMapper;
     private final PasswordEncoder passwordEncoder;
-    
-    /**
-     * 分页查询租户
-     */
+
     public PageResult<SysTenant> page(int pageNum, int pageSize, String keyword) {
         Page<SysTenant> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<SysTenant> wrapper = new LambdaQueryWrapper<>();
-        
         if (keyword != null && !keyword.isEmpty()) {
-            wrapper.and(w -> w
-                .like(SysTenant::getTenantCode, keyword)
-                .or()
-                .like(SysTenant::getTenantName, keyword)
-            );
+            wrapper.and(w -> w.like(SysTenant::getTenantCode, keyword).or().like(SysTenant::getTenantName, keyword));
         }
-        
-        wrapper.eq(SysTenant::getDeleted, 0)
-               .orderByDesc(SysTenant::getCreateTime);
-        
+        wrapper.eq(SysTenant::getDeleted, 0).orderByDesc(SysTenant::getCreateTime);
         IPage<SysTenant> result = tenantMapper.selectPage(page, wrapper);
         result.getRecords().forEach(this::fillLoginAccount);
         return PageResult.of(result);
     }
-    
-    /**
-     * 查询所有租户
-     */
+
     public List<SysTenant> list() {
-        List<SysTenant> list = tenantMapper.selectList(
-            new LambdaQueryWrapper<SysTenant>()
+        List<SysTenant> list = tenantMapper.selectList(new LambdaQueryWrapper<SysTenant>()
                 .eq(SysTenant::getDeleted, 0)
-                .orderByDesc(SysTenant::getCreateTime)
-        );
+                .orderByDesc(SysTenant::getCreateTime));
         list.forEach(this::fillLoginAccount);
         return list;
     }
-    
-    /**
-     * 根据ID查询租户
-     */
+
     public SysTenant getById(Long id) {
         SysTenant tenant = tenantMapper.selectById(id);
         fillLoginAccount(tenant);
         return tenant;
     }
-    
-    /**
-     * 根据租户编码查询
-     */
+
     public SysTenant getByCode(String tenantCode) {
-        return tenantMapper.selectOne(
-            new LambdaQueryWrapper<SysTenant>()
+        return tenantMapper.selectOne(new LambdaQueryWrapper<SysTenant>()
                 .eq(SysTenant::getTenantCode, tenantCode)
-                .eq(SysTenant::getDeleted, 0)
-        );
+                .eq(SysTenant::getDeleted, 0));
     }
-    
-    /**
-     * 新增租户 + 初始化基础数据（超级管理员角色、admin用户、菜单关联）
-     */
+
     @Transactional(rollbackFor = Exception.class)
     public void save(SysTenant tenant) {
-        // 1. 插入租户
-        if (tenant.getAccountCount() <= 0) {
-            tenant.setAccountCount(1);
-
-        }
+        normalizeTenant(tenant);
         tenantMapper.insert(tenant);
         Long tenantId = tenant.getId();
-        
-        // 2. 临时切换租户上下文（让 MyBatis-Plus 自动填充 tenant_id）
+
         Long originalTenantId = TenantContext.getTenantId();
         try {
             TenantContext.setTenantId(tenantId);
-            
-            // 3. 创建超级管理员角色
-            long roleCodeCount = roleMapper.selectCount(
-                new LambdaQueryWrapper<SysRole>()
-                    .eq(SysRole::getRoleCode, "super_admin")
-            );
+
+            long roleCodeCount = roleMapper.selectCount(new LambdaQueryWrapper<SysRole>()
+                    .eq(SysRole::getRoleCode, "super_admin"));
             if (roleCodeCount > 0) {
-                throw new BusinessException("初始化租户失败：角色编码 super_admin 已存在");
+                throw new BusinessException("初始化租户失败: 角色编码 super_admin 已存在");
             }
 
             SysRole adminRole = new SysRole();
@@ -124,18 +93,15 @@ public class SysTenantService {
             adminRole.setDescription("租户超级管理员，拥有全部权限");
             adminRole.setSortOrder(0);
             adminRole.setStatus(1);
-            adminRole.setDataScope(1); // 全部数据权限
+            adminRole.setDataScope(1);
             roleMapper.insert(adminRole);
             Long roleId = adminRole.getId();
-            
-            // 4. 创建 admin 用户（username = tenantCode_admin 避免全局唯一冲突）
+
             String adminUsername = tenant.getTenantCode() + "_admin";
-            long usernameCount = userMapper.selectCount(
-                new LambdaQueryWrapper<SysUser>()
-                    .eq(SysUser::getUsername, adminUsername)
-            );
+            long usernameCount = userMapper.selectCount(new LambdaQueryWrapper<SysUser>()
+                    .eq(SysUser::getUsername, adminUsername));
             if (usernameCount > 0) {
-                throw new BusinessException("初始化租户失败：用户名 " + adminUsername + " 已存在");
+                throw new BusinessException("初始化租户失败: 用户名 " + adminUsername + " 已存在");
             }
 
             SysUser adminUser = new SysUser();
@@ -146,11 +112,9 @@ public class SysTenantService {
             adminUser.setStatus(1);
             userMapper.insert(adminUser);
             Long userId = adminUser.getId();
-            
-            // 5. 绑定用户-角色
+
             userRoleMapper.insertUserRole(userId, roleId);
-            
-            // 6. 给超级管理员角色分配菜单（排除租户管理，那是平台级功能）
+
             List<Long> allMenuIds = menuMapper.selectAllMenuIds();
             List<Long> tenantMenuExclude = menuMapper.selectMenuIdsByPath("/system/tenant");
             for (Long menuId : allMenuIds) {
@@ -158,8 +122,7 @@ public class SysTenantService {
                     roleMenuMapper.insertRoleMenu(roleId, menuId);
                 }
             }
-            
-            // 7. 给超级管理员角色分配系统内置权限（排除租户管理权限）
+
             List<Long> allPermIds = permissionMapper.selectBuiltinPermissionIds();
             List<Long> tenantPermExclude = permissionMapper.selectPermissionIdsByCodePrefix("system:tenant");
             for (Long permId : allPermIds) {
@@ -167,36 +130,46 @@ public class SysTenantService {
                     rolePermissionMapper.insertRolePermission(roleId, permId);
                 }
             }
-            
         } finally {
-            // 恢复原租户上下文
             if (originalTenantId != null) {
                 TenantContext.setTenantId(originalTenantId);
             }
         }
     }
-    
-    /**
-     * 更新租户
-     */
+
     @Transactional(rollbackFor = Exception.class)
     public void update(SysTenant tenant) {
-        if (tenant.getAccountCount() <= 0) {
-            tenant.setAccountCount(1);
-
-        }
+        normalizeTenant(tenant);
         tenantMapper.updateById(tenant);
     }
-    
-    /**
-     * 删除租户
-     */
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatus(Long id, Integer status) {
+        SysTenant tenant = new SysTenant();
+        tenant.setId(id);
+        tenant.setStatus(status);
+        tenantMapper.updateById(tenant);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         SysTenant tenant = new SysTenant();
         tenant.setId(id);
         tenant.setDeleted(1);
         tenantMapper.updateById(tenant);
+    }
+
+    private void normalizeTenant(SysTenant tenant) {
+        tenant.setTenantCode(tenant.getTenantCode() == null ? null : tenant.getTenantCode().trim());
+        tenant.setTenantName(tenant.getTenantName() == null ? null : tenant.getTenantName().trim());
+        tenant.setContactName(trimToNull(tenant.getContactName()));
+        tenant.setContactPhone(trimToNull(tenant.getContactPhone()));
+        tenant.setContactEmail(trimToNull(tenant.getContactEmail()));
+        if (tenant.getAccountCount() == null) {
+            tenant.setAccountCount(1);
+        } else if (tenant.getAccountCount() == 0 || tenant.getAccountCount() < -1) {
+            throw new BusinessException("账号额度只能为-1或大于0");
+        }
     }
 
     private void fillLoginAccount(SysTenant tenant) {
@@ -206,5 +179,13 @@ public class SysTenantService {
         if (tenant.getTenantCode() != null && !tenant.getTenantCode().isEmpty()) {
             tenant.setLoginAccount(tenant.getTenantCode() + "_admin");
         }
+    }
+
+    private String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

@@ -5,18 +5,15 @@ import com.kite.user.entity.SysMenu;
 
 import java.util.List;
 
-/**
- * 菜单Service
- */
 public interface SysMenuService extends IService<SysMenu> {
-    
-    /**
-     * 获取当前用户的菜单树
-     */
+
     List<SysMenu> getUserMenuTree();
-    
-    /**
-     * 获取所有菜单树
-     */
+
     List<SysMenu> getMenuTree();
+
+    void addMenu(SysMenu menu);
+
+    void updateMenu(SysMenu menu);
+
+    void deleteMenu(Long id);
 }
