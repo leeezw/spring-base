@@ -18,5 +18,8 @@ CREATE TABLE sys_position (
     INDEX idx_tenant (tenant_id)
 ) COMMENT='职位表';
 
+-- 如果表已存在，删除唯一约束
+ALTER TABLE sys_position DROP INDEX IF EXISTS uk_code_tenant;
+
 -- 员工表增加职位字段
-ALTER TABLE sys_employee ADD COLUMN position_id BIGINT COMMENT '职位ID' AFTER post_id;
+ALTER TABLE sys_employee ADD COLUMN IF NOT EXISTS position_id BIGINT COMMENT '职位ID' AFTER post_id;

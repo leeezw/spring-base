@@ -13,7 +13,7 @@ spring:
   
   # 数据源配置
   datasource:
-    url: jdbc:postgresql://localhost:5432/scaffold_db
+    url: jdbc:postgresql://129.211.62.23:5432/scaffold_db
     username: scaffold_user
     password: Scaffold@2026
     driver-class-name: org.postgresql.Driver
@@ -27,7 +27,7 @@ spring:
   # Redis 配置
   data:
     redis:
-      host: localhost
+      host: 129.211.62.23
       port: 6379
       password: leezw123+.
       database: 0
@@ -57,7 +57,7 @@ scaffold:
       secret: scaffold-project-jwt-secret-key-2026-very-long-secret
       expire: 7200
     session:
-      enabled: true
+      enabled: false
       timeout: 86400
       single-login: false
     exclude-paths:
