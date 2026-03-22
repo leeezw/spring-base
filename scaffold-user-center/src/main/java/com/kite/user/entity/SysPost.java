@@ -38,6 +38,9 @@ public class SysPost {
     @TableField(exist = false)
     private Integer userCount;
 
+    @TableField(exist = false)
+    private List<SysPosition> positions;
+
     // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -86,4 +89,7 @@ public class SysPost {
 
     public Integer getUserCount() { return userCount; }
     public void setUserCount(Integer userCount) { this.userCount = userCount; }
+
+    public List<SysPosition> getPositions() { return positions; }
+    public void setPositions(List<SysPosition> positions) { this.positions = positions; }
 }

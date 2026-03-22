@@ -23,10 +23,12 @@ public interface SysEmployeeMapper extends BaseMapper<SysEmployee> {
             SELECT e.*,
                    d.dept_name,
                    p.post_name,
+                   pos.position_name,
                    u.username
             FROM sys_employee e
                      LEFT JOIN sys_dept d ON e.dept_id = d.id AND d.deleted = 0
                      LEFT JOIN sys_post p ON e.post_id = p.id AND p.deleted = 0
+                     LEFT JOIN sys_position pos ON e.position_id = pos.id AND pos.deleted = 0
                      LEFT JOIN sys_user u ON e.user_id = u.id AND u.deleted = 0
             ${ew.customSqlSegment}
             """)
@@ -40,10 +42,12 @@ public interface SysEmployeeMapper extends BaseMapper<SysEmployee> {
             SELECT e.*,
                    d.dept_name,
                    p.post_name,
+                   pos.position_name,
                    u.username
             FROM sys_employee e
                      LEFT JOIN sys_dept d ON e.dept_id = d.id AND d.deleted = 0
                      LEFT JOIN sys_post p ON e.post_id = p.id AND p.deleted = 0
+                     LEFT JOIN sys_position pos ON e.position_id = pos.id AND pos.deleted = 0
                      LEFT JOIN sys_user u ON e.user_id = u.id AND u.deleted = 0
             WHERE e.id = #{id} AND e.deleted = 0
             """)

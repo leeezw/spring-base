@@ -38,6 +38,11 @@ public class SysEmployee extends BaseEntity {
      */
     private Long postId;
 
+    /**
+     * 职位 ID（可空）
+     */
+    private Long positionId;
+
     // ── 基础档案 ──────────────────────────────────────────────
 
     /**
@@ -153,6 +158,9 @@ public class SysEmployee extends BaseEntity {
 
     @TableField(exist = false)
     private String postName;
+
+    @TableField(exist = false)
+    private String positionName;
 
     /**
      * 绑定账号的用户名（来自 SysUser）

@@ -2,6 +2,7 @@ package com.kite.user.controller;
 
 import com.kite.common.response.Result;
 import com.kite.user.entity.SysPost;
+import com.kite.user.entity.SysPosition;
 import com.kite.user.service.SysPostService;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,5 +57,10 @@ public class SysPostController {
     public Result<Void> delete(@PathVariable Long id) {
         postService.delete(id);
         return Result.success();
+    }
+
+    @GetMapping("/{id}/positions")
+    public Result<List<SysPosition>> getPositions(@PathVariable Long id) {
+        return Result.success(postService.getPositionsByPostId(id));
     }
 }
