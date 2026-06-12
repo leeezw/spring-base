@@ -13,6 +13,7 @@ import java.util.List;
 public class SysDept extends BaseEntity {
     
     private Long tenantId;
+    private Long storeId;
     private String deptName;
     private Long parentId;
     private Long leaderId;
@@ -23,9 +24,15 @@ public class SysDept extends BaseEntity {
     
     @TableField(exist = false)
     private List<SysDept> children;
+
+    @TableField(exist = false)
+    private String storeName;
     
     public Long getTenantId() { return tenantId; }
     public void setTenantId(Long tenantId) { this.tenantId = tenantId; }
+
+    public Long getStoreId() { return storeId; }
+    public void setStoreId(Long storeId) { this.storeId = storeId; }
     
     public String getDeptName() { return deptName; }
     public void setDeptName(String deptName) { this.deptName = deptName; }
@@ -50,4 +57,7 @@ public class SysDept extends BaseEntity {
     
     public List<SysDept> getChildren() { return children; }
     public void setChildren(List<SysDept> children) { this.children = children; }
+
+    public String getStoreName() { return storeName; }
+    public void setStoreName(String storeName) { this.storeName = storeName; }
 }

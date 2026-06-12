@@ -28,6 +28,7 @@
         <module>scaffold-log-starter</module>
         <module>scaffold-cache-starter</module>
         <module>scaffold-user-center</module>
+        <module>scaffold-beauty</module>
         <module>scaffold-app</module>
     </modules>
 
@@ -82,6 +83,11 @@
             <dependency>
                 <groupId>com.kite</groupId>
                 <artifactId>scaffold-user-center</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kite</groupId>
+                <artifactId>scaffold-beauty</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

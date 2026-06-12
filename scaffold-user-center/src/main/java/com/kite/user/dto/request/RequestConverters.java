@@ -104,6 +104,7 @@ public final class RequestConverters {
     public static SysDept toDept(DeptRequests.Save request) {
         SysDept dept = new SysDept();
         dept.setDeptName(trim(request.getDeptName()));
+        dept.setStoreId(request.getStoreId());
         dept.setParentId(request.getParentId());
         dept.setLeaderId(request.getLeaderId());
         dept.setPhone(trimToNull(request.getPhone()));

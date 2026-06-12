@@ -43,6 +43,11 @@ public class SysEmployee extends BaseEntity {
      */
     private Long positionId;
 
+    /**
+     * 悦美 V1 主门店 ID（可空）
+     */
+    private Long storeId;
+
     // ── 基础档案 ──────────────────────────────────────────────
 
     /**
@@ -124,6 +129,11 @@ public class SysEmployee extends BaseEntity {
      */
     private Integer status;
 
+    /**
+     * 是否可服务：1是 0否
+     */
+    private Integer serviceEnabled;
+
     // ── 紧急联系人 ────────────────────────────────────────────
 
     /**
@@ -161,6 +171,9 @@ public class SysEmployee extends BaseEntity {
 
     @TableField(exist = false)
     private String positionName;
+
+    @TableField(exist = false)
+    private String storeName;
 
     /**
      * 绑定账号的用户名（来自 SysUser）

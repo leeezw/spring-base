@@ -11,6 +11,7 @@ import com.kite.user.entity.SysDept;
 import com.kite.user.entity.SysEmployee;
 import com.kite.user.entity.SysEmployeeField;
 import com.kite.user.entity.SysUser;
+import com.kite.user.mapper.SysDeptMapper;
 import com.kite.user.mapper.SysEmployeeFieldMapper;
 import com.kite.user.mapper.SysEmployeeMapper;
 import com.kite.user.mapper.SysUserMapper;
@@ -35,6 +36,7 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
 
     private final SysEmployeeFieldMapper fieldMapper;
     private final SysUserMapper userMapper;
+    private final SysDeptMapper deptMapper;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // ══════════════════════════════════════════════════════════
@@ -46,27 +48,25 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
      */
     public PageResult<SysEmployee> pageEmployees(int pageNum, int pageSize,
                                                   String keyword, Long deptId,
-                                                  Integer status, Integer empType) {
-        LambdaQueryWrapper<SysEmployee> wrapper = new LambdaQueryWrapper<>();
-        // 关键词搜索：姓名或工号
-        if (StringUtils.hasText(keyword)) {
-            wrapper.and(w -> w.like(SysEmployee::getEmpName, keyword)
-                    .or().like(SysEmployee::getEmpCode, keyword));
-        }
-        if (deptId != null) {
-            wrapper.eq(SysEmployee::getDeptId, deptId);
-        }
-        if (status != null) {
-            wrapper.eq(SysEmployee::getStatus, status);
-        }
-        if (empType != null) {
-            wrapper.eq(SysEmployee::getEmpType, empType);
-        }
-        wrapper.orderByAsc(SysEmployee::getEmpCode);
-
-        // 联表分页（多租户由拦截器自动注入 WHERE e.tenant_id = ?）
-        IPage<SysEmployee> page = baseMapper.selectPageWithDetail(new Page<>(pageNum, pageSize), wrapper);
+                                                  Integer status, Integer empType,
+                                                  Long storeId, Integer serviceEnabled) {
+        String trimmedKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
+        IPage<SysEmployee> page = baseMapper.selectPageWithDetail(new Page<>(pageNum, pageSize),
+                trimmedKeyword, deptId, status, empType, storeId, serviceEnabled);
         return PageResult.of(page);
+    }
+
+    public List<SysEmployee> listSelectableEmployees(Long storeId, Boolean serviceOnly) {
+        LambdaQueryWrapper<SysEmployee> wrapper = new LambdaQueryWrapper<SysEmployee>()
+                .in(SysEmployee::getStatus, 1, 2);
+        if (storeId != null) {
+            wrapper.eq(SysEmployee::getStoreId, storeId);
+        }
+        if (Boolean.TRUE.equals(serviceOnly)) {
+            wrapper.eq(SysEmployee::getServiceEnabled, 1);
+        }
+        wrapper.orderByAsc(SysEmployee::getEmpCode).last("LIMIT 200");
+        return list(wrapper);
     }
 
     /**
@@ -84,11 +84,17 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
      * 新增员工
      */
     public void addEmployee(SysEmployee employee) {
+        normalizeEmployee(employee);
+        employee.setTenantId(resolveTenantId(employee.getTenantId()));
+        validateDeptBelongsToStore(employee.getStoreId(), employee.getDeptId());
         // 工号唯一性校验（同租户）
         checkEmpCodeUnique(employee.getEmpCode(), null);
         // 默认状态：在职
         if (employee.getStatus() == null) {
             employee.setStatus(1);
+        }
+        if (employee.getServiceEnabled() == null) {
+            employee.setServiceEnabled(1);
         }
         save(employee);
     }
@@ -101,6 +107,9 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
         if (exist == null) {
             throw new BusinessException("员工不存在");
         }
+        normalizeEmployee(employee);
+        employee.setTenantId(exist.getTenantId());
+        validateDeptBelongsToStore(employee.getStoreId(), employee.getDeptId());
         // 工号变更时校验唯一性
         if (!exist.getEmpCode().equals(employee.getEmpCode())) {
             checkEmpCodeUnique(employee.getEmpCode(), employee.getId());
@@ -163,7 +172,7 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
 
         // 创建系统账号
         SysUser user = new SysUser();
-        user.setTenantId(employee.getTenantId());
+        user.setTenantId(resolveTenantId(employee.getTenantId()));
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(defaultPassword));
         user.setNickname(employee.getEmpName());
@@ -264,6 +273,7 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
      * 新增自定义字段定义
      */
     public void addField(SysEmployeeField field) {
+        field.setTenantId(resolveTenantId(field.getTenantId()));
         // 同租户内 fieldKey 唯一
         long count = fieldMapper.selectCount(
                 new LambdaQueryWrapper<SysEmployeeField>()
@@ -315,5 +325,61 @@ public class SysEmployeeService extends ServiceImpl<SysEmployeeMapper, SysEmploy
         if (count > 0) {
             throw new BusinessException("工号 [" + empCode + "] 已存在");
         }
+    }
+
+    private Long resolveTenantId(Long tenantId) {
+        if (tenantId != null) {
+            return tenantId;
+        }
+        Long currentTenantId = TenantContext.getTenantId();
+        return currentTenantId != null ? currentTenantId : 1L;
+    }
+
+    private void validateDeptBelongsToStore(Long storeId, Long deptId) {
+        if (deptId == null) {
+            return;
+        }
+        if (storeId == null) {
+            throw new BusinessException("请选择所属门店后再选择部门");
+        }
+        SysDept dept = deptMapper.selectById(deptId);
+        if (dept == null) {
+            throw new BusinessException("所属部门不存在");
+        }
+        if (dept.getStoreId() == null || !dept.getStoreId().equals(storeId)) {
+            throw new BusinessException("所属部门不属于所选门店");
+        }
+    }
+
+    private void normalizeEmployee(SysEmployee employee) {
+        employee.setEmpCode(trim(employee.getEmpCode()));
+        employee.setEmpName(trim(employee.getEmpName()));
+        employee.setPhone(trimToNull(employee.getPhone()));
+        employee.setEmail(trimToNull(employee.getEmail()));
+        employee.setAvatar(trimToNull(employee.getAvatar()));
+        employee.setIdCard(trimToNull(employee.getIdCard()));
+        employee.setNation(trimToNull(employee.getNation()));
+        employee.setNativePlace(trimToNull(employee.getNativePlace()));
+        employee.setAddress(trimToNull(employee.getAddress()));
+        employee.setEmergencyContact(trimToNull(employee.getEmergencyContact()));
+        employee.setEmergencyPhone(trimToNull(employee.getEmergencyPhone()));
+        employee.setEmergencyRelation(trimToNull(employee.getEmergencyRelation()));
+        if (!StringUtils.hasText(employee.getEmpCode())) {
+            throw new BusinessException("工号不能为空");
+        }
+        if (!StringUtils.hasText(employee.getEmpName())) {
+            throw new BusinessException("员工姓名不能为空");
+        }
+    }
+
+    private String trim(String value) {
+        return value == null ? null : value.trim();
+    }
+
+    private String trimToNull(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return value.trim();
     }
 }

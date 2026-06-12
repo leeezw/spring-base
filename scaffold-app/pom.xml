@@ -56,6 +56,12 @@
             <groupId>com.kite</groupId>
             <artifactId>scaffold-user-center</artifactId>
         </dependency>
+
+        <!-- scaffold-beauty -->
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-beauty</artifactId>
+        </dependency>
         
         <!-- Spring Boot Web -->
         <dependency>

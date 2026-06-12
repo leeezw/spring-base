@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/system/dept")
@@ -29,26 +30,35 @@ public class SysDeptController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String deptName,
+            @RequestParam(required = false) Long storeId,
             @RequestParam(required = false) Integer status) {
-        return Result.success(deptService.pageDepts(pageNum, pageSize, deptName, status));
+        return Result.success(deptService.pageDepts(pageNum, pageSize, deptName, storeId, status));
     }
 
     @GetMapping("/tree")
     @RequiresPermissions("system:dept:query")
-    public Result<List<SysDept>> tree() {
-        return Result.success(deptService.getDeptTree());
+    public Result<List<SysDept>> tree(@RequestParam(required = false) Long storeId) {
+        return Result.success(deptService.getDeptTree(storeId));
     }
 
     @GetMapping("/list")
     @RequiresPermissions("system:dept:query")
-    public Result<List<SysDept>> list() {
-        return Result.success(deptService.list());
+    public Result<List<SysDept>> list(
+            @RequestParam(required = false) Long storeId,
+            @RequestParam(required = false) Integer status) {
+        return Result.success(deptService.listDepts(storeId, status));
+    }
+
+    @GetMapping("/store-options")
+    @RequiresPermissions("system:dept:query")
+    public Result<List<Map<String, Object>>> storeOptions() {
+        return Result.success(deptService.listStoreOptions());
     }
 
     @GetMapping("/{id}")
     @RequiresPermissions("system:dept:query")
     public Result<SysDept> getById(@PathVariable Long id) {
-        return Result.success(deptService.getById(id));
+        return Result.success(deptService.getDeptDetail(id));
     }
 
     @PostMapping

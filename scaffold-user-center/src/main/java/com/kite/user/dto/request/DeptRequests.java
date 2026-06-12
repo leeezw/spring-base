@@ -19,6 +19,10 @@ public final class DeptRequests {
         @Size(max = 50, message = "部门名称长度不能超过50个字符")
         private String deptName;
 
+        @NotNull(message = "所属门店不能为空")
+        @Min(value = 1, message = "所属门店值无效")
+        private Long storeId;
+
         @Min(value = 0, message = "上级部门值无效")
         private Long parentId;
 

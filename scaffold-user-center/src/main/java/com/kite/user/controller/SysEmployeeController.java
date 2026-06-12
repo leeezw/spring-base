@@ -36,8 +36,18 @@ public class SysEmployeeController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long deptId,
             @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) Integer empType) {
-        return Result.success(employeeService.pageEmployees(pageNum, pageSize, keyword, deptId, status, empType));
+            @RequestParam(required = false) Integer empType,
+            @RequestParam(required = false) Long storeId,
+            @RequestParam(required = false) Integer serviceEnabled) {
+        return Result.success(employeeService.pageEmployees(pageNum, pageSize, keyword, deptId, status, empType, storeId, serviceEnabled));
+    }
+
+    @GetMapping("/list")
+    @RequiresPermissions("hr:employee:query")
+    public Result<List<SysEmployee>> list(
+            @RequestParam(required = false) Long storeId,
+            @RequestParam(defaultValue = "false") Boolean serviceOnly) {
+        return Result.success(employeeService.listSelectableEmployees(storeId, serviceOnly));
     }
 
     /**
