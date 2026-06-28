@@ -169,30 +169,40 @@ CREATE INDEX IF NOT EXISTS idx_cert_task_log_cert ON cert_task_log (certificate_
 CREATE INDEX IF NOT EXISTS idx_cert_task_log_tenant_time ON cert_task_log (tenant_id, started_at DESC);
 
 -- =====================================================
--- 权限/菜单种子数据（按钮级权限码，供 @RequiresPermissions 校验）
+-- 权限种子数据（按钮级权限码，供 @RequiresPermissions 校验）
 -- permission_type: 1菜单 2按钮 3API
+-- 说明：用 WHERE NOT EXISTS 保证幂等且与 sys_permission 具体唯一约束解耦
+--       （现网约束存在脚本漂移：单列 permission_code 或组合 tenant_id+permission_code 都能正常执行）
 -- =====================================================
 INSERT INTO sys_permission (permission_code, permission_name, permission_type, parent_id, sort_order, status, tenant_id, create_time, update_time, deleted)
-VALUES
-  ('cert:certificate:query',  '证书查询', 2, 0, 1, 1, 1, NOW(), NOW(), 0),
-  ('cert:certificate:add',    '证书签发', 2, 0, 2, 1, 1, NOW(), NOW(), 0),
-  ('cert:certificate:renew',  '证书续期', 2, 0, 3, 1, 1, NOW(), NOW(), 0),
-  ('cert:certificate:deploy', '证书部署', 2, 0, 4, 1, 1, NOW(), NOW(), 0),
-  ('cert:certificate:delete', '证书删除', 2, 0, 5, 1, 1, NOW(), NOW(), 0),
-  ('cert:account:query',      'ACME账户查询', 2, 0, 6, 1, 1, NOW(), NOW(), 0),
-  ('cert:account:edit',       'ACME账户管理', 2, 0, 7, 1, 1, NOW(), NOW(), 0),
-  ('cert:dns:query',          'DNS服务商查询', 2, 0, 8, 1, 1, NOW(), NOW(), 0),
-  ('cert:dns:edit',           'DNS服务商管理', 2, 0, 9, 1, 1, NOW(), NOW(), 0),
-  ('cert:deploy:query',       '部署目标查询', 2, 0, 10, 1, 1, NOW(), NOW(), 0),
-  ('cert:deploy:edit',        '部署目标管理', 2, 0, 11, 1, 1, NOW(), NOW(), 0),
-  ('cert:log:query',          '任务日志查询', 2, 0, 12, 1, 1, NOW(), NOW(), 0)
-ON CONFLICT (permission_code) DO NOTHING;
+SELECT v.permission_code, v.permission_name, 2, 0, v.sort_order, 1, 1, NOW(), NOW(), 0
+FROM (VALUES
+  ('cert:certificate:query',  '证书查询', 1),
+  ('cert:certificate:add',    '证书签发', 2),
+  ('cert:certificate:renew',  '证书续期', 3),
+  ('cert:certificate:deploy', '证书部署', 4),
+  ('cert:certificate:delete', '证书删除', 5),
+  ('cert:account:query',      'ACME账户查询', 6),
+  ('cert:account:edit',       'ACME账户管理', 7),
+  ('cert:dns:query',          'DNS服务商查询', 8),
+  ('cert:dns:edit',           'DNS服务商管理', 9),
+  ('cert:deploy:query',       '部署目标查询', 10),
+  ('cert:deploy:edit',        '部署目标管理', 11),
+  ('cert:log:query',          '任务日志查询', 12)
+) AS v(permission_code, permission_name, sort_order)
+WHERE NOT EXISTS (
+    SELECT 1 FROM sys_permission p
+    WHERE p.permission_code = v.permission_code AND p.tenant_id = 1
+);
 
--- 授予超级管理员角色（role_code='ADMIN'）全部证书权限
+-- 授予超级管理员角色（role_code='ADMIN'）全部证书权限（幂等，避免依赖唯一约束）
 INSERT INTO sys_role_permission (role_id, permission_id, create_time)
 SELECT r.id, p.id, NOW()
 FROM sys_role r
 CROSS JOIN sys_permission p
 WHERE r.role_code = 'ADMIN'
   AND p.permission_code LIKE 'cert:%'
-ON CONFLICT (role_id, permission_id) DO NOTHING;
+  AND NOT EXISTS (
+      SELECT 1 FROM sys_role_permission rp
+      WHERE rp.role_id = r.id AND rp.permission_id = p.id
+  );

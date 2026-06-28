@@ -1,0 +1,35 @@
+# 本地一键起 PostgreSQL + Redis，供"本机没有任何环境"时验证证书自动化工具。
+# 用法：
+#   docker compose up -d
+#   按 TESTING.md 导入 SQL，然后 mvn spring-boot:run -Dspring-boot.run.profiles=local
+services:
+  postgres:
+    image: postgres:16
+    container_name: cert-postgres
+    environment:
+      POSTGRES_DB: scaffold_db
+      POSTGRES_USER: scaffold_user
+      POSTGRES_PASSWORD: scaffold_pass
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - cert-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scaffold_user -d scaffold_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: cert-redis
+    command: ["redis-server", "--requirepass", "redis_pass"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - cert-redisdata:/data
+
+volumes:
+  cert-pgdata:
+  cert-redisdata:
