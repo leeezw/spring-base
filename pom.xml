@@ -29,6 +29,7 @@
         <module>scaffold-cache-starter</module>
         <module>scaffold-user-center</module>
         <module>scaffold-beauty</module>
+        <module>scaffold-cert</module>
         <module>scaffold-app</module>
     </modules>
 
@@ -45,6 +46,12 @@
         <jwt.version>0.12.5</jwt.version>
         <knife4j.version>4.5.0</knife4j.version>
         <hutool.version>5.8.25</hutool.version>
+
+        <!-- 证书自动化模块依赖 -->
+        <acme4j.version>3.3.0</acme4j.version>
+        <bouncycastle.version>1.78.1</bouncycastle.version>
+        <jsch.version>0.2.17</jsch.version>
+        <qiniu.version>7.15.0</qiniu.version>
     </properties>
 
     <dependencyManagement>
@@ -90,7 +97,12 @@
                 <artifactId>scaffold-beauty</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+            <dependency>
+                <groupId>com.kite</groupId>
+                <artifactId>scaffold-cert</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- MyBatis-Plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -134,6 +146,34 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- acme4j (ACME 协议客户端，对接 Let's Encrypt / ZeroSSL) -->
+            <dependency>
+                <groupId>org.shredzone.acme4j</groupId>
+                <artifactId>acme4j-client</artifactId>
+                <version>${acme4j.version}</version>
+            </dependency>
+
+            <!-- BouncyCastle (acme4j 依赖，证书/密钥处理) -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+
+            <!-- JSch (SSH 部署证书到 Nginx / 西部数码服务器) -->
+            <dependency>
+                <groupId>com.github.mwiede</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
+            </dependency>
+
+            <!-- 七牛云 SDK (上传/绑定 OSS、CDN 证书) -->
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

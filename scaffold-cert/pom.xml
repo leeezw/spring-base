@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.kite</groupId>
+        <artifactId>scaffold-project</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>scaffold-cert</artifactId>
+    <packaging>jar</packaging>
+    <description>SSL 证书自动化管理模块（ACME 签发 / DNS 验证 / 自动部署 / 到期续期）</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-auth-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-mybatis-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-permission-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-log-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-user-center</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- 邮件通知 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- Hutool（HTTP 调用西部数码 / 宝塔 API，加密辅助） -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
+        <!-- ACME 协议客户端 -->
+        <dependency>
+            <groupId>org.shredzone.acme4j</groupId>
+            <artifactId>acme4j-client</artifactId>
+        </dependency>
+
+        <!-- BouncyCastle：密钥/证书/CSR 处理 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+        </dependency>
+
+        <!-- SSH 部署 -->
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <!-- 七牛云 SDK -->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+</project>

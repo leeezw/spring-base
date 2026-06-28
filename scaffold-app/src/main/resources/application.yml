@@ -43,6 +43,19 @@ spring:
           min-idle: 0
           max-wait: -1ms
 
+  # 邮件通知（证书到期/续期通知用，未配置则自动跳过邮件渠道）
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+
 # MyBatis-Plus 配置
 mybatis-plus:
   configuration:
@@ -102,3 +115,30 @@ app:
       save-response: false # 是否保存响应数据
     login:
       enabled: true        # 登录日志开关
+
+# 证书自动化模块配置
+cert:
+  crypto:
+    # AES 主密钥（>=32位），强烈建议通过环境变量 CERT_CRYPTO_SECRET 注入
+    secret: ${CERT_CRYPTO_SECRET:scaffold-cert-please-change-this-secret-key}
+  acme:
+    letsencrypt-directory: https://acme-v02.api.letsencrypt.org/directory
+    letsencrypt-staging-directory: https://acme-staging-v02.api.letsencrypt.org/directory
+    zerossl-directory: https://acme.zerossl.com/v2/DV90
+    dns-propagation-seconds: 30      # DNS TXT 写入后等待传播秒数
+    challenge-timeout-seconds: 180   # 验证/finalize 轮询超时
+  renew:
+    enabled: true
+    cron: "0 0 3 * * ?"              # 每日 03:00 扫描续期
+    renew-before-days: 30            # 到期前 30 天续期
+    expiry-warn-days: 15             # 到期前 15 天预警
+  storage:
+    export-path: /data/certs         # 可选：证书导出目录
+  notify:
+    email:
+      enabled: false
+      to: lizhouwei@mokahr.io
+    webhook:
+      enabled: false
+      type: dingtalk                 # dingtalk / wecom
+      url: ""

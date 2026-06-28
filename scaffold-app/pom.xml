@@ -62,7 +62,13 @@
             <groupId>com.kite</groupId>
             <artifactId>scaffold-beauty</artifactId>
         </dependency>
-        
+
+        <!-- scaffold-cert（证书自动化管理） -->
+        <dependency>
+            <groupId>com.kite</groupId>
+            <artifactId>scaffold-cert</artifactId>
+        </dependency>
+
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
