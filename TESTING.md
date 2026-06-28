@@ -6,6 +6,21 @@
 
 ---
 
+## 服务器过期 / 数据库连不上 怎么办？
+
+原默认配置连的是远程库 `129.211.62.23`。服务器过期后那台 PostgreSQL 和 Redis 都没了，应用起不来。这套工具可以**完全脱离那台服务器**，按成本从低到高三条路：
+
+1. **本机 Docker（首选，零成本、零改动）**：见下面【路径 B】，`docker compose up -d` 在自己电脑起 PG+Redis。
+2. **免费云数据库（想常驻又不想买服务器）**：用 Neon/Supabase 免费 PostgreSQL + Upstash 免费 Redis，复制 `application-cloud.yml.example` 为 `application-cloud.yml`、填好连接串后：
+   ```bash
+   mvn -pl scaffold-app -am spring-boot:run -Dspring-boot.run.profiles=cloud
+   ```
+3. **新服务器/续费**：长期方案——证书**自动续期是定时任务，需要一台常驻主机**才能在到期前自动跑。打包 `mvn -pl scaffold-app -am package` 得到 jar，配好 PG+Redis 与 `CERT_CRYPTO_SECRET`，`java -jar` 跑起来并设开机自启即可。
+
+> ⚠️ 关键：**Redis 也必须换一个能连的**（登录/令牌依赖它），只改数据库不够。
+
+---
+
 ## 0. 零依赖：先跑单元测试（不需要任何外部服务）
 
 ```bash

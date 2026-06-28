@@ -1,0 +1,31 @@
+# 免费云数据库 profile 模板：当没有自己的服务器时，用云上的 PostgreSQL + Redis。
+# 用法：
+#   cp application-cloud.yml.example application-cloud.yml   # application-cloud.yml 不入库
+#   填好下面的连接串后：
+#   mvn -pl scaffold-app -am spring-boot:run -Dspring-boot.run.profiles=cloud
+#
+# 推荐免费层：
+#   - PostgreSQL：Neon (https://neon.tech) 或 Supabase (https://supabase.com)
+#   - Redis：Upstash (https://upstash.com)
+# 注意：Redis 必须可达，登录/令牌黑名单依赖它，否则登录会失败。
+spring:
+  datasource:
+    # Neon/Supabase 控制台复制的连接串，通常需要 ?sslmode=require
+    url: jdbc:postgresql://<云PG主机>:5432/<库名>?sslmode=require
+    username: <云PG用户名>
+    password: <云PG密码>
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      # Upstash 控制台的 host / port / password（Upstash 需要 TLS）
+      host: <云Redis主机>
+      port: 6379
+      password: <云Redis密码>
+      database: 0
+      ssl:
+        enabled: true        # Upstash 等托管 Redis 通常要求 TLS；自建未开 TLS 则改为 false
+
+# 加密主密钥用环境变量注入：export CERT_CRYPTO_SECRET=...
+cert:
+  crypto:
+    secret: ${CERT_CRYPTO_SECRET:please-set-a-strong-32+-char-secret-0001}
