@@ -50,8 +50,10 @@ mvn -pl scaffold-cert -am test
    psql "$PG" -f sql/insert_test_data_fixed.sql   # 注意用 _fixed 版本
    psql "$PG" -f sql/cert_automation.sql
    ```
-3. 用 local profile 启动（数据源/Redis 已指向本机 docker）：
+3. 启用 local profile（`application-local.yml` 按仓库约定被 gitignore，从模板复制即可）：
    ```bash
+   cp scaffold-app/src/main/resources/application-local.yml.example \
+      scaffold-app/src/main/resources/application-local.yml
    mvn -pl scaffold-app -am spring-boot:run -Dspring-boot.run.profiles=local
    ```
 4. 前端：

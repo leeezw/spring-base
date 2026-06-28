@@ -1,0 +1,22 @@
+# 本地 docker 环境 profile：mvn spring-boot:run -Dspring-boot.run.profiles=local
+# 对应 docker-compose.yml 中的 PostgreSQL + Redis
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scaffold_db
+    username: scaffold_user
+    password: scaffold_pass
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis_pass
+      database: 0
+
+# 证书模块：本地用 staging 验证，加密密钥本地随便给一个（>=32 位）
+cert:
+  crypto:
+    secret: local-dev-cert-secret-please-change-0001
+  renew:
+    # 本地默认关闭定时续期，避免误触发；需要测试调度时改 true
+    enabled: false
